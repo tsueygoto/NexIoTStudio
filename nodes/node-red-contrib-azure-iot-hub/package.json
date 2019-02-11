@@ -1,0 +1,65 @@
+{
+  "_from": "node-red-contrib-azure-iot-hub",
+  "_id": "node-red-contrib-azure-iot-hub@0.3.0",
+  "_inBundle": false,
+  "_integrity": "sha1-HQ9+ass8eu7qbNG4kw5Dtx8TfEo=",
+  "_location": "/node-red-contrib-azure-iot-hub",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "node-red-contrib-azure-iot-hub",
+    "name": "node-red-contrib-azure-iot-hub",
+    "escapedName": "node-red-contrib-azure-iot-hub",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/node-red-contrib-azure-iot-hub/-/node-red-contrib-azure-iot-hub-0.3.0.tgz",
+  "_shasum": "1d0f7e6acb3c7aeeea6cd1b8930e43b71f137c4a",
+  "_spec": "node-red-contrib-azure-iot-hub",
+  "_where": "/home/user/IoT-Studio",
+  "author": {
+    "name": "Lucas Humenhuk",
+    "email": "luhumenh@microsoft.com",
+    "url": "http://nodered.org"
+  },
+  "bugs": {
+    "url": "https://github.com/lcarli/NodeRedIoTHub/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "azure-iot-device": "^1.0.14",
+    "azure-iot-device-amqp": "^1.0.14",
+    "azure-iot-device-amqp-ws": "^1.0.14",
+    "azure-iot-device-http": "^1.0.14",
+    "azure-iot-device-mqtt": "^1.0.14",
+    "azure-iothub": "^1.0.4"
+  },
+  "deprecated": false,
+  "description": "Connector to azure on Node-Red",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "homepage": "https://github.com/lcarli/NodeRedIoTHub#readme",
+  "keywords": [
+    "node-red",
+    "Azure",
+    "Azure IoT"
+  ],
+  "name": "node-red-contrib-azure-iot-hub",
+  "node-red": {
+    "nodes": {
+      "Azure": "azureiothub.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lcarli/NodeRedIoTHub.git"
+  },
+  "version": "0.3.1"
+}

@@ -1,0 +1,72 @@
+<style>
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "valve-plugin" , ImagePlugin , {
+        category : "Factory",
+        display_name : "Valve",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/factory/Valves-1.svg" }
+        },
+        color: "rgb(153,204,255)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="valve-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/factory/Valves-1.svg">Valve 1</option>
+          <option value="images/factory/Valves-2.svg">Valve 2</option>
+          <option value="images/factory/Valves-3.svg">Valve 3</option>
+          <option value="images/factory/Valves-4.svg">Valve 4</option>
+          <option value="images/factory/Valves-5.svg">Valve 5</option>
+          <option value="images/factory/Valves-6.svg">Valve 6</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="valve-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 6 types can select in below.</p>
+<pre>
+   Valve 1   Valve 2   Valve 3
+   Valve 4   Valve 5   Valve 6</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 6 Types.</p><p style="text-align: center;"><img src="images/Valves.png" /></p></div>
+</script>
+

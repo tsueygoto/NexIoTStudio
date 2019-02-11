@@ -1,0 +1,185 @@
+<style>
+.nvd3barhorizontalContainer {
+  flex: 1;
+}
+
+.nvd3barhorizontalContainer .nv-legend-text {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3barhorizontalContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3barhorizontalContainer .nvd3.nv-noData {
+  fill: #aab0b9;
+}
+
+.nvd3barhorizontalContainer .nv-axis {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3barhorizontalContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3barhorizontalContainer .tick line {
+  stroke: #4a4e54;
+}
+
+.nvd3barhorizontalContainer .tick text {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3barhorizontalContainer .nv-controlsWrap circle {
+  stroke: #cc8700 !important;
+  fill: #cc8700 !important;
+}
+
+.nvd3barhorizontalContainer .nv-groups text {
+  //fill: #eee !important; /*Kewei modified*/
+}
+
+</style>
+
+<script type="text/javascript">
+  ( function() {
+
+    var NVD3BarHorizontal = function( container , datasources , components , config ) {
+      this.datasources = datasources;
+      this.components = components;
+      this.config = config;
+      
+	  this.id = "id" + dbTools.generateId().replace(".","");
+      this.container = $( '<svg id="' + this.id + '" class="nvd3barhorizontalContainer"></svg>' );
+      $( container ).append( this.container );
+
+      this.data = [];
+
+      this.chart = nv.models.multiBarHorizontalChart()
+                     .x( function( d ) { return d.label; } )
+                     .y( function( d ) { return d.value; } )
+                     //.margin({top: 30, right: 20, bottom: 50, left: 175})
+                     .showValues( true )
+                     //.tooltips(true)
+                     .duration( 350 )
+                     .showControls(true)
+                     ;
+
+      this.chart.tooltip.enabled( true );
+
+      if( this.config.xLabel ) this.chart.xAxis.axisLabel( this.config.xLabel );
+      if( this.config.yLabel ) this.chart.yAxis.axisLabel( this.config.yLabel );
+
+      //this.chart.xAxis.axisLabelDistance( 1000 );
+      this.chart.yAxis.tickFormat(d3.format(',.2f'));
+
+      for( var i = 0; i < this.datasources.length; i++ )
+      {
+        //this.datasources[i].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+        this.data.push( {
+          key : this.datasources[i].config.label,
+          values : []
+        } );
+      }
+
+      //d3.select( this.container[0] ).datum( this.data ).transition( 0 ).call( this.chart );
+      d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+
+      this.container.parents( "li" ).on( "resize" , this.chart.update );
+    };
+
+    NVD3BarHorizontal.prototype.pushData = function( index , data )
+    {
+        this.data[ index ].values = data.data.group;
+        if (data.data.color != undefined)
+        {
+            this.data[index].color = data.data.color;
+        }
+        this.chart.update();
+		
+		/*kewei added
+		 *Change text color
+		*/
+	    d3.selectAll('#'+ this.id + ' .nv-wrap text').style('fill', this.config.textColor);
+	    d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);
+		d3.selectAll('#'+ this.id + ' .nv-groups text').style('fill', this.config.textColor);
+    };
+
+    App.Plugins.registerChartType( "nvd3barhorizontal" , NVD3BarHorizontal , {
+        category : "NVD3",
+        display_name : "Bar Horizontal",
+        chartConfig : {
+            xLabel : { default : "" },
+            yLabel : { default : "" },
+			textColor : { default : "#eee" } /*kewei added*/
+        },
+        disableComponentDiscovery : true,
+        color: "rgb(255,153,102)",
+        dependencies : [
+                "plugins/lib/d3_3.5.17/d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.css"
+        ]
+    } );
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="nvd3barhorizontal">
+  <div class="form-group">
+    <label>X Axis Label</label>
+    <input class="form-control" type="text" data-prop="xLabel">
+  </div>
+  <div class="form-group">
+    <label>Y Axis Label</label>
+    <input class="form-control" type="text" data-prop="yLabel">
+  </div>
+  <div class="form-group">
+    <label for="textColor">Text Color</label>
+    <input class="form-control" type="text" id="textColor" data-prop="textColor">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="nvd3barhorizontal">
+    <h1>Bar Horizontal</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource set horizontal bar value like the below example.</p>
+<pre>
+var valueA = Math.floor( (Math.random()-0.5) * 100 );
+var valueB = Math.floor( (Math.random()-0.5) * 100 );
+var valueC = Math.floor( (Math.random()-0.5) * 100 );
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data: {   
+        color: "rgb(31,119,180)",
+        group: [
+            { label: "A", value : valueA },
+            { label: "B", value : valueB },
+            { label: "C", value : valueC }        
+        ]
+    }
+};</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Datasources</b>: when add more datasources will form group horizontal bar.</p>
+    <p><b>X Axis Label</b>: the X axis label string.</p>
+    <p><b>Y Axis Label</b>: the Y axis label string.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p><b>Grouped Mode</b></p><p style="text-align: center;"><img src="images/nvd3BarHorizontalGrouped.png" style="width:100%;" /></p></div>
+    <div><p><b>Stacked Mode</b></p><p style="text-align: center;"><img src="images/nvd3BarHorizontalStacked.png" style="width:100%;" /></p></div>
+    
+    <h3><b>|</b> Flow Example</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3BarHorizontalExample.png" style="width:100%;" /></p></div>
+<pre>[{"id":"3ab0e3ca.5d961c","type":"function","z":"a68638eb.a48788","name":"Random Data","func":"var valueA = Math.floor( (Math.random()-0.5) * 100 );\nvar valueB = Math.floor( (Math.random()-0.5) * 100 );\nvar valueC = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: new Date().getTime(),\n    data: {\n        color: \"rgb(174,199,232)\",\n        group: [\n            { label: \"A\", value : valueA },\n            { label: \"B\", value : valueB },\n            { label: \"C\", value : valueC }        \n        ]\n    }\n};\nreturn msg;","outputs":1,"noerr":0,"x":319,"y":368,"wires":[["707a91e7.6d2c"]]},{"id":"707a91e7.6d2c","type":"iot-datasource","z":"a68638eb.a48788","name":"Horizontal Bar 2","tstampField":"","dataField":"data","disableDiscover":false,"x":496,"y":368,"wires":[[]]},{"id":"8671378f.5e1db8","type":"inject","z":"a68638eb.a48788","name":"trigger","topic":"","payload":"","payloadType":"str","repeat":"1","crontab":"","once":false,"x":165,"y":367,"wires":[["6ff74d26.b09fa4","3ab0e3ca.5d961c","5d7fb01d.24eb"]]},{"id":"6ff74d26.b09fa4","type":"function","z":"a68638eb.a48788","name":"Random Data","func":"var valueA = Math.floor( (Math.random()-0.5) * 100 );\nvar valueB = Math.floor( (Math.random()-0.5) * 100 );\nvar valueC = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: new Date().getTime(),\n    data: {   \n        color: \"rgb(31,119,180)\",\n        group: [\n            { label: \"A\", value : valueA },\n            { label: \"B\", value : valueB },\n            { label: \"C\", value : valueC }        \n        ]\n    }\n};\nreturn msg;","outputs":1,"noerr":0,"x":319,"y":335,"wires":[["adc45376.5700d"]]},{"id":"adc45376.5700d","type":"iot-datasource","z":"a68638eb.a48788","name":"Horizontal Bar 1","tstampField":"","dataField":"data","disableDiscover":false,"x":496,"y":335,"wires":[[]]},{"id":"5d7fb01d.24eb","type":"function","z":"a68638eb.a48788","name":"Random Data","func":"var valueA = Math.floor( (Math.random()-0.5) * 100 );\nvar valueB = Math.floor( (Math.random()-0.5) * 100 );\nvar valueC = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: new Date().getTime(),\n    data: {\n        color: \"rgb(255,127,14)\",\n        group: [\n            { label: \"A\", value : valueA },\n            { label: \"B\", value : valueB },\n            { label: \"C\", value : valueC }        \n        ]\n    }\n};\nreturn msg;","outputs":1,"noerr":0,"x":319,"y":402,"wires":[["b4f61fe3.d613e"]]},{"id":"b4f61fe3.d613e","type":"iot-datasource","z":"a68638eb.a48788","name":"Horizontal Bar 3","tstampField":"","dataField":"data","disableDiscover":false,"x":496,"y":402,"wires":[[]]}]</pre>
+
+    <p>In configure add the below three datasources.</p>
+<pre>
+   Horizontal Bar 1
+   Horizontal Bar 2
+   Horizontal Bar 3</pre>
+    
+</script>
+
+

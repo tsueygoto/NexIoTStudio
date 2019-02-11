@@ -1,0 +1,153 @@
+<style>
+#datetimepicker {
+    width:100%;
+	height:100%;
+}
+
+#datetimepicker input {
+    width:100%;
+	height:100%;
+	text-align:center;
+}
+</style>
+
+<script type="text/javascript">
+    (function() {
+        var datePickerPlugin = function( container , datasources , components , config )
+        {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            
+            //var options = this.config.options.split(",").map(function(e) { return e.trim(); });
+            //var optionsRet = "";
+            //for(var i=0; i<options.length; i++)
+            //{
+            //    optionsRet = optionsRet + '<option value="' + options[i] + '">'+ options[i] +'</option>';
+            //}
+
+            this.container = $( container );
+            var content = '<div id="datetimepicker" style=""><input type="text" name="datetimepicker" value="" style="background-color:'+ this.config.bk_Color +'; font-size:' + this.config.font_size + 'px;color:' + this.config.font_color + ';" readonly></div> ';
+
+            this.container.append(content);
+            
+            //this.title = (this.config.title == undefined) ? "" : this.config.title.trim();
+            //
+            //if (this.title == "")
+            //{
+            //    this.container.append( '<div class="datePickerPlugin"><select class="woTitle">' + optionsRet + '</select></div>' );
+            //}
+            //else
+            //{
+            //    this.container.append( '<div class="datePickerPlugin"><span>' + this.title + '</span><select class="wTitle">' + optionsRet + '</select></div>' );
+            //}
+            //this.$alertGlow = this.container.find( ".alertPluginGlow" );
+            this.container.parents( "li" ).on( "resize" , this.resize.bind( this ) );
+            //this.$datetimepicker = this.container.parents( "li" ).find('#datetimepicker');
+            this.$datetimepicker = this.container.parents( "li" ).find('div input');
+            //this.$datetimepicker.on( "change" , this.onChange.bind( this ) );
+            //this.$datetimepicker.on( "click" , this.onClick.bind( this ) );
+            
+            var node = this;
+            this.$datetimepicker.appendDtpicker({
+                "onHide": function(handler){
+                    for(var i = 0; i < node.datasources.length; i++ ) {
+                        node.datasources[i].requestHistoryData( 
+                            node.$datetimepicker.val(),
+                            new Date(),
+                            node.dataPickerResponse.bind( node ) );
+                    };
+                }
+            });
+                
+            // loadpage init
+            var dateData = this.$datetimepicker.val();
+            console.log(dateData.trim());
+            //var now = new Date();
+            var re = /(\d+)-(\d+)-(\d+) (\d+):(\d+)/g;
+            var dtArr = re.exec(dateData.trim());
+            var dtf = dtArr[1]+ '-' + dtArr[2] + '-' + dtArr[3] + ' ' + dtArr[4] + ':' + dtArr[5];
+            for(var i = 0; i < node.datasources.length; i++ ) {
+                node.datasources[i].requestHistoryData( 
+                    dtf,
+                    new Date(),
+                    node.dataPickerResponse.bind( node ) );
+            };
+        };
+
+        /**
+         *
+         */
+        datePickerPlugin.prototype.dataPickerResponse = function( index , data ) {
+            console.log("buttonResponse");
+        };
+        
+        
+        //---
+        // resize
+        //
+        datePickerPlugin.prototype.resize = function() {
+            // check title
+            if (this.title != "") return;
+            
+            //this.container.find("datePickerPlugin")
+            //if( this.components[ index ].getData( data.data ).type === "ok" ) {
+            //    this.$alertGlow.addClass( "animate" );
+            //}
+            //else {
+            //    this.$alertGlow.removeClass( "animate" );
+            //}
+        };
+        
+        /**
+         *
+         */
+        datePickerPlugin.prototype.pushData = function( index , data ) {
+            if( index < 0 || index >= this.components.length ) return;
+            console.log("data.data", data.data);
+            this.$datetimepicker.val(data.data);
+        };
+
+        App.Plugins.registerChartType( "datepicke-plugin" , datePickerPlugin , {
+            category : "Basic",
+            display_name : "DatePicker",
+            disableComponentDiscovery : true,
+            color:"rgb(204, 255, 255)",
+            chartConfig : {
+                font_size : { default : "10" },
+                font_color : { default : "black" },
+				bk_Color : { default : "white" }
+            },
+            dependencies : [
+                "plugins/lib/datePicker/jquery.simple-dtpicker.js",
+                "plugins/lib/datePicker/jquery.simple-dtpicker.css"
+            ]
+        });
+
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="datepicke-plugin">
+  <div class="form-group">
+    <label>Font Size</label>
+    <input class="form-control" type="text" data-prop="font_size">
+  </div>
+  <div class="form-group">
+    <label>Font Color</label>
+    <input class="form-control" type="text" data-prop="font_color">
+  </div>
+  <div class="form-group">
+    <label for="bk_Color">Background Color</label>
+    <input class="form-control" type="text" id="bk_Color" data-prop="bk_Color">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="datepicke-plugin">
+    <h1>Date Picker</h1>
+	
+	<h3><b>|</b> DataSource </h3>
+    
+    <h3><b>|</b> Shape</h3>
+    
+</script>
+

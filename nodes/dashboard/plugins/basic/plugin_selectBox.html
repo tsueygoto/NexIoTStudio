@@ -1,0 +1,150 @@
+<style>
+.selectBoxPlugin {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+}
+
+.woTitle {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    padding: 6px 12px;
+    color: #000000;
+    background-color: #fff;
+    background-image: none;
+    text-align:center;
+    font-weight:bold;
+}
+
+.wTitle {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    padding: 6px 12px;
+    color: #000000;
+    background-color: #fff;
+    background-image: none;
+    text-align:center;
+    font-weight:bold;
+}
+
+.selectBoxPlugin span {
+    color: #000000;
+}
+
+</style>
+
+<script type="text/javascript">
+    (function() {
+        var selectBoxPlugin = function( container , datasources , components , config )
+        {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            
+            var options = this.config.options.split(",").map(function(e) { return e.trim(); });
+            var optionsRet = "";
+            for(var i=0; i<options.length; i++)
+            {
+                optionsRet = optionsRet + '<option value="' + options[i] + '">'+ options[i] +'</option>';
+            }
+
+            this.container = $( container );
+            this.title = (this.config.title == undefined) ? "" : this.config.title.trim();
+
+            if (this.title == "")
+            {
+                this.container.append( '<div class="selectBoxPlugin"><select class="woTitle">' + optionsRet + '</select></div>' );
+            }
+            else
+            {
+                this.container.append( '<div class="selectBoxPlugin"><span>' + this.title + '</span><select class="wTitle">' + optionsRet + '</select></div>' );
+            }
+            //this.$alertGlow = this.container.find( ".alertPluginGlow" );
+            this.container.parents( "li" ).on( "resize" , this.resize.bind( this ) );
+            this.select = this.container.find( ".selectBoxPlugin select" );
+            this.select.on( "change" , this.onChange.bind( this ) );
+        };
+
+        //---
+        // onChange
+        //
+        selectBoxPlugin.prototype.onChange = function() {
+            selecedValue = this.container.find( ".selectBoxPlugin select option:selected" ).val();
+            var now = ( new Date() ).getTime();
+            for(var i = 0; i < this.datasources.length; i++ ) {
+                this.datasources[i].clickRequest( selecedValue , this.clickResponse.bind(this) );
+            }
+        }
+        
+        //---
+        // onChange
+        //
+        selectBoxPlugin.prototype.clickResponse = function( index , data ) {
+            console.log("clickResponse");
+        };
+        
+        //---
+        // resize
+        //
+        selectBoxPlugin.prototype.resize = function() {
+            // check title
+            if (this.title != "") return;
+            
+            //this.container.find("selectBoxPlugin")
+            //if( this.components[ index ].getData( data.data ).type === "ok" ) {
+            //    this.$alertGlow.addClass( "animate" );
+            //}
+            //else {
+            //    this.$alertGlow.removeClass( "animate" );
+            //}
+        };
+        
+        //---
+        //
+        //
+        selectBoxPlugin.prototype.pushData = function( index , data )
+        {
+            if( index < 0 || index >= this.components.length ) return;
+            this.container.find( ".selectBoxPlugin select" ).val(data.data);
+            this.onChange();
+        };
+
+        App.Plugins.registerChartType( "selectbox-plugin" , selectBoxPlugin , {
+            category : "Basic",
+            display_name : "SelectBox",
+            disableComponentDiscovery : true,
+            color:"rgb(204, 255, 255)",
+            chartConfig : {
+                title : { default : "" },
+                options : { default : "" }
+            },
+        });
+
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="selectbox-plugin">
+  <div class="form-group">
+    <label>Title</label>
+    <input class="form-control" type="text" data-prop="title">
+  </div>
+  <div class="form-group">
+    <label>Options</label>
+    <input class="form-control" type="text" data-prop="options">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="selectbox-plugin">
+    <h1>Select Box</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>The DataSource is need but select box node didn't process input data, so it don't need the msg.payload.</p>
+    <p>When node selected will return the selected option to datasource for process.</p>
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/selectBox.png" style="width: 90%;"/></p></div>
+</script>
+

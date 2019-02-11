@@ -1,0 +1,64 @@
+{
+  "IoT-Studio": {
+    "nodes": {
+      "datasource": "datasource.js"
+    }
+  },
+  "_from": "nex-dashboard@0.0.2",
+  "_id": "nex-dashboard@0.0.2",
+  "_inBundle": false,
+  "_integrity": "sha512-TGqTw9MSh+NxzMh7Qc7+xirEK0a1Zej7zLmPlLrlJc6q+sQKvRgZ/I5E4h/K1jVyQXFFnxUKJfxnFM9UlBMeNg==",
+  "_location": "/nex-dashboard",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "nex-dashboard@0.0.2",
+    "name": "nex-dashboard",
+    "escapedName": "nex-dashboard",
+    "rawSpec": "0.0.2",
+    "saveSpec": null,
+    "fetchSpec": "0.0.2"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://40.83.96.226:4873/nex-dashboard/-/nex-dashboard-0.0.2.tgz",
+  "_shasum": "bb364b0a215960660f13a6b1317a2a9836912896",
+  "_spec": "nex-dashboard@0.0.2",
+  "_where": "D:\\work\\NEXCOM\\One-ClickDeployer\\POC\\ISCD\\git_svr_new_loc\\zzz",
+  "author": {
+    "name": "Robin Tseng",
+    "email": "robintseng@nexcom.com.tw"
+  },
+  "bugs": {
+    "url": "https://40.83.96.226:4873/nex-dashboard/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "express": "^4.13.1",
+    "mustache": "^2.1.3",
+    "ws": "^0.8.0"
+  },
+  "deprecated": false,
+  "description": "A NEXCOM IoT Studio dashboard package. Contains a datasource node which handles historical data and live data streams, and a hackable visualization application designed to connect to the datasource nodes.",
+  "homepage": "https://40.83.96.226:4873/nex-dashboard/",
+  "keywords": [
+    "IoT Studio",
+    "graphs",
+    "gateway",
+    "NEXCOM"
+  ],
+  "license": "Apache",
+  "main": "datasource.js",
+  "name": "nex-dashboard",
+  "repository": {
+    "type": "npm",
+    "url": "https://40.83.96.226:4873/nex-dashboard/"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.2"
+}

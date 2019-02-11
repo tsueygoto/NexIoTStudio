@@ -1,0 +1,111 @@
+<style>
+
+.progress-content{
+    stroke: darken(#C2E362,5%);
+    stroke-width: 2px;
+    fill: #C2E362;
+    .top{
+      z-index:1;
+    }
+}
+  
+.percentage{
+    fill: #F8F9F9;
+    text-shadow: 1px 1px 1px black;
+    text-anchor: middle;
+}
+
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        /*
+        width="100%" height="100%" viewBox="0 0 442 185"
+        class="progress-content"
+fill="transparent" 
+
+'   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            
+         */
+        var content = 
+            '<svg id="line-progress" width="100%" height="100%" viewBox="0 0 51 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            
+            '<g class="progress-content"> \
+                <line                         \
+                x1="25"                        \
+                y1="100"                      \
+                x2="25"                     \
+                y2="0"                      \
+                stroke="#C2E362"              \
+                fill="transparent"            \
+                stroke-dasharray="100 100"       \
+                stroke-dashoffset="100"       \
+                stroke-opacity="0.6" \
+                stroke-width="51" />          \
+            </g>' +
+            '<text class="percentage" x="25" y="50" font-size="10">50%</text>' +
+            
+            '</svg>';
+
+        this.container.append(content);
+        //this.$motorLine.find('.progress-content>line').attr("stroke-dashoffset", progressValue+"%");
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+        // verify input data
+        var value = Number(data.data);
+        if ( value != NaN ) {
+            if ( value > 100 ) value = 100;
+            if ( value < 0 ) value = 0;
+            this.container.find('.progress-content>line').attr("stroke-dashoffset", (100-value));
+            this.container.find('text').html(value+"%");
+        }
+        
+    };
+
+    App.Plugins.registerChartType( "motor-plugin" , ImagePlugin , {
+        category : "Factory",
+        display_name : "Motor",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/factory/Motors-1.svg" }
+        },
+        color: "rgb(255, 204, 153)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="motor-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/factory/Motors-1.svg">Motor 1</option>
+          <option value="images/factory/Motors-2.svg">Motor 2</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="motor-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 2 types can select in below.</p>
+<pre>
+ Motor 1
+ Motor 2</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 2 Types.</p><p style="text-align: center;"><img src="images/Motors.png" /></p></div>
+</script>
+
+

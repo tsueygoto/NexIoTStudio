@@ -1,0 +1,282 @@
+<script>
+    /**
+        Copyright 2018 NEXCOM International Co., Ltd.
+  
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        
+        http://www.apache.org/licenses/LICENSE-2.0
+        
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+        
+        Notes:
+        
+            2018/02/07:
+                add new CustomerDiv plugin
+        
+                adopt the plugin - jQuery Templates plugin vBeta1.0.0
+                https://github.com/BorisMoore/jquery-tmpl
+                
+                CSS minify on-line tool:
+                https://cssminifier.com/
+        
+     */
+</script>
+
+<style>
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var LablePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            
+            this.container = $( container );
+            //console.info(" this.container >>> ", this.container);
+
+            var content = '';
+            if ((this.config.lp_customerDiv == undefined) || (this.config.lp_customerDiv == ""))
+            {
+                content = '<svg width="100%" height="100%" >' +
+                        '<text x="0" y="0" font-size="'+ this.config.lp_fontSize +'"' +
+                        ' fill="'+ this.config.lp_fontColor + '" ';
+                        
+                // depends on flag to control content fixed or variable
+                if(this.config.lp_fontSizeFixed) {
+                    content += 'text-anchor="start" alignment-baseline="hanging" dominant-baseline="hanging"';
+                } else {
+                    content += 'textLength="100%" lengthAdjust="spacingAndGlyphs" text-anchor="start" alignment-baseline="middle" dominant-baseline="middle" ';
+                }
+                
+                content += '>' + this.config.lp_content + '</text>' + '</svg>';
+            }
+            else
+            {
+                //content = this.config.lp_customerDiv;
+                //content = '<div class="ibox ibox-metric" ><div class="ibox-content"><h5><i class="fa ${icon}"></i>${name}</h5><h1 class="no-margins metric-value-overflow" title="${value}">${value}</h1><div class="stat-percent font-bold text-navy" data-original-title="" title=""><span>${percent}</span><i class="fa ${levelicon}"></i></div><small class="unit">${unit}</small></div><div>';
+                //'<div class="ibox ibox-metric" ><div class="ibox-content"><h5><i class="fa fa-user"></i>${Name}</h5><h1 class="no-margins metric-value-overflow" title="70,200">70,200</h1><div class="stat-percent font-bold text-navy" data-original-title="" title=""><span>+76.7%</span><i class="fa fa-level-up"></i></div><small class="unit">persons</small></div><div>'
+                
+                
+                //var ret = $.tmpl( "<li>${Name}</li>", { "Name" : "John Doe" });
+                //var ret = $.tmpl( content, { "Name" : "John Doe" });
+                //console.info("ret >>>", ret);
+                content = $.tmpl( this.config.lp_customerDiv, {
+                    "icon"  : "fa-user",
+                    "name"  : "John Doe",
+                    "value" : "70,200",
+                    "percent" : "+76.7%",
+                    "unit"  : "persons",
+                    "levelicon" : "fa-level-up"});
+                //var sheet = $("#plugin-lable").get(0).sheet;
+                //console.info("[ sheet ] : ", sheet);
+                //var sheet = '<style>.ibox,.ibox-content{clear:both;background-color:#fff}.ibox-metric .ibox-content h5,.metric-value-overflow{overflow:hidden;white-space:nowrap}.ibox{font-family:"open sans","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;color:#676a6c;line-height:1.42857143;padding:0;box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);margin:auto;width:96%}.ibox-content h1,.ibox-content h2,.ibox-content h3,.ibox-content h4,.ibox-content h5,.ibox-title h1,.ibox-title h2,.ibox-title h3,.ibox-title h4,.ibox-title h5,h3,h4,h5{margin-top:5px}.ibox-content{color:inherit;border-color:#e7eaec;border-image:none;border-style:solid solid none;border-width:1px 0}h1,h2{font-family:Poppins,sans-serif;text-transform:uppercase}h1{font-size:30px}h1,h2,h3,h4,h5,h6{font-weight:100}.font-bold,h3,h4,h5{font-weight:600}h5{font-size:12px}.no-margins{margin:0!important}.dashboard-small-metric,.ibox-metric .ibox-content{min-height:109px}.ibox-metric .ibox-content{padding:9px 12px 15px}.ibox-metric .ibox-content h5{text-overflow:ellipsis;line-height:1.3}.ibox-metric .ibox-content small{white-space:nowrap;display:inline-block;max-width:30%}.ibox-metric .ibox-content small.no-evolution{max-width:100%}.small,small{font-size:85%}*{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}.text-navy{color:#2C2760}.stat-percent{float:right}.fa{color:#000}</style>';
+                if ((this.config.lp_customerCss != undefined) && (this.config.lp_customerCss != ""))
+                {
+                    $('head').append(this.config.lp_customerCss);
+                }
+            }
+            
+            this.container.html(content);
+
+            if ((this.config.lp_customerDiv == undefined) || (this.config.lp_customerDiv == ""))
+            {
+                this.$labelText = this.container.find('svg').find('text');
+                this.container.parents( "li" ).on( "resize" , this._resize.bind( this ) );
+                this._resize();
+            }
+    };
+    
+    LablePlugin.prototype._resize = function()
+    {
+        if ((this.config.lp_customerDiv != undefined) && (this.config.lp_customerDiv != "")) { return; }
+        if (this.config.lp_fontSizeFixed) { return; }
+    
+        var oSVG = this.container.find('svg');
+        var oText = oSVG.find('text');
+        var fsize = oText.attr("font-size");
+        var PH = oSVG.height();
+        var PW = oSVG.width();
+        var CH = oText.get(0).getBBox().height;
+        if ((fsize === undefined) || (PH === undefined) || (PW === undefined) || (CH === undefined)) {
+            return;
+        }
+        
+        //if (CH < PH) {
+        //    for (var i=fsize; CH <= PH; i++ ) {
+        //    
+        //        console.log("CH", CH, "PH", PH);
+        //    
+        //        oText.attr("font-size", i);
+        //        CH = oText.get(0).getBBox().height;
+        //        if ( CH == 0 ) break;
+        //    }
+        //} else if (CH > PH) {
+        //    for (var i=fsize; CH >= PH; i-- ) {
+        //    
+        //        console.log("CH", CH, "PH", PH);
+        //    
+        //        oText.attr("font-size", i);
+        //        CH = oText.get(0).getBBox().height;
+        //        if ( CH == 0 ) break;
+        //    }
+        //}
+        
+        //this.$labelText = this.container.find('svg').find('text');
+        oText.attr("y", Math.round(PH/2));
+    };
+
+    LablePlugin.prototype.pushData = function( index , data )
+    {
+        if ((index < 0) || (index >= this.components.length)) return;
+            
+        if ((this.config.lp_customerDiv == undefined) || (this.config.lp_customerDiv == ""))
+        {
+            if (this.config.lp_contentFixed) return;
+
+            if (data.data.content != undefined) {
+                this.$labelText.html(data.data.content);
+            }
+            /*
+			 * Kewei marked
+			 * unnecessary code
+			 *
+			if (data.data.color != undefined) {
+                this.container.find('svg').find('text').css("fill", "" ); //data.data.color
+            }
+            if (data.data.fontSize != undefined) {
+                this.container.find('svg').find('text').css("font-size", ""); //data.data.fontSize
+            }
+			*/
+        }
+        else
+        {
+            var content = $.tmpl( this.config.lp_customerDiv, data.data);
+            this.container.html(content);
+        }
+    };
+
+    App.Plugins.registerChartType( "label-plugin" , LablePlugin , {
+        category        : "Basic",
+        display_name    : "Label",
+        version         : "1.00.006",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            lp_content          : { default : "label" },
+            lp_contentFixed     : {default: true},
+            lp_fontColor        : { default : "#000000" },
+            lp_fontSize         : {default: 10},
+            lp_fontSizeFixed    : {default: true},
+            lp_customerDiv      : { default : "" },
+            lp_customerCss      : { default : "" }
+        },
+        color: "rgb(204, 236,255)",
+        dependencies : [
+            //"http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"
+            "plugins/lib/jquery_templates/jqueryTmpl.min.js"
+        ]
+    });
+
+  } )();
+</script>
+
+<style>
+    .NexLabelConfigTd tbody tr th:nth-child(1) {
+        font-size: 14px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .NexLabelConfigTd tbody tr td:nth-child(1) {
+        width:25%;
+        padding-left:20px;
+        font-weight: 700;
+    }    
+
+    .NexLabelConfigTd tbody tr td:nth-child(2) {
+        width:60%;
+        align:"left";
+    }
+    
+    .NexLabelConfigTd tbody tr td input[type=checkbox] {
+        width:6%;
+    }
+</style>
+
+<script type="text/x-dash" data-chart-config="label-plugin">
+    <div class="form-group NexLabelConfigTd">
+        <table style="width:100%">
+            <tr>
+                <th colspan="2">Configure</th>
+            </tr>
+            <tr>
+                <td>Content</td><td><input class="form-control" type="text" data-prop="lp_content"></td>
+            </tr>
+            <tr>
+                <td>Content Fixed</td><td><input class="form-control" type="checkbox" data-prop="lp_contentFixed"></td>
+            </tr>
+            <tr>
+                <td>Font Color</td><td><input class="form-control" type="text" data-prop="lp_fontColor"></td>
+            </tr>            
+            <tr>
+                <td >Font Size</td><td><input class="form-control" type="text" data-prop="lp_fontSize"></td>
+            </tr>
+            <tr>
+                <td>Font Size Fixed</td><td><input class="form-control" type="checkbox" data-prop="lp_fontSizeFixed"></td>
+            </tr>
+            
+            <tr>
+                <td>Customer DIV</td><td><input class="form-control" type="text" data-prop="lp_customerDiv"></td>
+            </tr>
+            <tr>
+                <td>Customer CSS</td><td><input class="form-control" type="text" data-prop="lp_customerCss"></td>
+            </tr>
+            
+            <!-- tr>
+                <td>First Column Data Sorting Order</td>
+                <td width="60%" align="left">
+                    <select class="form-control" data-prop="dt_col1Order">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </td>
+            </tr -->
+        </table>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="label-plugin">
+    <h1>Label</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>The DataSource when configure:<b>lp_contentFixed</b> is false can set label and font color. The example like below.</p>
+<pre>
+ msg.payload = {
+    tstamp: new Date(),
+    data: {
+       content: "change label",
+       color: "rgb(255,0,0)",
+       fontSize: 30
+    }
+ };</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Content</b> : the label content value.</p>
+    <p><b>Content Fixed</b> : the label flag to control label content can be change or not. When value is <b>TRUE</b> means the content is fixed can't be changed otherwise can been changed by DataSource.</p>
+    <p><b>Font Color</b> : the label font color value.</p>
+    <p><b>Font Size</b> : the label font size value.</p>
+    <p><b>Font Size Fixed</b> : To fix the font size value.</p>
+    <p><b>Customer DIV</b> : For customer design free form DIV view based on template form and the below customer css. When this field is not empty then previous label features will disable.</p>
+    <p><b>Customer CSS</b> : For customer DIV adopt CSS.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/label.png" /></p></div>
+    
+</script>
+
+

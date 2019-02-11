@@ -1,0 +1,204 @@
+<style>
+
+.progress-content{
+    stroke: darken(#C2E362,5%);
+    stroke-width: 2px;
+    fill: #C2E362;
+    .top{
+      z-index:1;
+    }
+}
+  
+.percentage{
+    fill: #F8F9F9;
+    text-shadow: 1px 1px 1px black;
+    text-anchor: middle;
+    alignment-baseline: central;
+}
+
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            this.config = config;
+            
+        this.stroke = this.config.stroke;
+        this.opacity = this.config.opacity;
+        this.font_size = this.config.font_size;
+		//this.fill = this.config.font_color;
+        this.unit = this.config.value_unit;
+        // default value 
+        this.width = 51;
+        this.height = 100;
+        this.x1 = 25;
+        this.y1 = 100;
+        this.x2 = 25;
+        this.y2 = 0;
+        this.dash = this.height;
+        this.stroke_width = this.width;
+        this.text_x = this.x1;
+        this.text_y = this.height / 2
+        // from bottom to top
+        if (this.config.direction == "1") {
+            this.width = 51;
+            this.height = 100;
+            this.x2 = 25;
+            this.y2 = 100;
+            this.x1 = 25;
+            this.y1 = 0;
+            this.dash = this.height;
+            this.stroke_width = this.width;
+            this.text_x = this.x1;
+            this.text_y = this.height / 2
+        } else if (this.config.direction == "2") {  // from left to right
+            this.width = 100;
+            this.height = 51;
+            this.x2 = 100;
+            this.y2 = 25;
+            this.x1 = 0;
+            this.y1 = 25;
+            this.dash = this.width;
+            this.stroke_width = this.height;
+            this.text_x = this.width / 2;
+            this.text_y = this.height / 2
+        } else if (this.config.direction == "3") {  // right left to left
+            this.width = 100;
+            this.height = 51;
+            this.x1 = 100;
+            this.y1 = 25;
+            this.x2 = 0;
+            this.y2 = 25;
+            this.dash = this.width;
+            this.stroke_width = this.height;
+            this.text_x = this.width / 2;
+            this.text_y = this.height / 2
+        }            
+        var content = '<svg id="line-progress" width="100%" height="100%" viewBox="0 0 ' + this.width + ' ' + this.height + '" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '<g class="progress-content"> \
+                <line                         \
+                x1="' + this.x1 + '"                        \
+                y1="' + this.y1 + '"                      \
+                x2="' + this.x2 + '"                     \
+                y2="' + this.y2 + '"                      \
+                stroke="' + this.stroke + '"              \
+                fill="transparent"            \
+                stroke-dasharray="' + this.dash + ' ' + this.dash + '"       \
+                stroke-dashoffset="' + this.dash + '"       \
+                stroke-opacity="' + this.opacity + '" \
+                stroke-width="' + this.stroke_width + '" />          \
+            </g>' +
+            '<text class="percentage" x="' + this.text_x + '" y="' + this.text_y + '" font-size="' + this.font_size + '">50' + this.unit + '</text>' +            
+            '</svg>';
+
+        this.container.append(content);
+        //this.$motorLine.find('.progress-content>line').attr("stroke-dashoffset", progressValue+"%");
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+        // verify input data
+        console.info(data.data.hasOwnProperty('value'));
+        
+        if (!(data.data.hasOwnProperty('value'))) return;
+        var unit = this.unit;
+        if ( data.data.hasOwnProperty('unit')) {
+            unit = data.data.unit;
+        }
+        var stroke = this.stroke;
+        if ( data.data.hasOwnProperty('stroke')) {
+            stroke = data.data.stroke;
+        }
+        
+        var value = Number(data.data.value);
+        if ( value != NaN ) {
+            if ( value > 100 ) value = 100;
+            if ( value < 0 ) value = 0;
+            this.container.find('.progress-content>line').attr("stroke-dashoffset", (100-value));
+            this.container.find('text').html(value+unit);
+            this.container.find('.progress-content>line').attr("stroke", stroke);
+        }
+    };
+
+    App.Plugins.registerChartType( "progress-mask-plugin" , ImagePlugin , {
+        category : "Basic",
+        display_name : "Progress Mask",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            direction : {default : "0" },    // 0: from bottom to top, 1: from top to button, 2: form left to right 3: from right to left
+            stroke: {default:"#C2E362"},
+            opacity: {default: "0.6" },
+            font_size: {default: "20"},
+            value_unit: {default: "%"}
+        },
+        color: "rgb(255, 204, 153)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="progress-mask-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="direction">
+          <option value="0">from bottom to top</option>
+          <option value="1">from top to buttom</option>
+          <option value="2">from left to right</option>
+          <option value="3">from right to left</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="stroke">Stroke</label>
+        <input class="form-control" type="text" id="stroke" data-prop="stroke">
+    </div>
+    <div class="form-group">
+        <label for="opacity">Opacity</label>
+        <input class="form-control" type="text" id="opacity" data-prop="opacity">
+    </div>
+    <div class="form-group">
+        <label for="font_size">Text Size</label>
+        <input class="form-control" type="text" id="font_size" data-prop="font_size">
+    </div>
+	<!--div class="form-group">
+        <label for="font_color">Text Color</label>
+        <input class="form-control" type="text" id="font_color" data-prop="font_color">
+    </div-->
+    <div class="form-group">
+        <label for="value_unit">Value Unit</label>
+        <input class="form-control" type="text" id="value_unit" data-prop="value_unit">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="progress-mask-plugin">
+    <h1>Progress Mask</h1>
+    <p>The progress mask value range is from 0 to 100</p>
+    
+    <h3><b>|</b> DataSource</h3>
+    <p>The DataSource example:</p>
+<pre>
+ msg.payload = {
+     tstamp: new Date(),
+     data: {
+        value: 50,      // the value range from 0 to 100
+        unit: "$",      // the value unit
+        stroke:"#FF0000"  // the stroke color
+    }
+ };</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Direction</b> : There are 4 direcctions can select in below.</p>
+<pre>
+ from bottom to top
+ from top to bottom
+ from left to right
+ from right to left</pre>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p>The 2 Types.</p><p style="text-align: center;"><img src="" /></p></div>
+</script>
+
+

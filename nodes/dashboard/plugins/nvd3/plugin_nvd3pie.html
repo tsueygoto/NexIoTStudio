@@ -1,0 +1,254 @@
+<script>
+    /**
+    
+    Copyright 2018 NEXCOM International Co., Ltd.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    
+    
+    
+    */
+</script>
+
+<style>
+//.nvd3pieContainer {
+//  flex: 1;
+//}
+
+.nv-legend-text {
+  //fill: #eee; /*Kewei modified*/
+}
+
+//.nvd3pieContainer .nvd3.nv-pie path {
+//  stroke: #292C2F;
+//  stroke-width: 2px;
+//}
+//
+//.nvd3pieContainer .nvd3.nv-noData {
+//  fill: #aab0b9;
+//}
+
+</style>
+
+<!------------------------------------------------------------------------------
+    main javascript code.
+-->
+<script type="text/javascript">
+    ( function() {
+        var NVD3Pie = function( container , datasources , components , config )
+        {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            
+            this.id = "id" + dbTools.generateId().replace(".","");
+            this.container = $( '<div id="' + this.id + '" style="width:100%; height:100%;"><svg></svg></div>' );
+            
+            $( container ).append( this.container );
+
+            // initial data
+            this.data = [];
+
+            var donutRatio = Number(this.config.donutRatio);
+            if (isNaN(donutRatio)) donutRatio = 0.35;
+            if (donutRatio > 1) donutRatio = 1;
+            if (donutRatio < 0) donutRatio = 0;
+            
+            this.chart = nv.models.pieChart()
+                .x( function( d ) { return d.label; } )
+                .y( function( d ) { return d.value; } )
+                .donut(this.config.donut)
+                .donutRatio(donutRatio)
+                //.labelsOutside(true) // put lables outside the pie chart
+                ;
+                
+            this.chart.labelType(this.config.showLabelType);
+
+            // set customized colors
+            if ((this.config.colors != undefined) && (this.config.colors != ""))
+            {
+                //console.info(">>>>>",this.config.colors);
+                this.chart.color(this.config.colors.split(",").map(function(d){ return d.trim(); }));
+            }
+
+            if (this.config.hidePieLabel)
+            {
+                this.chart.showLabels( false );
+            } else {
+                this.chart.showLabels( true );
+            }
+            
+            // shows / hides the upper legend bar
+            if (this.config.hideUpperLegendBar)
+            {
+                this.chart.showLegend( false );
+            } else {
+                this.chart.showLegend( true );
+            }
+            
+            d3.select( "#" + this.id + " svg" ).datum( this.data ).call( this.chart );
+            //this.datasources[0].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+            this.container.parents( "li" ).on( "resize" , this.chart.update );
+        };
+
+        /**
+         *
+         */
+        NVD3Pie.prototype.pushData = function( index , data )
+        {
+            if( index < 0 || index >= this.components.length ) return;
+            
+            this.data = null;
+            this.data = data.data;
+            d3.select( "#" + this.id + " svg" ).datum( this.data );
+            this.chart.update();
+            if (( this.config.textColor != undefined) && (this.config.textColor != ""))
+            {
+                d3.selectAll('#'+ this.id + ' svg .nv-pieLabels text').style('fill', this.config.textColor);
+				d3.selectAll('#'+ this.id + ' svg .nv-legend-text').style('fill', this.config.textColor); /*kewei added*/
+            }
+        };
+
+        /**
+         *
+         */
+        App.Plugins.registerChartType( "nvd3pie" , NVD3Pie , {
+            category        : "NVD3",
+            display_name    : "Pie",
+            version         : "1.00.002",
+            disableComponentDiscovery : true,
+            color: "rgb(102,153,255)",
+            chartConfig : {
+                hidePieLabel    : { default : false },
+                showLabelType   : { default : "label" },
+                donut           : { default : false },
+                donutRatio      : { default : 0.35 },
+                labelOutside    : { default : false },
+                hideUpperLegendBar  : { default : false },
+                colors              : { default : "" },
+                textColor           : { default : "#eee" } /*Kewei modified*/
+            },
+            dependencies : [
+                "plugins/lib/tools.js",
+                "plugins/lib/d3_3.5.17/d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.css"
+            ]
+        } );
+  } )();
+</script>
+
+
+<style>
+    .NexNVD3PieConfigTd tbody tr th:nth-child(1) {
+        font-size: 14px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .NexNVD3PieConfigTd tbody tr td:nth-child(1) {
+        width:25%;
+        padding-left:20px;
+        font-weight: 700;
+    }    
+
+    .NexNVD3PieConfigTd tbody tr td:nth-child(2) {
+        width:60%;
+        align:"left";
+    }
+    
+    .NexNVD3PieConfigTd tbody tr td input[type=checkbox] {
+        width:6%;
+    }
+</style>
+
+<!------------------------------------------------------------------------------
+    additional configuration
+-->
+<script type="text/x-dash" data-chart-config="nvd3pie">
+    <div class="form-group NexNVD3PieConfigTd">
+        <table style="width:100%">
+            <tr>
+                <th colspan="2">Configure</th>
+            </tr>
+            <tr>
+                <td>Text Color</td><td><input class="form-control" type="text" data-prop="textColor"></td>
+            </tr>
+            <tr>
+                <td>Label Type</td>
+                <td>
+                    <select class="form-control" data-prop="showLabelType">
+                        <option value="key">Key</option>
+                        <option value="value">Value</option>
+                        <option value="percent">Percent</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Hide Pie Label</td>
+                <td><input class="form-control" type="checkbox" data-prop="hidePieLabel"></td>
+            </tr>
+            <tr>
+                <td>Donut</td>
+                <td><input class="form-control" type="checkbox" data-prop="donut"></td>
+            </tr>
+            <tr>
+                <td>Donut Ratio</td><td><input class="form-control" type="text" data-prop="donutRatio"></td>
+            </tr>
+            <tr>
+                <td>Hide Upper Legend Bar</td>
+                <td><input class="form-control" type="checkbox" data-prop="hideUpperLegendBar"></td>
+            </tr>
+            <tr>
+                <td>Colors</td><td><input class="form-control" type="text" data-prop="colors"></td>
+            </tr>
+        </table>
+    </div> 
+</script>
+
+<!------------------------------------------------------------------------------
+    online help
+-->
+<script type="text/x-red" data-help-name="nvd3pie">
+    <h1>Pie Chart</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource set donut chart value like the below example.</p>
+<pre>
+function getRandValue(offset, max) {
+    return Math.floor((Math.random()-offset) * max );
+}
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data:
+    [
+        { label: "A", value : getRandValue(0.5, 100) },
+        { label: "B", value : getRandValue(0.5, 100) },
+        { label: "C", value : getRandValue(0.5, 100) }
+    ]
+};</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Datasources</b>: select the target data source.</p>
+    
+    <p><b>Text Color</b> : Set Text Color.</p>
+    <p><b>Label Type</b> : Set Label type. There are three types: Key, Value, Percent.</p>
+    <p><b>Hide Pie Label</b> : Hide/Show Pie Label.</p>
+    <p><b>Donut</b> : Set Pie to Donut form.</p>
+    <p><b>Donut Ratio</b> : Set Donut ratio value. Value range from 0 to 1.</p>
+    <p><b>Hide Upper Legend Bar</b> : Hide/Show upper legend bar.</p>
+    <p><b>Colors</b> : Set customer colors set for pie data area.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3PieChart.png" style="width:100%;" /></p></div>
+   
+</script>

@@ -1,0 +1,110 @@
+<style>
+/*
+@keyframes alertPluginGlowAnimation {
+  from {
+    opacity : 0.5
+  }
+  to {
+    opacity : 1.0
+  }
+}
+
+.alertPluginBackground {
+  background-image: url( 'plugins/alert/alert_bg.png' );
+  background-repeat: no-repeat;
+  width: 256px;
+  height: 256px;
+  margin: auto;
+}
+
+.alertPluginGlow {
+  opacity: 0.2;
+  background-image: url( 'plugins/alert/alert_glow.png' );
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+}
+
+.alertPluginGlow.animate {
+  animation: alertPluginGlowAnimation 0.25s infinite alternate ease-in-out;
+}
+*/
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "corner-plugin" , ImagePlugin , {
+        category : "Factory",
+        display_name : "Corner",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/factory/Corners-1.svg" }
+        },
+        color: "rgb(102, 255, 255)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="corner-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/factory/Corners-1.svg">Round Angle Left Top</option>
+          <option value="images/factory/Corners-2.svg">Round Angle Left Bottom</option>
+          <option value="images/factory/Corners-3.svg">Round Angle Right Top</option>
+          <option value="images/factory/Corners-4.svg">Round Angle Right Bottom</option>
+          <option value="images/factory/Corners-5.svg">Right Angle Left Top</option>
+          <option value="images/factory/Corners-7.svg">Right Angle Left Bottom</option>
+          <option value="images/factory/Corners-6.svg">Right Angle Right Top</option>
+          <option value="images/factory/Corners-8.svg">Right Angle Right Bottom</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="corner-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 8 types can select in below.</p>
+<pre>
+   Round Angle Left Top
+   Round Angle Left Bottom
+   Round Angle Right Top
+   Round Angle Right Bottom
+   Right Angle Left Top
+   Right Angle Left Bottom
+   Right Angle Right Top
+   Right Angle Right Bottom</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 8 Types.</p><p style="text-align: center;"><img src="images/Corners.png" /></p></div>
+</script>
+

@@ -1,0 +1,120 @@
+<style>
+/*
+@keyframes alertPluginGlowAnimation {
+  from {
+    opacity : 0.5
+  }
+  to {
+    opacity : 1.0
+  }
+}
+
+.alertPluginBackground {
+  background-image: url( 'plugins/alert/alert_bg.png' );
+  background-repeat: no-repeat;
+  width: 256px;
+  height: 256px;
+  margin: auto;
+}
+
+.alertPluginGlow {
+  opacity: 0.2;
+  background-image: url( 'plugins/alert/alert_glow.png' );
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+}
+
+.alertPluginGlow.animate {
+  animation: alertPluginGlowAnimation 0.25s infinite alternate ease-in-out;
+}
+*/
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "reduction-plugin" , ImagePlugin , {
+        category : "Factory",
+        display_name : "Reduction",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/factory/Reductions-1.svg" }
+        },
+        color: "rgb(255, 153, 204)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="reduction-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/factory/Reductions-1.svg">Reduction 1</option>
+          <option value="images/factory/Reductions-2.svg">Reduction 2</option>
+          <option value="images/factory/Reductions-3.svg">Reduction 3</option>
+          <option value="images/factory/Reductions-4.svg">Reduction 4</option>
+          <option value="images/factory/Reductions-5.svg">Reduction 5</option>
+          <option value="images/factory/Reductions-7.svg">Reduction 6</option>
+          <option value="images/factory/Reductions-6.svg">Reduction 7</option>
+          <option value="images/factory/Reductions-8.svg">Reduction 8</option>
+          <option value="images/factory/Reductions-9.svg">Reduction 9</option>
+          <option value="images/factory/Reductions-10.svg">Reduction 10</option>
+          <option value="images/factory/Reductions-11.svg">Reduction 11</option>
+          <option value="images/factory/Reductions-12.svg">Reduction 12</option>
+          <option value="images/factory/Reductions-13.svg">Reduction 13</option>
+          <option value="images/factory/Reductions-14.svg">Reduction 14</option>
+          <option value="images/factory/Reductions-15.svg">Reduction 15</option>
+          <option value="images/factory/Reductions-16.svg">Reduction 16</option>
+          <option value="images/factory/Reductions-17.svg">Reduction 17</option>
+          <option value="images/factory/Reductions-18.svg">Reduction 18</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="reduction-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 18 types can select in below.</p>
+<pre>
+ Reduction 1    Reduction 2
+ Reduction 3    Reduction 4
+ Reduction 5    Reduction 6
+ Reduction 7    Reduction 8
+ Reduction 9    Reduction 10
+ Reduction 11   Reduction 12
+ Reduction 13   Reduction 14
+ Reduction 15   Reduction 16
+ Reduction 17   Reduction 18</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 18 Types.</p><p style="text-align: center;"><img src="images/Reductions.png" /></p></div>
+</script>

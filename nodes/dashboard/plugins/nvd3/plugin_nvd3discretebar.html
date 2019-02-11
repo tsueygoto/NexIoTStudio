@@ -1,0 +1,182 @@
+<style>
+.nvd3discretebarContainer {
+  flex: 1;
+}
+
+.nvd3discretebarContainer .nv-legend-text {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3discretebarContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3discretebarContainer .nvd3.nv-noData {
+  fill: #aab0b9;
+}
+
+.nvd3discretebarContainer .nv-axis {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3discretebarContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3discretebarContainer .tick line {
+  stroke: #4a4e54;
+}
+
+.nvd3discretebarContainer .nv-controlsWrap circle {
+  stroke: #cc8700 !important;
+  fill: #cc8700 !important;
+}
+
+.nvd3 .nv-discretebar .nv-groups text {
+    //fill: #eee !important; /*Kewei modified*/
+}
+
+
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var NVD3DiscreteBar = function( container , datasources , components , config ) {
+        this.datasources = datasources;
+        this.components = components;
+        this.config = config;
+
+        this.id = "id" + dbTools.generateId().replace(".","");
+		this.container = $( '<svg id="' + this.id + '" class="nvd3discretebarContainer"></svg>' );
+        $( container ).append( this.container );
+    
+        this.data = [];
+    
+        this.chart = nv.models.discreteBarChart()
+            .x( function( d ) { return d.label; } )
+            .y( function( d ) { return d.value; } )
+            .staggerLabels(true)
+            //.tooltips(false)
+            .showValues(true)
+            //.transitionDuration(350)
+            ;
+
+        this.chart.tooltip.enabled( true );
+        if( this.config.xLabel ) this.chart.xAxis.axisLabel( this.config.xLabel );
+        if( this.config.yLabel ) this.chart.yAxis.axisLabel( this.config.yLabel );
+        this.chart.forceY([parseInt(this.config.yMin),parseInt(this.config.yMax)]);
+        this.chart.xAxis.axisLabelDistance(-12);
+
+        for( var i = 0; i < this.datasources.length; i++ ) {
+            this.datasources[i].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+            this.data.push( {
+                key : this.datasources[i].config.label,
+                values : []
+            });
+        }
+
+        //d3.select( this.container[0] ).datum( this.data ).transition( 0 ).call( this.chart );
+        d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+        this.container.parents( "li" ).on( "resize" , this.chart.update );
+    };
+
+    NVD3DiscreteBar.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length )
+                return;
+        this.data[ index ].values = null;
+        this.data[ index ].values = data.data;
+        this.chart.update();
+		
+		/*kewei added
+		 *Change text color
+		*/
+	    d3.selectAll('#'+ this.id + ' .nv-wrap text').style('fill', this.config.textColor);
+	    d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);
+		d3.selectAll('#'+ this.id + ' .nv-groups text').style('fill', this.config.textColor);
+    };
+
+    App.Plugins.registerChartType( "nvd3discretebar" , NVD3DiscreteBar , {
+        category : "NVD3",
+        display_name : "Discrete Bar",
+        chartConfig : {
+            xLabel : { default : "" },
+            yLabel : { default : "" },
+            yMin : { default : "-50" },
+            yMax : { default : "50" },
+			textColor : { default : "#eee" } /*kewei added*/
+        },
+        disableComponentDiscovery : true,
+        color: "rgb(255,102,204)",
+        dependencies : [
+                "plugins/lib/d3_3.5.17/d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.css"
+        ]
+    } );
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="nvd3discretebar">
+  <div class="form-group">
+    <label>X Axis Label</label>
+    <input class="form-control" type="text" data-prop="xLabel">
+  </div>
+  <div class="form-group">
+    <label>Y Axis Label</label>
+    <input class="form-control" type="text" data-prop="yLabel">
+  </div>
+  <div class="form-group">
+    <label for="textColor">Text Color</label>
+    <input class="form-control" type="text" id="textColor" data-prop="textColor">
+  </div>
+  <div class="form-horizontal">
+    <label>Y Axis Value Range</label>
+    <div class="form-group">
+      <div class="col-md-2">
+        <label class="form-control" style="border: none;">Min:</label>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" type="text" data-prop="yMin">
+      </div>
+      <div class="col-md-2">
+        <label class="form-control" style="border: none;">Max:</label>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" type="text" data-prop="yMax">
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="nvd3discretebar">
+    <h1>Discrete Bar</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource set discrete bar chart value like the below example.</p>
+<pre>
+function getRandValue(offset, max) {
+    return Math.floor((Math.random()-offset) * max );
+}
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data:
+    [
+        { label: "A", value : getRandValue(0.5, 100) },
+        { label: "B", value : getRandValue(0.5, 100) },
+        { label: "C", value : getRandValue(0.5, 100) },
+        { label: "D", value : getRandValue(0.5, 100) },
+        { label: "E", value : getRandValue(0.5, 100) },
+    ]
+};</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Datasources</b>: can add more than one datasource.</p>
+    <p><b>X Axis Label</b>: the X axis label string.</p>
+    <p><b>Y Axis Label</b>: the Y axis label string.</p>
+    <p><b>Y Axis Value Range</b>: the Y axis value range from minimum and maximum.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3DiscreteBarChart.png" style="width:100%;" /></p></div>
+   
+</script>
+

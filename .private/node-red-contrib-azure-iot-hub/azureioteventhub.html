@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    RED.nodes.registerType('azureioteventhub',{
+        category: 'cloud',
+        color:"#fff", /*kewei modify (#2ab8bd)*/
+		border:"3px solid #e24d0d", /*kewei add*/
+		borColor:"#e24d0d", /*kewei modify*/
+        defaults: {
+            name: {value:"Azure IoT Event Hub"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "azureiothub.png",
+        label: function() {
+            return this.name||"Azure IoT Event Hub";
+        },
+        credentials: {
+            connectionstring: {type:"text"}
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="azureioteventhub">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-connectionstring"><i class="fa fa-bookmark"></i> Connection String</label>
+        <input type="text" id="node-input-connectionstring">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="azureioteventhub">
+    <p>A simple node that receives the message payloads from Azure IoT Device</p>
+</script>
+

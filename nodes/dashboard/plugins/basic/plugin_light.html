@@ -1,0 +1,172 @@
+<style>
+@keyframes lightPluginGlowAnimation {
+  from {
+    opacity : 0.3
+  }
+  to {
+    opacity : 1.0
+  }
+}
+
+.lightPluginBackground {
+  background-image: url( 'images/light/light_bg.png' );
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  margin: auto;
+  background-size: 100%;
+}
+
+.lightPluginGlow {
+  opacity: 0.2;
+  background-repeat: no-repeat;
+  height: 100%;
+  max-width: 100%;
+  background-size: 100%;
+}
+
+.lightPluginGlow.animate {
+  animation: lightPluginGlowAnimation 0.5s infinite alternate ease-in-out;
+}
+
+.lightPluginGlow.turnOn {
+  opacity: 1;
+}
+
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var lightPlugin = function( container , datasources , components , config ) {
+            var chart = this;
+            chart.datasources = datasources;
+            chart.components = components;
+            chart.config = config;
+            chart.container = $( container );
+            
+            
+            chart.$span = chart.container.parents("li").find('.gridItemHeader').find('span');
+            $(chart.$span[0]).css("color", chart.config.lt_chartTitleColor);
+            
+    
+            chart.id = "id" + dbTools.generateId().replace(".","");
+            chart.container.append( '<div class="lightPluginBackground"><div id="' + chart.id + '" class="lightPluginGlow"><div/></div>' );
+            chart.colorArr = [
+                "images/light/red_glow.png",
+                "images/light/yellow_glow.png",
+                "images/light/green_glow.png"
+            ];
+            
+            //chart.$alertGlow = this.container.find( ".lightPluginGlow" );
+            //chart.$alertGlow.css("background-image", 'url("' + this.colorArr[this.config.type] + '")');
+            
+            chart.$alertGlow = $("#"+ chart.id +".lightPluginGlow");
+            chart.$alertGlow.css("background-image", 'url("' + chart.colorArr[chart.config.type] + '")');
+            chart.$alertGlow.addClass( "turnOn" );
+        
+            if (chart.config.blinking) {
+                    chart.$alertGlow.addClass( "animate" );
+                } else {
+                    chart.$alertGlow.removeClass( "animate" );
+                }
+            };
+
+        lightPlugin.prototype.pushData = function( index , data ) {
+            console.dir(data.data);
+            //console.log(this.config.stable);
+            // set background color image
+            if ((data.data.color === undefined) || (data.data.color > 2)) {
+                // set default color
+                data.data.color = 0;
+            }
+            if ((data.data.turnOn === undefined) || (data.data.turnOn > 1)) {
+                data.data.turnOn = 0;
+            }
+            if ((data.data.mode === undefined) || (data.data.mode > 1)) {
+                data.data.mode = 0;
+            }
+            // set color
+            this.$alertGlow.css("background-image", 'url("' + this.colorArr[data.data.color] + '")');
+            if (data.data.turnOn === 1) {
+                if (data.data.mode == 0) {
+                    this.$alertGlow.removeClass( "animate" );
+                    this.$alertGlow.addClass( "turnOn" );
+                } else {
+                    this.$alertGlow.removeClass( "turnOn" );
+                    this.$alertGlow.addClass( "animate" );
+                }
+            } else {
+                this.$alertGlow.css("background-image", '');
+                this.$alertGlow.removeClass( "turnOn" );
+                this.$alertGlow.removeClass( "animate" );
+            }
+        };
+
+        App.Plugins.registerChartType( "light-plugin" , lightPlugin , {
+            category        : "Basic",
+            version         : "1.00.002",
+            dependencies : [
+                            "plugins/lib/tools.js"
+                        ],
+            display_name    : "Light",
+            disableComponentDiscovery : true,
+            color : "rgb(153, 255, 153)",
+            chartConfig     : {
+                type     : { default : 0 },
+                blinking : { default: false },
+                lt_chartTitleColor : { default: "black" }
+            }
+        });
+
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="light-plugin">
+    <div class="form-group">
+        <label for="maskWidth">Chart Titile Color</label>
+        <input class="form-control" type="text" id="lt_chartTitleColor" data-prop="lt_chartTitleColor">
+    </div>    
+    <div class="form-group">
+        <label for="type">Light Type</label>
+        <select class="form-control" data-prop="type">
+          <option value=0>Red Light</option>
+          <option value=1>Yellow Light</option>
+          <option value=2>Green Light</option>
+        </select>
+    </div>
+    <div class="checkbox">
+        <label><input type="checkbox" data-prop="blinking"> Light Blinking</label>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="light-plugin">
+    <h1>Basic/Light</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>The DataSource has three attributes for setting.</p>
+    <p><b>turnOn</b>: 0 set light turn off. 1 : set light on.</p>
+    <p><b>color</b>: 0 set red light, 1 : set yellow light, 2: set green light.</p>
+    <p><b>mode</b>: 0 set stable mode. 1 : set blinking mode.</p>
+<pre>
+ msg.payload = {
+    tstamp: new Date(),
+    data: {
+        turnOn: 1, // 0: Turn OFF, 1: Turn ON
+        color: 2, // color index
+        mode: 1 // 0: means stable, 1: means blink
+    }
+};</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Light Type</b> : has three light types: red light, yellow light and green light.</p>
+    <p><b>Light Blinking</b> : checked to set light blinking.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/light.png" /></p></div>
+    
+    <h3><b>|</b>Flow Example</h3>
+<pre>[{"id":"3c574c49.d9e6b4","type":"iot-datasource","z":"a68638eb.a48788","name":"Red Light","tstampField":"","dataField":"data","disableDiscover":false,"x":511,"y":2852,"wires":[[]]},{"id":"9ded7d05.0bfe8","type":"inject","z":"a68638eb.a48788","name":"toggle","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":126,"y":2737,"wires":[["dd854fec.f7b91"]]},{"id":"dd854fec.f7b91","type":"function","z":"a68638eb.a48788","name":"Turn Green ON Blink","func":"//\n//\n//\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        turnOn: 1, // 1: Turn ON\n        color: 2, // color index\n        mode: 1 // 0: means stable, 1: means blink\n    }\n};\n  \nreturn msg;\n","outputs":1,"noerr":0,"x":297,"y":2737,"wires":[["47251f01.9c0c"]]},{"id":"d6461b53.aac0a8","type":"inject","z":"a68638eb.a48788","name":"toggle","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":127,"y":2875,"wires":[["6c897b2b.89dc74"]]},{"id":"6c897b2b.89dc74","type":"function","z":"a68638eb.a48788","name":"Turn Red ON Blink","func":"//\n//\n//\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        turnOn: 1, // 1: Turn ON\n        color: 0, // color index\n        mode: 1 // 0: means stable, 1: means blink\n    }\n};\n  \nreturn msg;\n","outputs":1,"noerr":0,"x":287,"y":2875,"wires":[["3c574c49.d9e6b4"]]},{"id":"5b153cae.3273c4","type":"inject","z":"a68638eb.a48788","name":"toggle","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":127,"y":2841,"wires":[["d360122c.a2e28"]]},{"id":"d360122c.a2e28","type":"function","z":"a68638eb.a48788","name":"Turn Red ON","func":"//\n//\n//\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        turnOn: 1, // 1: Turn ON\n        color: 0, // color index\n        mode: 0 // 0: means stable, 1: means blink\n    }\n};\n  \nreturn msg;\n","outputs":1,"noerr":0,"x":267,"y":2841,"wires":[["3c574c49.d9e6b4"]]},{"id":"c0f9a8b.ba41058","type":"inject","z":"a68638eb.a48788","name":"toggle","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":126,"y":2702,"wires":[["97e5f9c5.6effe8"]]},{"id":"97e5f9c5.6effe8","type":"function","z":"a68638eb.a48788","name":"Turn Green ON","func":"//\n//\n//\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        turnOn: 1, // 1: Turn ON\n        color: 2, // color index\n        mode: 0 // 0: means stable, 1: means blink\n    }\n};\n  \nreturn msg;\n","outputs":1,"noerr":0,"x":277,"y":2702,"wires":[["47251f01.9c0c"]]},{"id":"992a3e26.e1578","type":"inject","z":"a68638eb.a48788","name":"toggle","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":126,"y":2772,"wires":[["403bb280.334a1c"]]},{"id":"403bb280.334a1c","type":"function","z":"a68638eb.a48788","name":"Turn Yellow ON","func":"//\n//\n//\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        turnOn: 1, // 1: Turn ON\n        color: 1, // color index\n        mode: 0 // 0: means stable, 1: means blink\n    }\n};\n  \nreturn msg;\n","outputs":1,"noerr":0,"x":277,"y":2772,"wires":[["fe3ce505.5603d8"]]},{"id":"fad76f31.63eeb","type":"inject","z":"a68638eb.a48788","name":"toggle","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":126,"y":2806,"wires":[["c4da53de.5b898"]]},{"id":"c4da53de.5b898","type":"function","z":"a68638eb.a48788","name":"Turn Yellow ON Blink","func":"//\n//\n//\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        turnOn: 1, // 1: Turn ON\n        color: 1, // color index\n        mode: 1 // 0: means stable, 1: means blink\n    }\n};\n  \nreturn msg;\n","outputs":1,"noerr":0,"x":297,"y":2806,"wires":[["fe3ce505.5603d8"]]},{"id":"47251f01.9c0c","type":"iot-datasource","z":"a68638eb.a48788","name":"Green Light","tstampField":"","dataField":"data","disableDiscover":false,"x":516,"y":2715,"wires":[[]]},{"id":"fe3ce505.5603d8","type":"iot-datasource","z":"a68638eb.a48788","name":"Yellow Light","tstampField":"","dataField":"data","disableDiscover":false,"x":519,"y":2781,"wires":[[]]}]</pre>
+    
+</script>
+
+

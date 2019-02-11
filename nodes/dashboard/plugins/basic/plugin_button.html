@@ -1,0 +1,213 @@
+<!--
+    [ Dashboard Button Module ]
+    
+-->
+
+<style>
+
+div.circle_in_black{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    background-color:black;
+    text-align: center;
+}
+
+.center {
+    margin: auto;
+    /*width: 60%;*/
+    border-radius:99em;
+    border: 6px solid #73AD21;
+    padding: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.btnCircle {
+    height:100%;
+    border-radius:100%;
+    text-shadow: 2px 2px 2px rgba(255,255,255, .22);
+    color: #FFFFFF;
+    -webkit-box-shadow: 1px 1px 1px rgba(255,0,0, .29), inset 1px 1px 1px rgba(255,255,255, .44);
+    -moz-box-shadow: 1px 1px 1px rgba(255,0,0, .29), inset 1px 1px 1px rgba(255,255,255, .44);
+    box-shadow: 1px 1px 1px rgba(255,0,0, .29), inset 1px 1px 1px rgba(255,255,255, .44);
+    
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    -ms-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+    
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ff3019+0,cf0404+100;Red+3D */
+background: #ff3019; /* Old browsers */
+background: -moz-linear-gradient(top, #ff3019 0%, #cf0404 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #ff3019 0%,#cf0404 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #ff3019 0%,#cf0404 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3019', endColorstr='#cf0404',GradientType=0 ); /* IE6-9 */
+
+}
+
+.green {
+    color: #3e5706;
+
+    background: #a5cd4e; /* Old browsers */
+    background: -moz-linear-gradient(top,  #a5cd4e 0%, #6b8f1a 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a5cd4e), color-stop(100%,#6b8f1a)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #a5cd4e 0%,#6b8f1a 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #a5cd4e 0%,#6b8f1a 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #a5cd4e 0%,#6b8f1a 100%); /* IE10+ */
+    background: linear-gradient(top,  #a5cd4e 0%,#6b8f1a 100%); /* W3C */}
+
+    
+.btn-default:hover {
+    background-position: 0 2px;
+}
+    
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var buttonPlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            this.container = $( container );
+            
+//style="height:100%;"
+//            var content = '<div type="button" class="btn btn-default btnCircle"><font size="' + this.config.db_size + '">' + this.config.db_text + '</font></div>';
+            
+
+            var content;
+            console.log(this.config.db_type);
+            
+            if (this.config.db_type) {
+                content = '<div type="button" class="btn btn-default btnCircle test" style="height:100%;'+this.config.db_exStyle+'"><font size="' + this.config.db_size + '">' + this.config.db_text + '</font></div>';
+            } else {
+                content = '<div type="button" class="btn btn-default" style="height:100%;'+ this.config.db_exStyle+'"><font size="' + this.config.db_size + '">' + this.config.db_text + '</font></div>';
+            }
+            
+            //var content = '<div type="button" class="btn btn-default" style="height:100%;" >xxxxxxxxx</div>';
+//            var content = '<div class="center">xxxxxxxxx</div>';
+            //var content = '<div type="button" class="circle_in_black" >xxxxxxxxxxxxxxxxxxx</div>';
+            this.container.append( content );
+            
+            this.container.parents( "li" ).on( "resize" , this._resize.bind( this ) );
+            //this.$button = this.container.parents( "li" ).find('div.circle_in_black');
+            this.$button = this.container.parents( "li" ).find('div.btn.btn-default');
+            //this.$button.style.line-height=this.$button.height();
+            //console.log(">>>>>"+this.$button.height());
+            this.$button.on( "click" , this.onClick.bind(this) );
+            this._resize();
+            
+            if (this.config.db_mode == 1) { // flat mode
+                if (this.$button.hasClass('btn')) this.$button.removeClass('btn');
+                if (this.$button.hasClass('btn-default')) this.$button.removeClass('btn-default');
+                this.$button.css('cursor', 'default');
+                this.$button.css('text-align', 'center');
+            } else {
+                if (!this.$button.hasClass('btn')) this.$button.addClass('btn');
+                if (!this.$button.hasClass('btn-default')) this.$button.addClass('btn-default');
+                this.$button.css('cursor', 'pointer');
+            }
+    };
+    
+    buttonPlugin.prototype.onClick = function() {
+        console.log("button click ......");
+        if (this.config.db_mode == 0) { // button mode
+            var now = ( new Date() ).getTime();
+            for(var i = 0; i < this.datasources.length; i++ ) {
+                //this.datasources[i].requestHistoryData( now , now, this.buttonResponse.bind(this) );
+                this.datasources[i].buttonRequest( now , now, this.buttonResponse.bind(this) );
+            }
+        } else if (this.config.db_mode == 2) {  // hyperlink mode
+            location.href = this.config.db_hyperlink;            
+        }
+    }
+    
+    //buttonPlugin.prototype.addHistoryData = function( index , data ) {
+    //    console.log("addHistoryData");
+    //};
+
+    buttonPlugin.prototype.buttonResponse = function( index , data ) {
+        console.log("buttonResponse");
+    };
+    
+    buttonPlugin.prototype._resize = function() {
+        this.$button.css('line-height',this.$button.height() + "px");
+    };
+
+    buttonPlugin.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+        console.log(data.data);
+        if(data.data.hasOwnProperty('label')) this.$button.find('font').text(data.data.label);
+        if(data.data.hasOwnProperty('exStyle')) {
+            for(var key in data.data.exStyle) {
+                console.log(key + data.data.exStyle[key]);
+                this.$button.css(key, data.data.exStyle[key]);
+            }
+        } 
+    };
+
+    App.Plugins.registerChartType( "button-plugin" , buttonPlugin , {
+        category : "Basic",
+        display_name : "Button",
+        disableComponentDiscovery : true,
+        chartConfig : {
+                db_text : { default : "text" },
+                db_type : { default : false },
+                db_size : { default : 10 },
+                db_exStyle : { default : "" },
+                db_mode : { default : 0 },
+                db_hyperlink : { default : '' }
+        },
+        color: "rgb(204, 255, 204)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="button-plugin">
+    <div class="form-group">
+        <label for="db_text">Text</label>
+        <input class="form-control" type="text" id="db_text" data-prop="db_text">
+    </div>
+    <div class="form-group">
+        <label for="db_size">Font Size</label>
+        <input class="form-control" type="text" id="db_size" data-prop="db_size">
+    </div>
+    <div class="checkbox">
+        <label><input type="checkbox" data-prop="db_type"> Round Button</label>
+    </div>  
+    <div class="form-group">
+        <label for="db_exStyle">extend Style</label>
+        <input class="form-control" type="text" id="db_exStyle" data-prop="db_exStyle">
+    </div>
+    <div class="form-group">
+        <label for="db_mode">Type</label>
+        <select class="form-control" data-prop="db_mode">
+          <option value=0>Button</option>
+          <option value=1>Flat Area</option>
+          <option value=2>Hyperlink</option>
+        </select>
+        <label for="db_hyperlink">Hyperlink</label>
+        <input class="form-control" type="text" id="db_hyperlink" data-prop="db_hyperlink">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="button-plugin">
+    <h1>Button</h1>
+    <h3><b>|</b>DataSource</h3>
+    <p>This button can return press action to DataSource</p>
+    <h3><b>|</b>Configuration</h3>
+    <p><b>Text</b> : Text string show in button.</p>
+    <p><b>Font Size</b> : The Text font size.</p>
+    </br>
+    <p><b>Round Button</b> : checked means round button, unchecked means rect button is default value.</p>
+    <h3><b>|</b>Shape</h3>
+    <p>There are two button shapes.</p>
+    <p><b>Rect button</b></p>
+    <p type="button" class="btn btn-default" style="width:80%"><font size="8px">Rect</font></p>
+    <p><b>Round button</b></p>
+    <p type="button" class="btn btn-default btnCircle" style="width:80%"><font size="8px">Round</font></p>
+</script>
+

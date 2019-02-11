@@ -1,0 +1,121 @@
+<style>
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "icon-class1-plugin" , ImagePlugin , {
+        category: "Icon",
+        display_name : "Icon Class1",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/icons/icon_bc_001.svg" }
+        },
+        color: "rgb(51,153,255)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="icon-class1-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/icons/icon_bc_001.svg">Icon 1</option>
+          <option value="images/icons/icon_bc_002.svg">Icon 2</option>
+          <option value="images/icons/icon_bc_003.svg">Icon 3</option>
+          <option value="images/icons/icon_bc_004.svg">Icon 4</option>
+          <option value="images/icons/icon_bc_005.svg">Icon 5</option>
+          <option value="images/icons/icon_bc_006.svg">Icon 6</option>
+          <option value="images/icons/icon_bc_007.svg">Icon 7</option>
+          <option value="images/icons/icon_bc_008.svg">Icon 8</option>
+          <option value="images/icons/icon_bc_009.svg">Icon 9</option>
+          <option value="images/icons/icon_bc_010.svg">Icon 10</option>
+          <option value="images/icons/icon_bc_011.svg">Icon 11</option>
+          <option value="images/icons/icon_bc_012.svg">Icon 12</option>
+          <option value="images/icons/icon_bc_013.svg">Icon 13</option>
+          <option value="images/icons/icon_bc_014.svg">Icon 14</option>
+          <option value="images/icons/icon_bc_015.svg">Icon 15</option>
+          <option value="images/icons/icon_bc_016.svg">Icon 16</option>
+          <option value="images/icons/icon_bc_017.svg">Icon 17</option>
+          <option value="images/icons/icon_bc_018.svg">Icon 18</option>
+          <option value="images/icons/icon_bc_019.svg">Icon 19</option>
+          <option value="images/icons/icon_bc_020.svg">Icon 20</option>
+          <option value="images/icons/icon_bc_021.svg">Icon 21</option>
+          <option value="images/icons/icon_bc_022.svg">Icon 22</option>
+          <option value="images/icons/icon_bc_023.svg">Icon 23</option>
+          <option value="images/icons/icon_bc_024.svg">Icon 24</option>
+          <option value="images/icons/icon_bc_025.svg">Icon 25</option>
+          <option value="images/icons/icon_bc_026.svg">Icon 26</option>
+          <option value="images/icons/icon_bc_027.svg">Icon 27</option>
+          <option value="images/icons/icon_bc_028.svg">Icon 28</option>
+          <option value="images/icons/icon_bc_029.svg">Icon 29</option>
+          <option value="images/icons/icon_bc_030.svg">Icon 30</option>
+          <option value="images/icons/icon_bc_031.svg">Icon 31</option>
+          <option value="images/icons/icon_bc_032.svg">Icon 32</option>
+          <option value="images/icons/icon_bc_033.svg">Icon 33</option>
+          <option value="images/icons/icon_bc_034.svg">Icon 34</option>
+          <option value="images/icons/icon_bc_035.svg">Icon 35</option>
+          <option value="images/icons/icon_bc_036.svg">Icon 36</option>
+          <option value="images/icons/icon_bc_037.svg">Icon 37</option>
+          <option value="images/icons/icon_bc_038.svg">Icon 38</option>
+          <option value="images/icons/icon_bc_039.svg">Icon 39</option>
+          <option value="images/icons/icon_bc_040.svg">Icon 40</option>
+          <option value="images/icons/icon_bc_041.svg">Icon 41</option>
+          <option value="images/icons/icon_bc_042.svg">Icon 42</option>
+          <option value="images/icons/icon_bc_043.svg">Icon 43</option>
+          <option value="images/icons/icon_bc_044.svg">Icon 44</option>
+          <option value="images/icons/icon_bc_045.svg">Icon 45</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="icon-class1-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 45 types can select in below.</p>
+<pre>
+ Icon 1   Icon 2   Icon 3   Icon 4
+ Icon 5   Icon 6   Icon 7   Icon 8
+ Icon 9   Icon 10  Icon 11  Icon 12
+ Icon 13  Icon 14  Icon 15  Icon 16
+ Icon 17  Icon 18  Icon 19  Icon 20
+ Icon 21  Icon 22  Icon 23  Icon 24
+ Icon 25  Icon 26  Icon 27  Icon 28
+ Icon 29  Icon 30  Icon 31  Icon 32
+ Icon 33  Icon 34  Icon 35  Icon 36
+ Icon 37  Icon 38  Icon 39  Icon 40
+ Icon 41  Icon 42  Icon 43  Icon 44
+ Icon 45</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 45 Types.</p><p style="text-align: center;"><img src="images/IconClass1s.png" /></p></div>
+</script>
+

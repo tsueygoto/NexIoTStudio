@@ -1,0 +1,238 @@
+<style>
+.nvd3LinewithViewFinderContainer {
+  flex: 1;
+}
+
+.nvd3LinewithViewFinderContainer .nv-legend-text {
+  fill: #eee; /*kewei modified*/
+}
+
+.nvd3LinewithViewFinderContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3LinewithViewFinderContainer .nvd3.nv-noData {
+  fill: #aab0b9;
+}
+
+.nvd3LinewithViewFinderContainer .nv-axis {
+  fill: #eee; /*kewei modified*/
+}
+
+.nvd3LinewithViewFinderContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3LinewithViewFinderContainer .tick line {
+  stroke: #4a4e54;
+}
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var NVD3LinewithViewFinder = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            
+			this.id = "id" + dbTools.generateId().replace(".","");
+            this.container = $( '<svg id="' + this.id + '" class="nvd3LinewithViewFinderContainer"></svg>' );
+            $( container ).append( this.container );
+      
+            this.data = [];
+            this.chart = nv.models.lineWithFocusChart()
+
+            //this.chart.xAxis.tickFormat(d3.format(',f'));
+            this.chart.xAxis.tickFormat(function(d) { return d3.time.format('%b %d %H:%M:%S')(new Date(d)); });
+            this.chart.yAxis.tickFormat(d3.format(',.2f'));
+            this.chart.y2Axis.tickFormat(d3.format(',.2f'));
+            this.chart.x2Axis.tickFormat(function(d) { return d3.time.format('%b %d %H:%M:%S')(new Date(d)); });
+
+            this.chart.tooltip.enabled( true );
+            if( this.config.xLabel ) this.chart.xAxis.axisLabel( this.config.xLabel );
+            if( this.config.yLabel ) this.chart.yAxis.axisLabel( this.config.yLabel );
+      
+            var now = ( new Date() ).getTime();
+            for( var i = 0; i < this.datasources.length; i++ ) {
+                //this.datasources[i].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+                this.data.push( {
+                  key : this.datasources[i].config.label,
+                  values : []
+                });
+                this.datasources[i].requestHistoryData( now , now , this.addHistoryData.bind( this ) );
+            }
+      
+      /* Inspired by Lee Byron's test data generator. */
+        //function stream_layers(n, m, o) {
+        //  if (arguments.length < 3) o = 0;
+        //  function bump(a) {
+        //    var x = 1 / (.1 + Math.random()),
+        //        y = 2 * Math.random() - .5,
+        //        z = 10 / (.1 + Math.random());
+        //    for (var i = 0; i < m; i++) {
+        //      var w = (i / m - y) * z;
+        //      a[i] += x * Math.exp(-w * w);
+        //    }
+        //  }
+        //  return d3.range(n).map(function() {
+        //      var a = [], i;
+        //      for (i = 0; i < m; i++) a[i] = o + o * Math.random();
+        //      for (i = 0; i < 5; i++) bump(a);
+        //      return a.map(stream_index);
+        //    });
+        //}
+        //
+        ///* Another layer generator using gamma distributions. */
+        //function stream_waves(n, m) {
+        //  return d3.range(n).map(function(i) {
+        //    return d3.range(m).map(function(j) {
+        //        var x = 20 * j / m - i / 3;
+        //        return 2 * x * Math.exp(-.5 * x);
+        //      }).map(stream_index);
+        //    });
+        //}
+        //
+        //function stream_index(d, i) {
+        //  return {x: i, y: Math.max(0, d)};
+        //}
+        //
+        //
+        //function testData() {
+        //  return stream_layers(3,128,.1).map(function(data, i) {
+        //    return { 
+        //      key: 'Stream' + i,
+        //      values: data
+        //    };
+        //  });
+        //}
+
+        //console.log(testData());
+        
+            //d3.select( this.container[0] ).datum( this.data ).transition().duration(500).call( this.chart );
+            d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+            this.container.parents( "li" ).on( "resize" , this.chart.update );
+        };
+        
+        NVD3LinewithViewFinder.prototype.addHistoryData = function( index , data ) {
+            //var tableBody = this.dataTable;
+            //var itemsProcessed = 0;
+            //data.data.forEach(function(item, index, array) {
+            //    tableBody.row.add( item );
+            //    itemsProcessed++;
+            //    if (itemsProcessed === array.length) {
+            //        tableBody.draw(false);
+            //    }
+            //});
+            if( index < 0 || index >= this.components.length || data.data == undefined)
+                return;
+        
+            // in current anly allow array data groups
+            if( $.isArray( data.data ) ) {
+                this.data[index].values = null;
+                this.data[index].values = data.data;
+            }
+            this.chart.update();
+        };        
+
+        NVD3LinewithViewFinder.prototype.pushData = function( index , data ) {
+            //if( $.isArray( data.data ) ) this.data[ index ].values = this.data[ index ].values.concat( data.data );
+            //else this.data[ index ].values.push( data.data );
+            //console.log(this.data[ index ]);
+            if( index < 0 || index >= this.components.length || data.data == undefined)
+                return;
+        
+            // in current anly allow array data groups
+            if( $.isArray( data.data ) ) {
+                this.data[index].values = null;
+                this.data[index].values = data.data;
+            }
+            else 
+            {
+                //if (this.data[index].values.length == 30) {
+                //    this.data[index].values.shift();
+                //}
+                this.data[index].values.push( data.data );
+            }
+            this.chart.update();
+			
+			/*kewei added
+			 *Change text color
+			*/
+		    d3.selectAll('#'+ this.id + ' .nv-wrap text').style('fill', this.config.textColor);
+	        d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);
+        };
+
+        App.Plugins.registerChartType( "nvd3LinewithViewFinder" , NVD3LinewithViewFinder , {
+            category : "NVD3",
+            display_name : "Line w Finder",
+            chartConfig : {
+                xLabel : { default : "" },
+                yLabel : { default : "" },
+				textColor : { default : "#eee" }
+            },
+            //datasourceConfig : {
+            //    trend : { default : false }
+            //},
+            disableComponentDiscovery : true,
+            color: "rgb(153,153,255)",
+            dependencies : [
+                    "plugins/lib/d3_3.5.17/d3.min.js",
+                    "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                    "plugins/lib/nvd3_1.8.5/nv.d3.css"
+            ]
+        });
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="nvd3LinewithViewFinder">
+  <div class="form-group">
+    <label>X Axis Label</label>
+    <input class="form-control" type="text" data-prop="xLabel">
+  </div>
+  <div class="form-group">
+    <label>Y Axis Label</label>
+    <input class="form-control" type="text" data-prop="yLabel">
+  </div>
+  <div class="form-group">
+    <label for="textColor">Text Color</label>
+    <input class="form-control" type="text" id="textColor" data-prop="textColor">
+  </div>
+</script>
+
+<!-- script type="text/x-dash" data-datasource-config="nvd3LinewithViewFinder">
+  <div class="checkbox">
+    <label><input type="checkbox" data-prop="trend"> Show trend</label>
+  </div>
+</script -->
+
+<script type="text/x-red" data-help-name="nvd3LinewithViewFinder">
+    <h1>Line W Finder</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource set line chart with view finder like the below example.</p>
+<pre>
+var data = [{"x":0,"y":0.17743331247475},{"x":1,"y":0.12145424904301763},{"x":2,"y":0.13435301356948914}];
+var now = new Date().getTime();
+msg.payload = {
+    tstamp: now,
+    data: data
+};</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Datasources</b>: can add more than one datasource.</p>
+	<p><b>X Axis Label</b>: the X axis label string.</p>
+    <p><b>Y Axis Label</b>: the Y axis label string.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3LineChartwViewFinder.png" style="width:100%;" /></p></div>
+
+    <h3><b>|</b> Flow Example</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3LineChartwViewFinder.png" style="width:100%;" /></p></div>
+<pre>[{"id":"b1c9a7d.870d358","type":"function","z":"27c17b32.dd0494","name":"Data 1","func":"var data = [{\"x\":0,\"y\":0.17743331247475},{\"x\":1,\"y\":0.12145424904301763},{\"x\":2,\"y\":0.13435301356948914},{\"x\":3,\"y\":0.17447940357960762},{\"x\":4,\"y\":0.15048410187009723},{\"x\":5,\"y\":0.14166630755644294},{\"x\":6,\"y\":0.14554843651130797},{\"x\":7,\"y\":0.13262473337817937},{\"x\":8,\"y\":0.11046892872545869},{\"x\":9,\"y\":0.13852980700321496},{\"x\":10,\"y\":0.17069632827769965},{\"x\":11,\"y\":0.15038526991847903},{\"x\":12,\"y\":0.15237178371753546},{\"x\":13,\"y\":0.16688277097418905},{\"x\":14,\"y\":0.10271332159172744},{\"x\":15,\"y\":0.13401963606011125},{\"x\":16,\"y\":0.17179445491638035},{\"x\":17,\"y\":0.1574943024897948},{\"x\":18,\"y\":0.1292032189434395},{\"x\":19,\"y\":0.13275598895270396},{\"x\":20,\"y\":0.17196881060954256},{\"x\":21,\"y\":0.19346825031098272},{\"x\":22,\"y\":0.14265399645083796},{\"x\":23,\"y\":0.15737609989014126},{\"x\":24,\"y\":0.1027936850443218},{\"x\":25,\"y\":0.16200863367469667},{\"x\":26,\"y\":0.18952218662216833},{\"x\":27,\"y\":0.19492454566744177},{\"x\":28,\"y\":0.19354693975695775},{\"x\":29,\"y\":0.1520607418874993},{\"x\":30,\"y\":0.16639117788945498},{\"x\":31,\"y\":0.14389439143251184},{\"x\":32,\"y\":0.11685552793457006},{\"x\":33,\"y\":0.10517278927956414},{\"x\":34,\"y\":0.16894992981435342},{\"x\":35,\"y\":0.16794272881079328},{\"x\":36,\"y\":0.10032233216393692},{\"x\":37,\"y\":0.12364071514278614},{\"x\":38,\"y\":0.10974550278943197},{\"x\":39,\"y\":0.19556279077926483},{\"x\":40,\"y\":0.14393844714706486},{\"x\":41,\"y\":0.14019265906407727},{\"x\":42,\"y\":0.17498682683896083},{\"x\":43,\"y\":0.17331600752426948},{\"x\":44,\"y\":0.1625375173508677},{\"x\":45,\"y\":0.14731809224202488},{\"x\":46,\"y\":0.19800244092759864},{\"x\":47,\"y\":0.1826405309494838},{\"x\":48,\"y\":0.12218905529616943},{\"x\":49,\"y\":0.14357222409140455},{\"x\":50,\"y\":0.20544504654297546},{\"x\":51,\"y\":0.1806309176937984},{\"x\":52,\"y\":0.21177369929437573},{\"x\":53,\"y\":0.2112461094026035},{\"x\":54,\"y\":0.2000265341315071},{\"x\":55,\"y\":0.20492074959036333},{\"x\":56,\"y\":0.2924134519563605},{\"x\":57,\"y\":0.3475031381659649},{\"x\":58,\"y\":0.3725257866516091},{\"x\":59,\"y\":0.45868645858593265},{\"x\":60,\"y\":0.6469573209907872},{\"x\":61,\"y\":0.8068403118898491},{\"x\":62,\"y\":0.9865781518606138},{\"x\":63,\"y\":1.2644180899702082},{\"x\":64,\"y\":1.4948918316635065},{\"x\":65,\"y\":1.71368027822828},{\"x\":66,\"y\":1.9465113521960828},{\"x\":67,\"y\":2.2340180468182234},{\"x\":68,\"y\":2.3976883921670353},{\"x\":69,\"y\":2.6188699040574637},{\"x\":70,\"y\":2.7006222611124073},{\"x\":71,\"y\":2.7169215572963776},{\"x\":72,\"y\":2.7217898210060745},{\"x\":73,\"y\":2.6712368642269975},{\"x\":74,\"y\":2.4939716824492213},{\"x\":75,\"y\":2.2803449602749932},{\"x\":76,\"y\":2.139644461755881},{\"x\":77,\"y\":2.3865920942625505},{\"x\":78,\"y\":3.221646362484993},{\"x\":79,\"y\":3.864361826570071},{\"x\":80,\"y\":3.3835938633715448},{\"x\":81,\"y\":2.0423066109653902},{\"x\":82,\"y\":0.998785767740912},{\"x\":83,\"y\":0.6123611586130041},{\"x\":84,\"y\":0.3855367768262657},{\"x\":85,\"y\":0.30808690668142996},{\"x\":86,\"y\":0.2924834607809634},{\"x\":87,\"y\":0.2717112438852778},{\"x\":88,\"y\":0.2390662294600308},{\"x\":89,\"y\":0.20399563036122648},{\"x\":90,\"y\":0.19631512716163177},{\"x\":91,\"y\":0.13027228622760786},{\"x\":92,\"y\":0.17003837438178449},{\"x\":93,\"y\":0.17776370174980413},{\"x\":94,\"y\":0.10979487876000231},{\"x\":95,\"y\":0.12125597658896271},{\"x\":96,\"y\":0.1898394583468592},{\"x\":97,\"y\":0.13740096475663288},{\"x\":98,\"y\":0.1995296146004629},{\"x\":99,\"y\":0.21368256166513425}];\n\nvar now = ( new Date() ).getTime();\nmsg.payload = {\n    tstamp: now,\n    data: data\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":343,"y":141,"wires":[["6608ab3c.bc2c44"]]},{"id":"6608ab3c.bc2c44","type":"iot-datasource","z":"27c17b32.dd0494","name":"LVF 5","tstampField":"","dataField":"data","disableDiscover":false,"x":461,"y":141,"wires":[[]]},{"id":"f0f24518.7b9178","type":"function","z":"27c17b32.dd0494","name":"Data 2","func":"var data = [{\"x\":0,\"y\":0.12472254649593727},{\"x\":1,\"y\":0.12580094041130835},{\"x\":2,\"y\":0.14772122808644292},{\"x\":3,\"y\":0.15137210522892347},{\"x\":4,\"y\":0.15185622742689725},{\"x\":5,\"y\":0.16123338441633267},{\"x\":6,\"y\":0.16557793460860465},{\"x\":7,\"y\":0.18193396264468878},{\"x\":8,\"y\":0.29474446672412646},{\"x\":9,\"y\":0.2862753635803339},{\"x\":10,\"y\":0.39403196415538855},{\"x\":11,\"y\":0.5125528078388937},{\"x\":12,\"y\":0.6359625883112157},{\"x\":13,\"y\":0.7680239949412445},{\"x\":14,\"y\":0.9094222138432195},{\"x\":15,\"y\":1.0925247801863378},{\"x\":16,\"y\":1.2543565781403112},{\"x\":17,\"y\":1.4110761963184466},{\"x\":18,\"y\":1.518852567686696},{\"x\":19,\"y\":1.7090948220174407},{\"x\":20,\"y\":1.7822254569837563},{\"x\":21,\"y\":1.8028363083231562},{\"x\":22,\"y\":1.833578216391874},{\"x\":23,\"y\":1.7549654973828015},{\"x\":24,\"y\":1.656177086020405},{\"x\":25,\"y\":1.5643856961671117},{\"x\":26,\"y\":1.5270531496184807},{\"x\":27,\"y\":1.4163458264961772},{\"x\":28,\"y\":1.4265419440597875},{\"x\":29,\"y\":1.4162381994619424},{\"x\":30,\"y\":1.678684286315674},{\"x\":31,\"y\":1.9684062452444722},{\"x\":32,\"y\":2.4032149682742765},{\"x\":33,\"y\":3.014122950027362},{\"x\":34,\"y\":3.5308328667351705},{\"x\":35,\"y\":3.9568866347629204},{\"x\":36,\"y\":4.189683224394436},{\"x\":37,\"y\":4.092632038045408},{\"x\":38,\"y\":3.722727354834724},{\"x\":39,\"y\":3.1680541678973566},{\"x\":40,\"y\":2.5121228151385004},{\"x\":41,\"y\":1.8369848303652008},{\"x\":42,\"y\":1.3021203687431517},{\"x\":43,\"y\":0.9164836455627083},{\"x\":44,\"y\":0.6839493292955726},{\"x\":45,\"y\":0.41901133913010086},{\"x\":46,\"y\":0.30728251201988493},{\"x\":47,\"y\":0.2519634631614356},{\"x\":48,\"y\":0.22582994723754096},{\"x\":49,\"y\":0.1802956095204557},{\"x\":50,\"y\":0.12106585472670578},{\"x\":51,\"y\":0.11997929786236874},{\"x\":52,\"y\":0.142360807242997},{\"x\":53,\"y\":0.12838644068488542},{\"x\":54,\"y\":0.1307473692802353},{\"x\":55,\"y\":0.10406388113572707},{\"x\":56,\"y\":0.10970144640074701},{\"x\":57,\"y\":0.1936709653137825},{\"x\":58,\"y\":0.14845993450453918},{\"x\":59,\"y\":0.10745629720146166},{\"x\":60,\"y\":0.18482126842830363},{\"x\":61,\"y\":0.18212023388928442},{\"x\":62,\"y\":0.11973492318350654},{\"x\":63,\"y\":0.11731200243878866},{\"x\":64,\"y\":0.20374116210088306},{\"x\":65,\"y\":0.14506209414639057},{\"x\":66,\"y\":0.21161387457624534},{\"x\":67,\"y\":0.14836103720976537},{\"x\":68,\"y\":0.13781599958353755},{\"x\":69,\"y\":0.18233138307492647},{\"x\":70,\"y\":0.22181236526196585},{\"x\":71,\"y\":0.2559246545014046},{\"x\":72,\"y\":0.265375892113557},{\"x\":73,\"y\":0.2925228863833772},{\"x\":74,\"y\":0.39529857800421053},{\"x\":75,\"y\":0.39989622668568153},{\"x\":76,\"y\":0.49185072056014645},{\"x\":77,\"y\":0.511214756000785},{\"x\":78,\"y\":0.6745700998524591},{\"x\":79,\"y\":0.7769281963303666},{\"x\":80,\"y\":0.8157190729186298},{\"x\":81,\"y\":0.9164510045486456},{\"x\":82,\"y\":1.0945268350934576},{\"x\":83,\"y\":1.1415009958052877},{\"x\":84,\"y\":1.2265148126187146},{\"x\":85,\"y\":1.394175104050451},{\"x\":86,\"y\":1.4567281707318234},{\"x\":87,\"y\":1.4940139308426064},{\"x\":88,\"y\":1.491084531764852},{\"x\":89,\"y\":1.5068883093004026},{\"x\":90,\"y\":1.4500918342069598},{\"x\":91,\"y\":1.375716127891051},{\"x\":92,\"y\":1.3104571616138778},{\"x\":93,\"y\":1.2724643794026995},{\"x\":94,\"y\":1.1402331124211533},{\"x\":95,\"y\":1.0811528883333488},{\"x\":96,\"y\":0.9498843274089036},{\"x\":97,\"y\":0.7963126816836168},{\"x\":98,\"y\":0.7577151383585496},{\"x\":99,\"y\":0.618192981257824}];\nvar now = ( new Date() ).getTime();\nmsg.payload = {\n    tstamp: now,\n    data: data\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":343,"y":176,"wires":[["422d33b.c6afecc"]]},{"id":"422d33b.c6afecc","type":"iot-datasource","z":"27c17b32.dd0494","name":"LVF 6","tstampField":"","dataField":"","disableDiscover":false,"x":461,"y":176,"wires":[[]]},{"id":"6039b963.4fb248","type":"function","z":"27c17b32.dd0494","name":"Data 3","func":"var data = [{\"x\":0,\"y\":0.1046433193762251},{\"x\":1,\"y\":0.11793903984388042},{\"x\":2,\"y\":0.1464674774241381},{\"x\":3,\"y\":0.18796909647968582},{\"x\":4,\"y\":0.3009129196962834},{\"x\":5,\"y\":0.6219215871609721},{\"x\":6,\"y\":1.1720509483350465},{\"x\":7,\"y\":1.5690560772564544},{\"x\":8,\"y\":1.4542414984702725},{\"x\":9,\"y\":0.842532725519718},{\"x\":10,\"y\":0.4335167839903221},{\"x\":11,\"y\":0.24421379641554353},{\"x\":12,\"y\":0.37173929616547957},{\"x\":13,\"y\":0.534977865009515},{\"x\":14,\"y\":0.7539555663455028},{\"x\":15,\"y\":1.2181373006921654},{\"x\":16,\"y\":1.7265202678936051},{\"x\":17,\"y\":2.455456922292945},{\"x\":18,\"y\":3.120118856478007},{\"x\":19,\"y\":3.8566711696203777},{\"x\":20,\"y\":4.356220240458559},{\"x\":21,\"y\":4.53874604796234},{\"x\":22,\"y\":4.422479382704657},{\"x\":23,\"y\":4.046307630410215},{\"x\":24,\"y\":3.4365979010761487},{\"x\":25,\"y\":2.766467548994711},{\"x\":26,\"y\":2.039733471798025},{\"x\":27,\"y\":1.4389285450462725},{\"x\":28,\"y\":0.9448747837637677},{\"x\":29,\"y\":0.6217924677650424},{\"x\":30,\"y\":0.43326960780716806},{\"x\":31,\"y\":0.23522577375499631},{\"x\":32,\"y\":0.22254141479391626},{\"x\":33,\"y\":0.1560276301366458},{\"x\":34,\"y\":0.1249924985805948},{\"x\":35,\"y\":0.14667616826530727},{\"x\":36,\"y\":0.16570296626290865},{\"x\":37,\"y\":0.10735002737637953},{\"x\":38,\"y\":0.15327150478351462},{\"x\":39,\"y\":0.12343969194085495},{\"x\":40,\"y\":0.1700367031876065},{\"x\":41,\"y\":0.12365962392192392},{\"x\":42,\"y\":0.15906124685034348},{\"x\":43,\"y\":0.17037008299289066},{\"x\":44,\"y\":0.16855172162850193},{\"x\":45,\"y\":0.10535180763160382},{\"x\":46,\"y\":0.10203050146064327},{\"x\":47,\"y\":0.19189735559751306},{\"x\":48,\"y\":0.18646716583496722},{\"x\":49,\"y\":0.12493002861855411},{\"x\":50,\"y\":0.10825522148530067},{\"x\":51,\"y\":0.14459827193060587},{\"x\":52,\"y\":0.18370769007597282},{\"x\":53,\"y\":0.14343890242744256},{\"x\":54,\"y\":0.12316314149647953},{\"x\":55,\"y\":0.13798857170622797},{\"x\":56,\"y\":0.1350834432989359},{\"x\":57,\"y\":0.15708171755541117},{\"x\":58,\"y\":0.19097181288525464},{\"x\":59,\"y\":0.12958672742825003},{\"x\":60,\"y\":0.1473768718307838},{\"x\":61,\"y\":0.18819302923511716},{\"x\":62,\"y\":0.12829815847799184},{\"x\":63,\"y\":0.12682399491313845},{\"x\":64,\"y\":0.13414311381056906},{\"x\":65,\"y\":0.10686755769420415},{\"x\":66,\"y\":0.11157868059817702},{\"x\":67,\"y\":0.1598852575523779},{\"x\":68,\"y\":0.12330788199324161},{\"x\":69,\"y\":0.1561152061680332},{\"x\":70,\"y\":0.1453804804943502},{\"x\":71,\"y\":0.11032264910172672},{\"x\":72,\"y\":0.12843686954583974},{\"x\":73,\"y\":0.10895627308636904},{\"x\":74,\"y\":0.17338553899899126},{\"x\":75,\"y\":0.11768340601120145},{\"x\":76,\"y\":0.12457165187224746},{\"x\":77,\"y\":0.1241065648617223},{\"x\":78,\"y\":0.13496428788639606},{\"x\":79,\"y\":0.1073584660422057},{\"x\":80,\"y\":0.170539302774705},{\"x\":81,\"y\":0.10811576400883496},{\"x\":82,\"y\":0.12607868984341622},{\"x\":83,\"y\":0.17541975385975095},{\"x\":84,\"y\":0.12286323641892523},{\"x\":85,\"y\":0.12700317879207434},{\"x\":86,\"y\":0.15150578855536878},{\"x\":87,\"y\":0.1338628460885957},{\"x\":88,\"y\":0.15152364815585317},{\"x\":89,\"y\":0.16588984827976674},{\"x\":90,\"y\":0.19243079028092325},{\"x\":91,\"y\":0.1330950661096722},{\"x\":92,\"y\":0.1244492186466232},{\"x\":93,\"y\":0.12741906486917287},{\"x\":94,\"y\":0.16260827949736267},{\"x\":95,\"y\":0.10835461430251599},{\"x\":96,\"y\":0.143217385513708},{\"x\":97,\"y\":0.1857396527659148},{\"x\":98,\"y\":0.18850705926306546},{\"x\":99,\"y\":0.17873059660196305}];\nvar now = ( new Date() ).getTime();\nmsg.payload = {\n    tstamp: now,\n    data: data\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":343,"y":211,"wires":[["fbd78959.eafa88"]]},{"id":"fbd78959.eafa88","type":"iot-datasource","z":"27c17b32.dd0494","name":"LVF 7","tstampField":"","dataField":"data","disableDiscover":false,"x":461,"y":211,"wires":[[]]},{"id":"74b96e71.7d3e2","type":"inject","z":"27c17b32.dd0494","name":"","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":true,"x":209,"y":140,"wires":[["b1c9a7d.870d358","f0f24518.7b9178","6039b963.4fb248"]]}]</pre>
+
+    <p>In configure add the below three datasources.</p>
+<pre>
+   LVF 5
+   LVF 6
+   LVF 7</pre>
+</script>
+

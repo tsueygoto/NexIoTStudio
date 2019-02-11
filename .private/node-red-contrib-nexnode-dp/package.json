@@ -1,0 +1,85 @@
+{
+  "_args": [
+    [
+      "node-red-contrib-nexnode-dp",
+      "/Users/howard/Desktop/node-red"
+    ],
+    [
+      "node-red-contrib-nexnode-dp@^1.0.0",
+      "/Users/howard/Desktop/node-red"
+    ]
+  ],
+  "_from": "node-red-contrib-nexnode-dp@latest",
+  "_id": "node-red-contrib-nexnode-dp@1.2.4",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/node-red-contrib-nexnode-dp",
+  "_nodeVersion": "5.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/node-red-contrib-nexnode-dp-1.2.4.tgz_1466560943101_0.5908933212049305"
+  },
+  "_npmUser": {
+    "name": "howardchiu",
+    "email": "blkd55@gmail.com"
+  },
+  "_npmVersion": "3.8.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "node-red-contrib-nexnode-dp",
+    "raw": "node-red-contrib-nexnode-dp@^1.0.0",
+    "rawSpec": "^1.0.0",
+    "scope": null,
+    "spec": ">=1.0.0 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_shrinkwrap": null,
+  "_spec": "node-red-contrib-nexnode-dp@^1.0.0",
+  "_where": "/Users/howard/Desktop/node-red",
+  "author": {
+    "name": "Nexcom"
+  },
+  "dependencies": {},
+  "description": "Nexcom Nodes",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "9c70da1dab27486435859e4f6ac2346cf5762315",
+    "tarball": "https://registry.npmjs.org/node-red-contrib-nexnode-dp/-/node-red-contrib-nexnode-dp-1.2.4.tgz"
+  },
+  "keywords": [
+    "none"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "howardchiu",
+      "email": "blkd55@gmail.com"
+    }
+  ],
+  "name": "node-red-contrib-nexnode-dp",
+  "node-red": {
+    "nodes": {
+      "boundary": "10-boundary.js",
+      "merge": "11-merge.js",
+      "cypher": "12-cypher.js",
+      "criticalsection": "13-criticalsection.js",
+      "xcare": "14-xcare.js"
+    }
+  },
+  "optionalDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "n"
+  },
+  "scripts": {
+    "test": "none"
+  },
+  "version": "1.2.4",
+  "_shasum": "9c70da1dab27486435859e4f6ac2346cf5762315",
+  "_resolved": "https://registry.npmjs.org/node-red-contrib-nexnode-dp/-/node-red-contrib-nexnode-dp-1.2.4.tgz"
+}

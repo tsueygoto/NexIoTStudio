@@ -1,0 +1,101 @@
+<style>
+/*
+@keyframes alertPluginGlowAnimation {
+  from {
+    opacity : 0.5
+  }
+  to {
+    opacity : 1.0
+  }
+}
+
+.alertPluginBackground {
+  background-image: url( 'plugins/alert/alert_bg.png' );
+  background-repeat: no-repeat;
+  width: 256px;
+  height: 256px;
+  margin: auto;
+}
+
+.alertPluginGlow {
+  opacity: 0.2;
+  background-image: url( 'plugins/alert/alert_glow.png' );
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+}
+
+.alertPluginGlow.animate {
+  animation: alertPluginGlowAnimation 0.25s infinite alternate ease-in-out;
+}
+*/
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/blowers-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "heater-plugin" , ImagePlugin , {
+        category : "Factory",
+        display_name : "Heater",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/factory/Heaters-1.svg" }
+        },
+        color: "rgb(153, 255, 153)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="heater-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/factory/Heaters-1.svg">Heater 1</option>
+          <option value="images/factory/Heaters-2.svg">Heater 2</option>
+          <option value="images/factory/Heaters-3.svg">Heater 3</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="heater-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 3 types can select in below.</p>
+<pre>
+   Heater 1
+   Heater 2
+   Heater 3</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 3 Types.</p><p style="text-align: center;"><img src="images/Heaters.png" /></p></div>
+</script>
+
+

@@ -1,0 +1,8 @@
+{
+   "admin"  : {"password":"$2a$08$RtDvQ0BWE1isW9igVozLk.68gMbRXX83CgK.c2eOavr59iUCq6ELK", 
+                "dashboardList":[],
+                "role" : 0 },
+   "nexcom" : {"password":"$2a$08$cGKNL/xMaHXeqB0vgu.IjefLe6oB6mGm/5lmVUXA9sHdDepxGVJcW",
+                "dashboardList":[],
+                "role" : 1 }
+}

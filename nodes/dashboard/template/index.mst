@@ -1,0 +1,403 @@
+{{=<% %>=}}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <base href="<%&baseUrl%>dash/">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/bootstrap-toggle.min.css">
+    <link rel="stylesheet" href="css/jquery-ui.structure.min.css">
+    <link type="text/css" rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+
+    <script src="js/lib/jquery/jquery-2.1.4.min.js"></script>
+    <script src="js/lib/jquery/jquery-ui.min.js"></script>
+	
+	<script src="plugins/lib/d3_3.5.17/d3.min.js"></script>
+
+    <script src="js/login.js"></script>    
+    <script src="js/lib/jquery/jquery.ui.touch-punch.min.js"></script>
+    <script src="js/gridlist/gridList.js"></script>
+    <script src="js/gridlist/jquery.gridList.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
+    <script src="js/lib/bootstrap-toggle.min.js"></script>
+    <script src="js/lib/jsrender.min.js"></script>
+    <script src="js/lib/simple_statistics.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/page.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/configure.js"></script>
+    <script src="js/net.js"></script>
+    <script src="js/model/dashboard.js"></script>
+    <script src="js/model/datasource.js"></script>
+    <script src="js/model/chart.js"></script>
+    <script src="js/view/dashboardlist.js"></script>
+    <script src="js/view/dashboard.js"></script>
+    <script src="js/view/statusbar.js"></script>
+    <script src="js/controller/dashboardlist.js"></script>
+    <script src="js/controller/dashboard.js"></script>
+    <script src="js/main.js"></script>
+    
+   
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapsed">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          
+          <!-- button id="homeDashboard" class="btn btn-default" type="button" style="font-size: 18px;"><span class="glyphicon glyphicon-home"></span></button -->
+          
+          <!-- span id="dashboardBrand" class="navbar-brand" style="color:white;" >node-red-contrib-graphs</span -->
+          <span id="dashboardBrand" class="navbar-brand" style="color:white;" ></span>
+          
+          <button id="dashboardListButton" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" style="padding: 15px 15px 10px 15px; font-size: 18px; color:white;">Dashboard <span class="caret"></span></button><span id="titleDashboard" ></span>
+          <ul class="dropdown-menu" id="dashboardList" style="margin-left:15px;"></ul>
+          
+        </div>
+        
+        <div class="collapse navbar-collapse" id="navbar-collapsed">
+
+            <ul class="nav navbar-nav navbar-right" id="dashboardListPageNav">
+                <li style="top:8px;" >
+					<input type="checkbox" id="operMode" checked data-toggle="toggle" data-on="Edit Mode" data-off="View Mode" data-width="120" data-onstyle="danger" data-offstyle="success">
+				</li>
+                <li>
+					<a href="#" id="createNewDashboard">
+						<span class="glyphicon glyphicon-plus"></span> 
+						Dashboard
+					</a>
+				</li>
+                <li>
+					<a href="#" id="logoutDashboard">
+						<span class="glyphicon glyphicon-log-out"></span> 
+						Logout
+					</a>
+				</li>
+                <li>
+					<a href="" id="userDashboard">
+						<span class="glyphicon glyphicon-user"></span>
+					</a>
+				</li>
+            </ul>
+          
+            <ul class="nav navbar-nav navbar-right" id="dashboardPageNav">
+                <li>
+					<a href="#" id="createNewChart2">
+						<span class="glyphicon glyphicon-unchecked"></span> 
+						Chart List
+					</a>
+				</li>
+                <!-- li><a href="#" id="createNewChart"><span class="glyphicon glyphicon-plus"></span> Create New
+                Chart</a></li -->
+                <li>
+					<a href="#" id="switchLockDashboard">
+						<span class="fa fa-unlock"></span>
+					</a>
+				</li>
+                <li>
+					<a href="#" id="deleteDashboard">
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
+				</li>
+                <li>
+					<a href="#" id="home">
+						<span class="glyphicon glyphicon-home"></span>
+					</a>
+				</li>
+				
+				<!--kewei added : Dropdown Menu-->
+				<li>
+				<nav id="nav">
+					<div class="navbar" role="navigation">
+						<div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+							<div class="navbar-header">
+								<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+								</button>
+							</div>
+						<div id="dropdownMenu" class="collapse navbar-collapse">
+							<ul class="nav navbar-nav">
+								<li>
+									<a id="dropdownBar">
+										<i class="fa fa-bars fa-fw"></i>
+									</a>
+									<ul id="dropdownMenu_list" class="sub-menu">
+										<li><a href="#">View settings</a>
+											<ul class="sub-menu">
+												<li>
+													<span>Show grid</span>
+													<input id="showGrid" class="switch switch-anim" type="checkbox"/>
+												</li>
+												<li>
+													<span>Snap to grid</span>
+													<input id="snapToGrid" class="switch switch-anim" type="checkbox"/>
+												</li>
+											</ul>
+										</li>
+										<li><a href="#">Background settings</a>
+											<ul class="sub-menu">
+												<li  id="imgUploadLi">
+													<label id="imgUpload">
+														<input accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" type="file" onchange="App.Model.Dashboard.uploadImg( this.files )">
+														<i class="fa fa-cloud-upload"></i> 
+														Upload image
+													</label>
+												</li>
+												<li>
+													<form id="imgList">
+														<select id="imgDrpodownList">
+														</select>
+														<button id="BK-set" class="btn btn btn-default">
+															Set
+														</button>
+														<button id="BK-on-off" class="btn btn btn-default">
+															Clear
+														</button>
+													</form>
+												</li>
+												<li>
+													<span>Scale</span>
+													<input id="imgScale" class="switch switch-anim" type="checkbox"/>
+												</li>
+												<li>
+													<span>Center</span>
+													<input id="imgCenter" class="switch switch-anim" type="checkbox"/>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<!-- /.navbar-collapse -->
+						</div>
+					</div>
+				</nav>
+				</li>				
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right" id="groupController" style="margin-top: 6px;">
+                <li><a href="#" id="alignLeft"><span class="glyphicon glyphicon-object-align-left"></span></a></li>
+                <li><a href="#" id="alignVertical"><span class="glyphicon glyphicon-object-align-vertical"></span></a></li>
+                <li><a href="#" id="alignRight"><span class="glyphicon glyphicon-object-align-right"></span></a></li>
+                <li><a href="#" id="alignTop"><span class="glyphicon glyphicon-object-align-top"></span></a></li>
+                <li><a href="#" id="alignHorizontal"><span class="glyphicon glyphicon-object-align-horizontal"></span></a></li>
+                <li><a href="#" id="alignBottom"><span class="glyphicon glyphicon-object-align-bottom"></span></a></li>
+                <li><a href="#" id="alignHorizontalAverage"><span class="glyphicon glyphicon-option-horizontal"></span></a></li>
+                <li><a href="#" id="alignVerticalAverage"><span class="glyphicon glyphicon-option-vertical"></span></a></li>
+                <li><a href="#" id="resizeFull"><span class="glyphicon glyphicon-resize-full"></span></a></li>
+                <li><a href="#" id="resizeSmall"><span class="glyphicon glyphicon-resize-small"></span></a></li>
+            </ul>
+
+          </div>
+      </div>
+    </nav>
+
+    <div class="statusBar">
+      <div id="statusBarMessage" >&nbsp;</div>
+      <div class="statusVerion">&nbsp;</div>
+      <div class="statusBarConnect"></div>
+    </div>
+    
+    <div class="chartBoard">
+    </div>
+    
+    <div id="loadingPage" class="loading">
+		<!--kewei added-->
+		<div></div>
+        <img src="images/loading.gif">
+    </div>
+
+    <div id="fullPage" class="fullScreen">
+		<!-- robin added -->
+        <div></div>
+    </div>
+
+    <div id="welcomePage" class="welcomecss"></div>
+
+    <div id="dashboardListPage" class="dashboardListPagecss container"></div>
+    
+    <!-- div class="login-page" style="display:<%&display%>" -->
+    <div class="login-page" style="display:none">
+        <div class="form">
+            <form class="login-form">
+                <h3>Sign in</h3> <br><!--kewei add-->
+                <input id="userName" type="text" name="name" placeholder="username"/>
+                <input type="password" name="pwd" placeholder="password"/>
+                <input id="login-form-msg" style="width:60%; background:white; color:black;" value="        "/>
+                <button style="float: right;" onclick="dashboardLogin(this.form);  return false;">login</button>
+                <!-- p class="message">Not registered? <a href="#">Create an account</a></p -->
+            </form>
+        </div>
+    </div>
+    
+    <div id="selectRect" style="display:none" >
+    </div>
+    
+    <div id="dashboardMask" ></div>
+   
+    <div id="dashboardPage" class="container">
+    </div>
+
+    <div class="chartInfoPage">
+        Chart Info ...
+    </div>
+
+    <div class="modal fade" id="dashboardModal" tabindex="-1" role="dialog" aria-labelledby="dashboardModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="dashboardModal">New Dashboard</h4>
+          </div>
+          <div class="modal-body">
+            <div id="dashboardError" class="alert alert-danger"></div>
+            <div class="form-group">
+              <label for="dashboardName">Name</label>
+              <input id="dashboardName" type="text" class="form-control" value="">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            <button id="dashboardDone" type="button" class="btn btn-default">Done <span class="glyphicon glyphicon-ok"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="chartModalLabel">Create New Chart</h4>
+          </div>
+          
+          <div class="modal-body">
+            <div id="chartError" class="alert alert-danger"></div>
+            <div class="form-group">
+              <label for="chartName">Name</label>
+              <label style="float: right;"><input id="chartShowName" type="checkbox" style="margin-right: 5px;" >show</label>
+              <input id="chartName" type="text" class="form-control" value="">
+            </div>
+            <div class="form-group">
+              <label>Plugin</label>
+              <div class="dropdown">
+                <button id="chartPluginsButton" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                </button>
+                <ul class="dropdown-menu" id="chartPlugins"></ul>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Datasources</label>
+              <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                  Add datasources
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" id="chartDatasources"></ul>
+              </div>
+            </div>
+            <div id="chartDatasourceList"></div>
+            <div id="chartPluginConfig" style="font-size:80%;margin-top:10px"></div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            <button id="chartDone" type="button" class="btn btn-default">Done <span class="glyphicon glyphicon-ok"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script id="tmpl_dashboardItems" type="text/x-jsrender">
+      <div class="btn-group" role="group" style="margin-bottom:5px">
+        <button type="button" class="btn btn-default" data-open="{{:#index}}">{{:name}}</button>
+        <button type="button" class="btn btn-default" data-remove="{{:#index}}"><span class="glyphicon glyphicon-trash"></span></button>
+      </div><br>
+    </script>
+
+    <script id="tmpl_GridContainer" type="text/x-jsrender">
+      <li data-id="{{:id}}">
+        <div class="gridItemHeader">
+          <span>{{:name}}</span>
+          <div style="float:right">
+            <button data-act="duplicate" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-duplicate"></span></button>
+            <button data-act="edit" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil"></span></button>
+            <button data-act="remove" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash"></span></button>
+          </div>
+        </div>
+        <div class="gridItemContent"></div>
+        <div class="gridItemSize"></div>
+      </li>
+    </script>
+
+    <script id="tmpl_ChartDatasource" type="text/x-jsrender">
+      <div data-dsid="{{:id}}" data-dsname="{{:name}}" data-uid="{{:uid}}" class="panel panel-default panel-small">
+        <div class="panel-heading panel-clickable">
+          {{:name}}
+          <button type="button" class="btn btn-default btn-xs" style="float:right"><span class="glyphicon glyphicon-remove"></span></button>
+        </div>
+        <div class="panel-body" style="display:none">
+          <div class="form-group">
+            <input id="nds{{:uid}}-label" class="form-control" type="text" placeholder="Label">
+          </div>
+          <div class="datasourcePluginConfig">
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <script id="tmpl_ChartDatasourceComponent" type="text/x-jsrender">
+      <div class="datasourceComponent" data-component="{{:name}}">
+        <div class="datasourceComponentBtn">
+          <button tabindex="-1" type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
+        </div>
+        <div class="datasourceComponentInputCont">
+          <input class="datasourceComponentInput" type="text" placeholder="{{:name}}">
+        </div>
+      </div>
+    </script>
+
+    <script id="tmpl_Modal" type="text/x-jsrender">
+      <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">{{>title}}</h4>
+            </div>
+            {{if content}}
+            <div class="modal-body">
+              {{:content}}
+            </div>
+            {{/if}}
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+              <button id="dynamicModalYes" type="button" class="btn btn-success">Yes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+	<script src="js/gridLine.js"></script>
+  </body>
+</html>

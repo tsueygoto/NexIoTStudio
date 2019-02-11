@@ -1,0 +1,140 @@
+<script type="text/javascript">
+  ( function() {
+
+    var CircleGauge = function( container , datasources , components , config ) {
+        this.datasources = datasources;
+        this.components = components;
+        this.config = config;
+        
+        console.log(this.config);
+    
+        this.container = $( '<div style="-webkit-flex:1;flex:1"></div>' )[0];
+        $( container ).append( this.container );
+    
+        this.data = [];
+        var options = {};
+        if (this.config.max) {
+            options.valueMax = parseFloat(this.config.max);
+        }
+        if (this.config.min) {
+            options.valueMin = parseFloat(this.config.min);
+        }
+        if (this.config.unit) {
+            options.valueUnit = this.config.unit;
+        }        
+        if (this.config.innerColor) {
+            options.innerColor = this.config.innerColor;
+        }
+        if (this.config.outerColor) {
+            options.outerColor = this.config.outerColor;
+        }
+        if (this.config.textColor) {
+            options.textColor = this.config.textColor;
+        }
+        
+        this.gauge = new CG.CircleGauge( this.container , options );
+    
+        $( this.container ).parents( "li" ).on( "resize" , this._resize.bind( this ) );
+    };
+
+    CircleGauge.prototype._resize = function() {
+      $( this.container ).css( "height" , "0" );
+      this.gauge.resize();
+    };
+
+    CircleGauge.prototype.pushData = function( index , data ) {
+      if( index !== 0 ) return;
+      this.gauge.updateValue( this.components[ index ].getData( data.data ) );
+    };
+
+    App.Plugins.registerChartType( "circleGauge" , CircleGauge , {
+        category : "Basic",
+        dependencies : [
+            "plugins/lib/circleGauge.js"
+        ],
+        display_name : "Circle Gauge",        
+        color: "rgb(255,255,204)",
+        chartConfig : {
+            innerColor : { default: "#305683"},
+            outerColor : { default: "#5178a6"},
+            textColor  : { default: "#ffffff"},
+            min     : { default: "0"},
+            max     : { default: "100"},
+            unit    : { default: "%"}
+        }
+    } );
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="circleGauge">
+    <div class="form-horizontal">
+        <label>Color</label>
+        <div class="form-group">
+            <div class="col-md-1">
+                <label class="form-control" style="border: none;">Inner </label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="innerColor">
+            </div>
+            <div class="col-md-1">
+                <label class="form-control" style="border: none;">outer </label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="outerColor">
+            </div>
+            <div class="col-md-1">
+                <label class="form-control" style="border: none;">text </label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="textColor">
+            </div>
+        </div>
+    </div>
+    <div class="form-horizontal">
+        <label>Value Range</label>
+        <div class="form-group">
+            <div class="col-md-1">
+                <label class="form-control" style="border: none;">Min </label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="min">
+            </div>
+            <div class="col-md-1">
+                <label class="form-control" style="border: none;">Max </label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="max">
+            </div>
+        </div>
+    </div>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-3">
+                <label class="form-control" style="border: none;">Value Unit </label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="unit">
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="circleGauge">
+    <h1>Circle Gauge</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>The DataSource example:</p>
+<pre>
+ var value = Math.floor( Math.random() * 100 );
+ msg.payload = {
+    tstamp: new Date().getTime(),
+    data: value
+ };</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p>No configure need.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/circleGauge.png" /></p></div>
+</script>
+

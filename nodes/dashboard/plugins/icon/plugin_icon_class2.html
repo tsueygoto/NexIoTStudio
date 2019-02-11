@@ -1,0 +1,73 @@
+<style>
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "icon-class2-plugin" , ImagePlugin , {
+        category: "Icon",
+        display_name : "Icon Class2",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/icons/icon_bt_001.svg" }
+        },
+        color: "rgb(51,204,255)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="icon-class2-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/icons/icon_bt_001.svg">Icon 1</option>
+          <option value="images/icons/icon_bt_002.svg">Icon 2</option>
+          <option value="images/icons/icon_bt_003.svg">Icon 3</option>
+          <option value="images/icons/icon_bt_004.svg">Icon 4</option>
+          <option value="images/icons/icon_bt_005.svg">Icon 5</option>
+          <option value="images/icons/icon_bt_006.svg">Icon 6</option>
+          <option value="images/icons/icon_bt_007.svg">Icon 7</option>
+          <option value="images/icons/icon_bt_008.svg">Icon 8</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="icon-class2-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 8 types can select in below.</p>
+<pre>
+ Icon 1   Icon 2   Icon 3   Icon 4
+ Icon 5   Icon 6   Icon 7   Icon 8</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 8 Types.</p><p style="text-align: center;"><img src="images/IconClass2s.png" /></p></div>
+</script>

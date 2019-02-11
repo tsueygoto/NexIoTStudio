@@ -1,0 +1,21 @@
+{
+  "short_name": "Dashboard",
+  "name": "IoT Studio Dashboard",
+  "icons": [
+    {
+      "src": "/dash/images/dashboard-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/dash/images/dashboard-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/dash/",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "scope": "/dash/",
+  "theme_color": "#3367D6"
+}

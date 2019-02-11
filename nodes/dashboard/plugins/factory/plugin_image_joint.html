@@ -1,0 +1,108 @@
+<style>
+/*
+@keyframes alertPluginGlowAnimation {
+  from {
+    opacity : 0.5
+  }
+  to {
+    opacity : 1.0
+  }
+}
+
+.alertPluginBackground {
+  background-image: url( 'plugins/alert/alert_bg.png' );
+  background-repeat: no-repeat;
+  width: 256px;
+  height: 256px;
+  margin: auto;
+}
+
+.alertPluginGlow {
+  opacity: 0.2;
+  background-image: url( 'plugins/alert/alert_glow.png' );
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+}
+
+.alertPluginGlow.animate {
+  animation: alertPluginGlowAnimation 0.25s infinite alternate ease-in-out;
+}
+*/
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "joint-plugin" , ImagePlugin , {
+        category : "Factory",
+        display_name : "Joint",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/factory/Joints-1.svg" }
+        },
+        color: "rgb(204, 255, 153)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="joint-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/factory/Joints-1.svg">Joint 1</option>
+          <option value="images/factory/Joints-2.svg">Joint 2</option>
+          <option value="images/factory/Joints-3.svg">Joint 3</option>
+          <option value="images/factory/Joints-4.svg">Joint 4</option>
+          <option value="images/factory/Joints-5.svg">Joint 5</option>
+          <option value="images/factory/Joints-7.svg">Joint 6</option>
+          <option value="images/factory/Joints-6.svg">Joint 7</option>
+          <option value="images/factory/Joints-8.svg">Joint 8</option>
+          <option value="images/factory/Joints-9.svg">Joint 9</option>
+          <option value="images/factory/Joints-10.svg">Joint 10</option>
+          <option value="images/factory/Joints-11.svg">Joint 11</option>
+          <option value="images/factory/Joints-12.svg">Joint 12</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="joint-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 12 types can select in below.</p>
+<pre>
+ Joint 1  Joint 2  Joint 3  Joint 4
+ Joint 5  Joint 6  Joint 7  Joint 8
+ Joint 9  Joint 10 Joint 11 Joint 12</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 12 Types.</p><p style="text-align: center;"><img src="images/Joints.png" /></p></div>
+</script>

@@ -1,0 +1,90 @@
+<style>
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        
+        var digiClockPlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+        
+        var content = 
+                '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                '<image id="d1" x="0" y="0" width="22%" height="100%" href="images/media/num-8.svg"></image>' + 
+                '<image id="d2" x="22.5" y="0" width="22%" height="100%" href="images/media/num-8.svg"></image>' + 
+                '<image id="d3" x="55" y="0" width="22%" height="100%" href="images/media/num-8.svg"></image>' + 
+                '<image id="d4" x="77.5" y="0" width="22%" height="100%" href="images/media/num-8.svg"></image>' + 
+                '<image x="46.5" y="25" width="6%" height="60%" href="images/media/num-equal.svg"></image>' +
+                '</svg>';
+                
+        this.container.append(content);
+        
+        this.$d1 = this.container.find('#d1');
+        this.$d1Path = this.container.find("path");
+        this.$d2 = this.container.find('#d2');
+        this.$d3 = this.container.find('#d3');
+        this.$d4 = this.container.find('#d4');
+
+        var now = ( new Date() ).getTime();
+        for(var i = 0; i < this.datasources.length; i++ ) {
+            this.datasources[i].requestHistoryData( now , now , this.addHistoryData.bind( this ) );
+        }
+    };
+    
+    digiClockPlugin.prototype.addHistoryData = function( index , data ) {
+        //console.log(">>> addHistoryData");
+        if( index < 0 || index >= this.components.length ) return;
+        this.$d1.attr('href','images/media/num-'+ data.data.hH +'.svg');
+        this.$d2.attr('href','images/media/num-'+ data.data.hL +'.svg');
+        this.$d3.attr('href','images/media/num-'+ data.data.mH +'.svg');
+        this.$d4.attr('href','images/media/num-'+ data.data.mL +'.svg');
+    };
+    
+    digiClockPlugin.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+        this.$d1.attr('href','images/media/num-'+ data.data.hH +'.svg');
+        this.$d2.attr('href','images/media/num-'+ data.data.hL +'.svg');
+        this.$d3.attr('href','images/media/num-'+ data.data.mH +'.svg');
+        this.$d4.attr('href','images/media/num-'+ data.data.mL +'.svg');
+    };
+
+    App.Plugins.registerChartType( "digiClock-plugin" , digiClockPlugin , {
+        category: "Media",
+        display_name : "Digi-Clock",
+        disableComponentDiscovery : true,
+        color: "rgb(102,255,153)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-red" data-help-name="digiClock-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource set Time value like below example.</p>
+<pre>
+var dt = new Date();
+var h = dt.getHours();
+var m = dt.getMinutes();
+msg.payload = {
+    tstamp: dt,
+    data: {
+        hH: parseInt(h/10),
+        hL: h % 10,
+        mH: parseInt(m/10),
+        mL: m % 10,
+    }
+};</pre>
+
+    <h3>* Configuration *</h3>
+    <p>No configure need.</p>
+    
+    <h3>* Shape *</h3>
+    <div><p style="text-align: center;"><img src="images/digiClock.png" /></p></div>
+    
+    <h3>* Flow Example *</h3>
+    <div><p style="text-align: center;"><img src="images/digiClockExample.png" style="width:100%"/></p></div>
+<pre>[{"id":"374e6915.22f2e6","type":"inject","z":"a68638eb.a48788","name":"Time Trigger per second","topic":"","payload":"","payloadType":"str","repeat":"1","crontab":"","once":true,"x":320,"y":3111,"wires":[["141ccc7.1bb8e34"]]},{"id":"578d3d23.1134c4","type":"iot-datasource","z":"a68638eb.a48788","name":"digiClock","tstampField":"","dataField":"data","disableDiscover":true,"x":429,"y":3163,"wires":[["e8ed2229.d8d6e"]]},{"id":"141ccc7.1bb8e34","type":"function","z":"a68638eb.a48788","name":"Set Date","func":"\nvar dt = new Date();\nvar h = dt.getHours();\nvar m = dt.getMinutes();\n\nmsg.payload = {\n    tstamp: new Date(),\n    data: {\n        hH: parseInt(h/10),\n        hL: h % 10,\n        mH: parseInt(m/10),\n        mL: m % 10,\n    }\n};\n  \nmsg.topic = \"storeHistoryData\";\n\nreturn msg;\n","outputs":"1","noerr":0,"x":272,"y":3164,"wires":[["578d3d23.1134c4","e8ed2229.d8d6e"]]},{"id":"e8ed2229.d8d6e","type":"function","z":"a68638eb.a48788","name":"Proc Next Time","func":"if (msg.topic == \"storeHistoryData\") {\n    context.historyData = msg.payload;\n} else {\n    if (context.historyData === undefined) {\n        var dt = new Date();\n        var h = dt.getHours();\n        var m = dt.getMinutes();\n        context.historyData = {\n            tstamp: dt,\n            data: {\n                hH: parseInt(h/10),\n                hL: h % 10,\n                mH: parseInt(m/10),\n                mL: m % 10,\n            }\n        };\n    }\n    msg.payload = context.historyData;\n    return msg;\n}\n\n","outputs":1,"noerr":0,"x":432,"y":3220,"wires":[["578d3d23.1134c4"]]}]</pre>    
+</script>
+
+

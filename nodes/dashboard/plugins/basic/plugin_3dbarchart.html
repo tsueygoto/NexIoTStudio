@@ -1,0 +1,406 @@
+<script src="plugins/lib/amcharts/amcharts.js"><script>
+<script src="plugins/lib/amcharts/export.min.js"><script>
+<script src="plugins/lib/amcharts/light.js"><script>
+<script type="text/javascript">
+    /**
+        Dashboard 3D Bar Chart
+    
+        reference from : 
+            https://www.amcharts.com/
+            https://www.amcharts.com/demos/3d-stacked-column-chart/
+            
+     */
+</script>
+<style>
+.amcharts-graph-g1 .amcharts-graph-stroke {
+  stroke-dasharray: 5, 2, 2;
+}
+
+.amcharts-graph-g1 .amcharts-graph-column {
+  width: 10%;
+}
+
+.amcharts-graph-g2 .amcharts-graph-column-front,
+.amcharts-graph-g2.amcharts-legend-marker {
+  stroke-dasharray: 10, 5, 10;
+}
+
+.camera{
+    //position: relative;
+    //perspective: 1200px;
+    //perspective-origin: 50% 50%;
+    //transform-style: preserve-3d;
+    animation: cameraMove 2s ease-out infinite alternate both;
+}
+
+#loading {
+		-webkit-animation: cameraMove 10s infinite linear;
+}
+
+@-webkit-keyframes rotation {
+		from {
+				-webkit-transform: rotateY(0deg);
+		}
+		to {
+				-webkit-transform: rotateY(359deg);
+		}
+}
+
+@-webkit-keyframes cameraMove{
+    0%{
+       -webkit-perspective-origin: 50% 180px;
+    }
+    100%{
+       -webkit-perspective-origin: 50% -200px;
+    }
+}
+            
+</style>
+
+<script type="text/javascript">
+    ( function() 
+    {
+        var BarChart3DPlugin = function( container , datasources , components , dsconfig )
+        {
+            var plugin = this;
+            plugin.datasources = datasources;
+            plugin.components = components;
+            plugin.config = dsconfig;
+            plugin.container = $( container );
+            
+            // depth
+            plugin.config.depth3D = parseInt( plugin.config.depth3D );
+
+            if( isNaN( plugin.config.depth3D ) ) plugin.config.depth3D = 60;
+
+            // angle
+            plugin.config.angle = parseInt( plugin.config.angle );
+
+            if( isNaN( plugin.config.angle ) ) plugin.config.angle = 30;
+
+            // column opacity
+            plugin.config.columnOpacity = parseFloat( plugin.config.columnOpacity );
+
+            if( isNaN( plugin.config.columnOpacity ) ) plugin.config.columnOpacity = 0.8;
+    
+            plugin.id = "id" + dbTools.generateId().replace(".","");
+            plugin.container.append( '<div class="BarChart3DPlugin" id="'+ plugin.id +'" style="width:100%; height:100%;"></div>' );
+            
+            plugin.valueField = [];            
+            
+            var chartConfig = {
+                "theme": "light",
+                "type": "serial",
+                "dataProvider": [],
+                //"addClassNames": true,
+                "legend": {
+                    "useGraphSettings": true,
+                    "enabled" : true,
+					"color" : plugin.config.textColor                    
+                },
+                "valueAxes": [{
+                    "stackType": "3d",
+                    "unit"      : plugin.config.unit,
+                    "position"  : plugin.config.position,
+                    "title"     : plugin.config.title,
+                    "axisColor" : (plugin.config.axisColor == undefined ? "#000000" : plugin.config.axisColor),
+                    "gridColor" : (plugin.config.gridColor == undefined ? "#000000" : plugin.config.gridColor),
+                }],
+                "gridAboveGraphs": false,
+                "startDuration": 1,
+                "graphs" : [],
+                "plotAreaFillAlphas": 0.3,
+                "depth3D"           : plugin.config.depth3D,
+                "angle"             : plugin.config.angle,
+                "categoryField"     : "category",
+                "categoryAxis"      : {
+                    "gridPosition"  : "start",
+                    "axisColor"     : (plugin.config.axisColor == undefined ? "#000000" : plugin.config.axisColor),
+                    "gridColor"     : (plugin.config.gridColor == undefined ? "#000000" : plugin.config.gridColor)
+                },
+                "export": {
+                    "enabled": false
+                },
+                "color": plugin.config.textColor,
+                "columnWidth" : 0.7,
+            };
+
+            plugin.chart = AmCharts.makeChart( plugin.id, chartConfig);
+
+            console.info("3D Bar Chart : ", plugin.chart);
+            
+            if (plugin.config.valueColors) {
+                plugin.chart.colors = plugin.config.valueColors.split(',').map(function(x){return x.trim();})
+            }
+            plugin.chart.rotate = (plugin.config.rotate == undefined) ? false : plugin.config.rotate;
+            plugin.chart.legend.enabled = (plugin.config.legend == undefined) ? true : plugin.config.legend;
+            
+            console.info("plugin.config.valueMaximum", plugin.config.valueMaximum);
+            if ((plugin.config.valueMaximum != undefined) && 
+                (plugin.config.valueMaximum != ""))
+            {
+                plugin.config.valueMaximum = parseInt( plugin.config.valueMaximum );
+                if( isNaN( plugin.config.valueMaximum ) ) plugin.config.valueMaximum = 100;
+                plugin.chart.valueAxes[0].maximum = plugin.config.valueMaximum;
+            }
+            
+            if ((plugin.config.valueMinimum != undefined) && 
+                (plugin.config.valueMinimum != ""))
+            {
+                plugin.config.valueMinimum = parseInt( plugin.config.valueMinimum );
+                if( isNaN( plugin.config.valueMinimum ) ) plugin.config.valueMinimum = 0;
+                plugin.chart.valueAxes[0].minimum = plugin.config.valueMinimum;
+            }
+            // column width
+            plugin.chart.columnWidth = (plugin.config.columnWidth == undefined) ? 0.7 : plugin.config.columnWidth;
+            
+            plugin.chart.validateData();
+        };
+    
+        /**
+         *
+         */
+        BarChart3DPlugin.prototype.pushData = function( index , data )
+        {
+            if ( index !== 0 ) return;
+            
+            var plugin = this;
+            
+            plugin.chart.startDuration = 1;
+            //plugin.chart.dataProvider.push() = data.data;
+            // depends on data.data to decide graphs
+            data.data.map(function(item, idx, arr) {
+                if (item.hasOwnProperty('category'))
+                {
+                    var targetCategory = null;
+                    for (var jdx = 0; jdx < plugin.chart.dataProvider.length; jdx++ )
+                    {
+                        if (item.category == plugin.chart.dataProvider[jdx].category)
+                        {
+                            targetCategory = plugin.chart.dataProvider[jdx];
+                            break;
+                        }
+                        else
+                        {
+                            targetCategory = null;
+                        }
+                    }
+                    if (targetCategory == null) { plugin.chart.dataProvider.push(item); }
+                
+                    // valid item
+                    var keyArr = Object.keys(item);
+                    for(var index=0; index < keyArr.length; index++)
+                    {
+                        if ( keyArr[index] != 'category' )
+                        {
+                            if (plugin.valueField.indexOf(keyArr[index]) == -1)
+                            {
+                                plugin.valueField.push(keyArr[index]);
+                                plugin.chart.graphs.push({
+                                //"id": "g1",
+                                //"lineThickness": 5,
+                                    "balloonText" : plugin.config.tooltip,
+                                    "fillAlphas"  : plugin.config.columnOpacity,
+                                    "lineAlpha"   : 0.2,
+                                    "title"       : keyArr[index],
+                                    "type"        : "column",
+                                    "valueField"  : keyArr[index]
+                                });
+                            }
+                            if (targetCategory != null) { targetCategory[keyArr[index]] = item[keyArr[index]]; }
+                        }
+                    };
+                }
+                else
+                {
+                    // invalid item
+                }
+                
+                if ((idx+1) == arr.length)   // the last item
+                {
+                    plugin.chart.validateData();
+                }
+            });
+
+            //
+            // TODO for each column color setting method
+            //
+            // set category column color
+            //console.info("3D Bar Chart : ", this.chart);
+            //console.info("columnsArray : ", this.chart.columnsArray);
+            //console.info("columnsArray 0 : ", this.chart.columnsArray["0"]);
+            //console.info("columnsArray 0 column : ", this.chart.columnsArray["0"].column);
+            //
+            //this.chart.columnsArray["0"].column.color = "#FF0000";
+            //this.chart.columnsArray["0"].column.bcolor = "#FF0000";
+            //this.chart.columnsArray["0"].column.colors = "#FF0000";
+        };
+
+        App.Plugins.registerChartType( "_3dbarchart" , BarChart3DPlugin , 
+        {
+            category     : "Basic",
+            version      : "1.00.008",
+            dependencies : [
+                               "plugins/lib/tools.js",
+							   "plugins/lib/amcharts/serial.js",
+                               "plugins/lib/amcharts/export.css"
+                           ],
+            display_name : "3D Bar Chart",
+            chartConfig  : {
+                               title           : { default : "Title" },
+                               position        : { default : "left" },
+                               unit            : { default : "%" },
+                               tooltip         : { default : "[[category]]: <b>[[value]]</b>" },
+                               textColor       : { default : "#000000" },
+                               valueColors     : { default : "#67b7dc,#fdd400,#84b761,#cc4748,#cd82ad,#2f4074,#448e4d,#b7b83f,#b9783f,#b93e3d,#913167" },
+                               rotate          : { default : false },
+                               depth3D         : { default : 60 },
+                               angle           : { default : 30 },
+                               columnOpacity   : { default : 0.8 },
+                               columnWidth     : { default : 0.7 },
+                               axisColor       : { default : "#000000" },
+                               gridColor       : { default : "#000000" },
+                               legend          : { default : true },
+                               valueMaximum    : { default : undefined },
+                               valueMinimum    : { default : undefined }
+                           },
+            color        : "rgb(255, 204, 255)"
+        } );
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="_3dbarchart">
+    <div class="form-group">
+        <label>Title</label><input class="form-control" type="text" data-prop="title">
+    </div>
+    <div class="form-group BarChart3DPlugin">
+        <table width="100%">
+        <tr>
+            <th colspan="2">Configuration</th>
+        </tr>
+        <tr>
+            <td width="20%">Position</td>
+            <td width="70%">
+                <select class="form-control" data-prop="position">
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td width="20%">Uint</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="unit"></td>
+        </tr>
+        <tr>
+            <td width="20%">Tool Tip</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="tooltip"></td>
+        </tr>
+        <tr>
+            <td width="20%">Text Color</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="textColor"></td>
+        </tr>
+        <tr>
+            <td width="20%">Value Colors</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="valueColors"></td>
+        </tr>
+        <tr>
+            <td width="20%">Axis Color</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="axisColor"></td>
+        </tr>
+        <tr>
+            <td width="20%">Grid Color</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="gridColor"></td>
+        </tr>
+        <tr>
+            <td width="20%">Rotate</td>
+            <td width="70%" align="left"><input class="form-control" type="checkbox" data-prop="rotate"></td>
+        </tr>
+        <tr>
+            <td width="20%">Depth 3D</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="depth3D"></td>
+        </tr>
+        <tr>
+            <td width="20%">Angle</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="angle"></td>
+        </tr>
+        <tr>
+            <td width="20%">Column Opacity</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="columnOpacity"></td>
+        </tr>
+        <tr>
+            <td width="20%">Column Width</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="columnWidth"></td>
+        </tr>
+        <tr>
+            <td width="20%">Legend</td>
+            <td width="70%" align="left"><input class="form-control" type="checkbox" data-prop="legend"></td>
+        </tr>
+        <tr>
+            <td width="20%">Value Maximum</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="valueMaximum"></td>
+        </tr>
+        <tr>
+            <td width="20%">Value Minimum</td>
+            <td width="70%"><input class="form-control" type="text" data-prop="valueMinimum"></td>
+        </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="_3dbarchart">
+    <h1>3DBarChart</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>The DataSource example:</p>
+<pre>
+var data = [
+    {
+        "category": "USA",
+        "zone1": Math.round(Math.random() * 10),
+        "zone2": Math.round(Math.random() * 10),
+        "zone3": Math.round(Math.random() * 10),
+        "zone4": Math.round(Math.random() * 10),
+        "zone5": Math.round(Math.random() * 10)
+    }, {
+        "category": "UK",
+        "zone1": Math.round(Math.random() * 10),
+        "zone2": Math.round(Math.random() * 10),
+        "zone3": Math.round(Math.random() * 10),
+        "zone4": Math.round(Math.random() * 10),
+        "zone5": Math.round(Math.random() * 10)
+    }, {
+        "category": "Canada",
+        "zone1": Math.round(Math.random() * 10),
+        "zone2": Math.round(Math.random() * 10),
+        "zone3": Math.round(Math.random() * 10),
+        "zone4": Math.round(Math.random() * 10),
+        "zone5": Math.round(Math.random() * 10)
+    }];
+
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data: data
+};
+return msg;</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Title</b> : the title value. default value is "Title".</p>
+    <p><b>Position</b> : the value coordinate position. The position has tow values: left and right.</p>
+    <p><b>Unit</b> : the unit label for show.</p>
+    <p><b>Tool Tip</b> : The tool tip for cursor point show.</p>
+    <p><b>Text Color</b> : The text color.</p>
+    <p><b>Value Colors</b> : The bar color value.</p>
+    <p><b>Axis Colors</b> : The axis color value.</p>
+    <p><b>Grid Colors</b> : The grid color value.</p>
+    <p><b>Rotate</b> : The bar chart show Horizontal or veritical mode. The value is true or false.</p>
+    <p><b>Depth 3D</b> : The bar chart show 3D depeth value.</p>
+    <p><b>Angle</b> : The bar chart show 3D angle value.</p>
+    <p><b>Column Opacity</b> : The bar chart column opacity value from 0.0 ~ 1.0.</p>
+    <p><b>Column Width</b> : The one column width value from 0.0 ~ 1.0.</p>
+    <p><b>Legend</b> : The enable/disable show legend. The value is true or false.</p>
+    <p><b>Value Maximum</b> : To fix the maximum bound value. Set empty will diable fixed maximun bound.</p>
+    <p><b>Value Minimum</b> : To fix the minimum bound value. Set empty will diable fixed minimun bound.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/3DBarChart.png" style="width:100%;" /></p></div>
+    
+</script>

@@ -1,0 +1,71 @@
+<style>
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var content = 
+            '<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      //{
+      //  this.$alertGlow.removeClass( "animate" );
+      //}
+      //else
+      //{
+      //  this.$alertGlow.addClass( "animate" );
+      //}
+    };
+
+    App.Plugins.registerChartType( "icon-class4-plugin" , ImagePlugin , {
+        category: "Icon",
+        display_name : "Icon Class4",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/icons/icon_weather_001.svg" }
+        },
+        color: "rgb(102,255,204)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="icon-class4-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/icons/icon_weather_001.svg">Icon 1</option>
+          <option value="images/icons/icon_weather_002.svg">Icon 2</option>
+          <option value="images/icons/icon_weather_003.svg">Icon 3</option>
+          <option value="images/icons/icon_weather_004.svg">Icon 4</option>
+          <option value="images/icons/icon_weather_005.svg">Icon 5</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="icon-class4-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource any.</p>
+    
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 5 types can select in below.</p>
+<pre>
+ Icon 1   Icon 2   Icon 3   Icon 4
+ Icon 5</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p>The 5 Types.</p><p style="text-align: center;"><img src="images/IconClass4s.png" /></p></div>
+</script>
+

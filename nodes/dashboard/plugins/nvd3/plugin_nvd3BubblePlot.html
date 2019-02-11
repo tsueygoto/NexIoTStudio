@@ -1,0 +1,388 @@
+<script>
+    /**
+    
+    Copyright 2018 NEXCOM International Co., Ltd.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    
+    
+    
+    */
+</script>
+
+<style>
+.nvd3scatterContainer {
+  flex: 1;
+}
+
+.nvd3scatterContainer .nv-legend-text {
+  fill: #eee;
+}
+
+.nvd3scatterContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3scatterContainer .nvd3.nv-noData {
+  fill: #aab0b9;
+}
+
+.nvd3scatterContainer .nv-axis {
+  fill: #eee;
+}
+
+.nvd3scatterContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3scatterContainer .tick line {
+  stroke: #4a4e54;
+}
+</style>
+
+
+
+<script type="text/javascript">
+    ( function()
+    {
+        var NVD3BubblePlot = function( container , datasources , components , config )
+        {
+            var plugin = this;
+            
+            plugin.datasources = datasources;
+            plugin.components = components;
+            plugin.config = config;
+            
+            /**
+              < x axis >
+                    xMin
+                    xMax
+                    xLabel
+              < y axis >
+                    yMin
+                    yMax
+                    yLabel
+              dataMax
+            **/
+            
+            // configure 
+            plugin.xMin = parseInt( plugin.config.xMin );
+            plugin.xMax = parseInt( plugin.config.xMax );
+            plugin.yMin = parseInt( plugin.config.yMin );
+            plugin.yMax = parseInt( plugin.config.yMax );
+            plugin.index = 0;
+            plugin.dataMax = parseInt( plugin.config.dataMax );;
+
+            // start
+            plugin.id = "id" + dbTools.generateId().replace(".","");
+            plugin.container = $( '<div id="' + plugin.id + '" style="width:100%; height:100%;"><svg class="nvd3scatterContainer"></svg></div>' );
+            
+            $( container ).append( plugin.container );
+
+            // initial empty data
+            //plugin.chart = null;
+            plugin.data = [];
+            plugin.idx = 0;
+
+            // register our custom symbols to nvd3
+            // make sure your path is valid given any size because size scales if the chart scales.
+            nv.utils.symbolMap.set('thin-x', function(size) {
+                size = Math.sqrt(size);
+                return 'M' + (-size/2) + ',' + (-size/2) +
+                        'l' + size + ',' + size +
+                        'm0,' + -(size) +
+                        'l' + (-size) + ',' + size;
+            });
+            
+            plugin.chart = nv.models.scatterChart()
+                            .showDistX(true)
+                            .showDistY(true)
+                            .useVoronoi(true)
+                            .duration(300)
+                            .color(d3.scale.category10().range());
+
+            plugin.chart.scatter.dispatch.on('elementClick', plugin.onElementClick.bind(plugin) );
+            
+            plugin.chart.scatter.dispatch.on('renderEnd', function()
+            {
+                console.log('render complete');
+            });
+
+            plugin.chart.forceX([plugin.xMin, plugin.xMax]);
+            plugin.chart.forceY([plugin.yMin, plugin.yMax]);
+
+            plugin.chart.xAxis.tickFormat( d3.format( '.2f' ) );
+            plugin.chart.yAxis.tickFormat( d3.format( '.2f' ) );
+
+            if( plugin.config.xLabel ) plugin.chart.xAxis.axisLabel( plugin.config.xLabel );
+            if( plugin.config.yLabel ) plugin.chart.yAxis.axisLabel( plugin.config.yLabel );
+
+            for( var i = 0; i < plugin.datasources.length; i++ ) {
+                //this.datasources[i].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+                plugin.data.push({
+                    key : plugin.datasources[i].config.label,
+                    values : [],
+                    idx : 0
+                });
+            }
+
+            d3.select( "#" + plugin.id + " svg" ).datum( plugin.data ).call( plugin.chart );
+            plugin.container.parents( "li" ).on( "resize" , plugin.resize.bind(plugin) );
+        };
+        
+        /**
+         *
+         */
+        NVD3BubblePlot.prototype.onElementClick = function( e )
+        {
+            var plugin = this;
+            console.log('elementClick in callback');                             
+            plugin.datasources[e.point.series].clickRequest( e.point, plugin.clickResponse.bind(plugin) );
+        };
+
+        /**
+         *
+         */
+        NVD3BubblePlot.prototype.resize = function( e )
+        {
+            this.chart.update();
+        };
+        
+        /**
+         *
+         */
+        NVD3BubblePlot.prototype.clickResponse = function( index , data )
+        {
+            console.log("clickResponse ...");
+        };
+        
+        /**
+         *
+            sample code for reference:
+            
+            //console.info("path : ",d3.select( "#" + plugin.id + " svg" ).selectAll('path .nv-point  .nv-point-0'));
+
+            //if((data.data.x < this.xMin) || (data.data.x > this.xMax) ||
+            //   (data.data.y < this.yMin) || (data.data.y > this.yMax))
+            //   return;
+
+            //if( $.isArray( data.data ) ) this.data[ index ].values = this.data[ index ].values.concat( data.data );
+            //else this.data[ index ].values.push( data.data );
+         
+
+                    //var clone = this.data[index].values.slice(0);
+                    //clone[this.index] = data.data;
+                    //
+                    ////this.data[index].values.shift();
+                    ////this.data[index].values[this.index] = data.data;
+                    //this.data[index].values = null;
+                    //this.data[index].values = clone;
+                    //
+                    //this.index++;
+                    //if(this.index == this.dataMax) this.index = 0;
+                    
+                    //console.info(d3.select( "#" + plugin.id + " svg" ).selectAll('path').filter('.nv-point').each(function(item){
+                    //    console.info("item", item);
+                    //    if (item[1] == 0) (this.remove());
+                    //}));
+                    //
+                    //plugin.data[index].values.shift();
+                    
+                    
+                    //d3.select( "#" + plugin.id + " svg" ).datum( this.data ).transition().call( this.chart );
+                    //plugin.data[index].values.push( data.data );
+
+         */
+        NVD3BubblePlot.prototype.pushData = function( index , data )
+        {
+            var plugin = this;
+            
+            console.log(data);
+            
+            if( index < 0 || index >= plugin.components.length ) return;
+            
+            if( $.isArray( data.data ) && data.data.length > 0 )
+            {
+                plugin.data[index].values = data.data;
+                //d3.select( "#" + plugin.id + " svg" ).selectAll('path').filter('.nv-point').remove();
+                d3.select( "#" + plugin.id + " svg" ).datum( plugin.data );
+            }
+            else
+            {
+                if (plugin.data[index].values.length == plugin.dataMax)
+                {
+                    plugin.data[index].values[plugin.data[index].idx % plugin.dataMax] = data.data;
+                    d3.select( "#" + plugin.id + " svg" ).datum( this.data );
+                }
+                else
+                {
+                    plugin.data[index].values.push( data.data );
+                    d3.select( "#" + plugin.id + " svg" ).datum( plugin.data );
+                }
+                plugin.data[index].idx++;
+            }
+            plugin.chart.update();
+			
+			/*kewei added
+			 *Change text color
+			*/
+		    d3.selectAll('#'+ plugin.id + ' .nv-axis text').style('fill', plugin.config.textColor);
+			d3.selectAll('#'+ plugin.id + ' .nv-legend-text').style('fill', plugin.config.textColor);
+        };
+
+        /**
+         *
+         */
+        App.Plugins.registerChartType( "nvd3bubbleplot" , NVD3BubblePlot , {
+            category        : "NVD3",
+            display_name    : "Bubble Plot",
+            version         : "1.00.006",
+            chartConfig : {
+                xLabel  : { default : "" },
+                yLabel  : { default : "" },
+                xMin    : { default : "0" },
+                xMax    : { default : "100" },
+                yMin    : { default : "0" },
+                yMax    : { default : "100" },
+                dataMax : { default : "100" },
+				textColor: { default : "#eee" } /*Kewei modified*/
+            },
+            datasourceConfig : {
+                trend : { default : false }
+            },
+            disableComponentDiscovery : true,
+            color: "rgb(255,124,128)",
+            dependencies : [
+                    "plugins/lib/tools.js",
+                    "plugins/lib/d3_3.5.17/d3.min.js",
+                    "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                    "plugins/lib/nvd3_1.8.5/nv.d3.css"
+            ]
+        } );
+
+    } )();
+</script>
+
+
+<style>
+    .NexNVD3BubblePlotConfigTd tbody tr th:nth-child(1) {
+        font-size: 14px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .NexNVD3BubblePlotConfigTd tbody tr td:nth-child(1) {
+        width:25%;
+        padding-left:20px;
+        font-weight: 700;
+    }    
+
+    .NexNVD3BubblePlotConfigTd tbody tr td:nth-child(2) {
+        width:60%;
+        align:"left";
+    }
+    
+    .NexNVD3BubblePlotConfigTd tbody tr td input[type=checkbox] {
+        width:6%;
+    }
+</style>
+
+<script type="text/x-dash" data-chart-config="nvd3bubbleplot">
+
+    <div class="form-group NexNVD3BubblePlotConfigTd">
+        <table style="width:100%">
+            <tr>
+                <th colspan="4">Configure</th>
+            </tr>
+            <tr>
+                <td>X Axis Label</td><td><input class="form-control" type="text" data-prop="xLabel"></td>
+            </tr>
+            <tr>
+                <td>X Axis Value Minimum</td><td><input class="form-control" type="text" data-prop="xMin"></td>
+            </tr>
+            <tr>
+                <td>X Axis Value Maximum</td><td><input class="form-control" type="text" data-prop="xMax"></td>
+            </tr>
+            <tr>
+                <td>Y Axis Label</td><td><input class="form-control" type="text" data-prop="yLabel"></td>
+            </tr>
+            <tr>
+                <td>Y Axis Value Minimum</td><td><input class="form-control" type="text" data-prop="yMin"></td>
+            </tr>
+            <tr>
+                <td>Y Axis Value Maximum</td><td><input class="form-control" type="text" data-prop="yMax"></td>
+            </tr>
+            <tr>
+                <td>Maximun Data Quantity</td><td><input class="form-control" type="text" data-prop="dataMax"></td>
+            </tr>
+			<tr>
+                <td>Text Color</td>
+				<td><input class="form-control" type="text" data-prop="textColor">
+				</td>
+            </t
+        </table>
+    </div>
+</script>
+
+<!-- script type="text/x-dash" data-datasource-config="nvd3bubbleplot">
+  <div class="checkbox">
+    <label><input type="checkbox" data-prop="trend"> Show trend</label>
+  </div>
+</script -->
+
+<script type="text/x-red" data-help-name="nvd3bubbleplot">
+    <h1>Bubble Plot</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>DataSource set bubble plot value like the below example.</p>
+<pre>
+var shapes = ['thin-x', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square'];
+var valueA = Math.floor( Math.random() * 100 );
+var valueB = Math.floor( Math.random() * 100 );
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data: [{
+            x : valueA,
+            y : valueB,
+            size: Math.random(),
+            shape: shapes[0]
+    }]  
+};</pre>
+
+    <h3><b>|</b> Configuration </h3>
+    <p><b>Datasources</b>: can add more than one datasource.</p>
+    <p><b>X Axis Label</b>: the X axis label string.</p>
+    <p><b>X Axis Value Minimum</b>: the X axis value range minimum.</p>
+    <p><b>X Axis Value Maximum</b>: the X axis value range maximum.</p>
+    <p><b>Y Axis Label</b>: the Y axis label string.</p>
+    <p><b>Y Axis Value Minimum</b>: the Y axis value range minimum.</p>
+    <p><b>Y Axis Value Maximum</b>: the Y axis value range maximum.</p>
+    <p><b>Maximum Data Quantity</b>: the maximum data quantity in chart.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p><b>Grouped Mode</b></p><p style="text-align: center;"><img src="images/nvd3BubbleChart.png" style="width:100%;" /></p></div>
+    
+    <h3><b>|</b> Flow Example</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3BubbleChartExample.png" style="width:100%;" /></p></div>
+<pre>[{"id":"dd18497.3aebb38","type":"inject","z":"c649d8f0.8ac748","name":"","topic":"","payload":"","payloadType":"date","repeat":"1","crontab":"","once":false,"x":190,"y":60,"wires":[["c5c34021.36fa08","f09a9173.e3a938","f52f6b98.6a69f8"]]},{"id":"c5c34021.36fa08","type":"function","z":"c649d8f0.8ac748","name":"","func":"function getRandomInt(max) {\n  return Math.floor(Math.random() * Math.floor(max));\n}\nvar shapes = ['thin-x', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square'];\n\nmsg.payload = {\n    tstamp: new Date().getTime(),\n    data: {\n            x : getRandomInt(100),\n            y : getRandomInt(100),\n            size: Math.round(Math.random() * 100) / 100,\n            shape: shapes[getRandomInt(6)]\n    }  \n};\nreturn msg;","outputs":1,"noerr":0,"x":350,"y":60,"wires":[["625bbd22.374f44"]]},{"id":"625bbd22.374f44","type":"iot-datasource","z":"c649d8f0.8ac748","name":"BP1","tstampField":"","dataField":"","disableDiscover":false,"cloudReady":false,"protocol":"amqp","x":490,"y":60,"wires":[[]]},{"id":"f09a9173.e3a938","type":"function","z":"c649d8f0.8ac748","name":"","func":"function getRandomInt(max) {\n  return Math.floor(Math.random() * Math.floor(max));\n}\nvar shapes = ['thin-x', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square'];\n\nmsg.payload = {\n    tstamp: new Date().getTime(),\n    data: {\n            x : getRandomInt(100),\n            y : getRandomInt(100),\n            size: Math.round(Math.random() * 100) / 100,\n            shape: shapes[getRandomInt(6)]\n    }  \n};\nreturn msg;","outputs":1,"noerr":0,"x":350,"y":100,"wires":[["a5d99c51.91f95"]]},{"id":"f52f6b98.6a69f8","type":"function","z":"c649d8f0.8ac748","name":"","func":"function getRandomInt(max) {\n  return Math.floor(Math.random() * Math.floor(max));\n}\nvar shapes = ['thin-x', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square'];\n\nmsg.payload = {\n    tstamp: new Date().getTime(),\n    data: {\n            x : getRandomInt(100),\n            y : getRandomInt(100),\n            size: Math.round(Math.random() * 100) / 100,\n            shape: shapes[getRandomInt(6)]\n    }  \n};\nreturn msg;","outputs":1,"noerr":0,"x":350,"y":140,"wires":[["72b1b3a7.3282e4"]]},{"id":"a5d99c51.91f95","type":"iot-datasource","z":"c649d8f0.8ac748","name":"BP2","tstampField":"","dataField":"","disableDiscover":false,"cloudReady":false,"protocol":"amqp","x":490,"y":100,"wires":[[]]},{"id":"72b1b3a7.3282e4","type":"iot-datasource","z":"c649d8f0.8ac748","name":"BP3","tstampField":"","dataField":"","disableDiscover":false,"cloudReady":false,"protocol":"amqp","x":490,"y":140,"wires":[[]]}]</pre>
+
+    <p>In configure add the below three datasources.</p>
+<pre>
+   BP1
+   BP2
+   BP3</pre>
+    
+</script>
+
+
+
+

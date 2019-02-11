@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+]>
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="515px" height="282px" viewBox="0 0 515 282" enable-background="new 0 0 515 282" xml:space="preserve">
+<defs>
+</defs>
+<rect x="451" y="186" fill="#00FFFF" width="64" height="33"/>
+<rect x="385" y="186" fill="#39B54A" width="66" height="33"/>
+<rect x="321" y="186" width="64" height="33"/>
+<rect x="257" y="186" fill="#CCCCCC" width="64" height="33"/>
+<rect x="194" y="186" fill="#FF0000" width="63" height="33"/>
+<rect x="130" y="186" fill="#FFFFFF" width="64" height="33"/>
+<rect x="64" y="186" width="66" height="33"/>
+<rect y="186" fill="#0000FF" width="64" height="33"/>
+<rect x="451" y="217" fill="#4D4D4D" width="64" height="65"/>
+<rect x="385" y="217" fill="#E6E6E6" width="66" height="65"/>
+<rect x="321" y="217" fill="#B3B3B3" width="64" height="65"/>
+<rect x="257" y="217" fill="#808080" width="64" height="65"/>
+<rect x="194" y="217" width="63" height="65"/>
+<rect x="130" y="217" fill="#666666" width="64" height="65"/>
+<rect x="64" y="217" fill="#1A1A1A" width="66" height="65"/>
+<rect y="217" fill="#FFFFFF" width="64" height="65"/>
+<rect x="451" fill="#FFFFFF" width="64" height="186"/>
+<rect x="385" fill="#0000FF" width="66" height="186"/>
+<rect x="321" fill="#FF0000" width="64" height="186"/>
+<rect x="257" fill="#FF00FF" width="64" height="186"/>
+<rect x="194" fill="#39B54A" width="63" height="186"/>
+<rect x="130" fill="#00FFFF" width="64" height="186"/>
+<rect x="64" fill="#FFFF00" width="66" height="186"/>
+<rect fill="#CCCCCC" width="64" height="186"/>
+</svg>

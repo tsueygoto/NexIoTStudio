@@ -1,0 +1,96 @@
+<svg width="342" height="794" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="SVGID_2_" x1="0.141589" y1="0.968649" x2="0.858414" y2="0.03136">
+   <stop offset="0" stop-color="#CCCCCC"/>
+   <stop offset="0.3576" stop-color="#FFFFFF"/>
+   <stop offset="1" stop-color="#333333"/>
+  </linearGradient>
+  <linearGradient id="SVGID_3_" x1="1" y1="0.5" x2="0" y2="0.5">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.1212" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#DEDEDE"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+   <stop offset="1" stop-color="#1A1A1A"/>
+  </linearGradient>
+  <linearGradient id="SVGID_4_" x1="1" y1="0.5" x2="0" y2="0.5">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.1212" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#DEDEDE"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+   <stop offset="1" stop-color="#1A1A1A"/>
+  </linearGradient>
+  <linearGradient id="SVGID_5_" x1="0.999999" y1="0.499999" x2="0.000001" y2="0.499999">
+   <stop offset="0" stop-color="#CACACA"/>
+   <stop offset="1" stop-color="#CACACA"/>
+  </linearGradient>
+  <linearGradient id="SVGID_6_" x1="1.000002" y1="0.5" x2="0.000001" y2="0.5">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.1212" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#DEDEDE"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+   <stop offset="1" stop-color="#1A1A1A"/>
+  </linearGradient>
+  <linearGradient id="SVGID_7_" x1="0.999999" y1="0.499979" x2="0.000001" y2="0.499979">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.2727" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#DEDEDE"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+   <stop offset="1" stop-color="#1A1A1A"/>
+  </linearGradient>
+  <linearGradient id="SVGID_9_" x1="0.757098" y1="0.591108" x2="0.242938" y2="0.408891">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.6909" stop-color="#CCCCCC"/>
+  </linearGradient>
+  <linearGradient id="SVGID_10_" x1="0.242895" y1="0.591106" x2="0.757048" y2="0.408891">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.6909" stop-color="#CCCCCC"/>
+  </linearGradient>
+  <linearGradient id="SVGID_11_" x1="1.000002" y1="0.500021" x2="0.000001" y2="0.500021">
+   <stop offset="0.1212" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#FFFFFF"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+  </linearGradient>
+  <linearGradient id="SVGID_12_" x1="1" y1="0.500001" x2="0" y2="0.500001">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.1212" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#DEDEDE"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+   <stop offset="1" stop-color="#1A1A1A"/>
+  </linearGradient>
+  <linearGradient id="SVGID_13_" x1="1" y1="0.500001" x2="0" y2="0.500001">
+   <stop offset="0" stop-color="#333333"/>
+   <stop offset="0.1212" stop-color="#CCCCCC"/>
+   <stop offset="0.497" stop-color="#DEDEDE"/>
+   <stop offset="0.7879" stop-color="#989898"/>
+   <stop offset="1" stop-color="#1A1A1A"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect x="-1" y="-1" width="344" height="796" id="canvas_background" fill="none"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <ellipse fill="url(#SVGID_2_)" cx="170.625252" cy="90.957333" rx="171.099" ry="91.625" id="svg_1"/>
+  <rect x="295.333252" y="548.902333" fill="url(#SVGID_3_)" width="35" height="244" id="svg_2"/>
+  <rect x="62.333252" y="548.902333" fill="url(#SVGID_4_)" width="35" height="244" id="svg_3"/>
+  <polygon fill="url(#SVGID_5_)" points="-0.4737471342086792,523.068257689476 341.7252502441406,523.068257689476 249.3312225341797,721.4562581777573 91.92025756835938,721.4562581777573 " id="svg_4"/>
+  <rect x="-0.473748" y="88.501333" fill="url(#SVGID_6_)" width="342.198" height="434.567" id="svg_5"/>
+  <polygon fill="url(#SVGID_7_)" points="85.07625579833984,707.286275267601 256.1753234863281,707.286275267601 256.1753234863281,726.4582723379135 85.08226013183594,726.4582723379135 " id="svg_6"/>
+  <g id="svg_7">
+   <defs transform="translate(0,-1.6666666269302368) translate(0,1.6666666269302368) translate(0,-1.6666666269302368) translate(0,1.6666666269302368) translate(0,-1.6666666269302368) translate(-1.6666666269302368,0) translate(1.6666666269302368,0) translate(1.6666666269302368,0) translate(-1.6666666269302368,0) translate(-1.6666666269302368,0) translate(-1.6666666269302368,0) translate(0,1.6666666269302368) translate(0,-1.6666666269302368) translate(-1.6666666269302368,0) translate(1.6666666269302368,0) translate(1.6666666269302368,0) translate(-1.6666666269302368,0) translate(-1.6666666269302368,0) translate(1,1) ">
+    <rect id="SVGID_1_" y="523.569" width="400" height="185"/>
+   </defs>
+   <clipPath transform="translate(0,-1.6666666269302368) translate(0,1.6666666269302368) translate(0,-1.6666666269302368) translate(0,1.6666666269302368) translate(0,-1.6666666269302368) translate(-1.6666666269302368,0) translate(1.6666666269302368,0) translate(1.6666666269302368,0) translate(-1.6666666269302368,0) translate(-1.6666666269302368,0) translate(-1.6666666269302368,0) translate(0,1.6666666269302368) translate(0,-1.6666666269302368) translate(-1.6666666269302368,0) translate(1.6666666269302368,0) translate(1.6666666269302368,0) translate(-1.6666666269302368,0) translate(-1.6666666269302368,0) translate(1,1) " id="SVGID_8_">
+    <use xlink:href="#SVGID_1_" id="svg_8" y="-0.666667" x="-30.666748"/>
+   </clipPath>
+   <polygon clip-path="url(#SVGID_8_)" fill="url(#SVGID_9_)" points="294.43829345703125,479.92830407619476 341.9252624511719,521.610249876976 225.79124450683594,773.6012777090073 178.29823303222656,731.9182943105698 " id="svg_9"/>
+   <polygon clip-path="url(#SVGID_8_)" fill="url(#SVGID_10_)" points="47.01224899291992,479.92830407619476 -0.4737471342086792,521.610249876976 115.6602554321289,773.6012777090073 163.15423583984375,731.9182943105698 " id="svg_10"/>
+  </g>
+  <rect x="-0.473748" y="287.525333" fill="url(#SVGID_11_)" width="342.198" height="19.205" id="svg_11"/>
+  <path fill="url(#SVGID_12_)" d="m254.333252,548.855333c0,0 3.19,-8.23 17,-8.23c13.248,0 17,8.23 17,8.23l0,244.046l-34,0l0,-244.046z" id="svg_12"/>
+  <path fill="url(#SVGID_13_)" d="m14.333252,548.855333c0,0 3.19,-8.23 17,-8.23c13.247,0 17,8.23 17,8.23l0,244.046l-34,0l0,-244.046z" id="svg_13"/>
+  <rect x="-0.666748" y="86.902333" fill="#FFFFFF" width="343" height="3" id="svg_14"/>
+  <rect x="-0.666748" y="87.902333" fill="#333333" width="343" height="2" id="svg_15"/>
+ </g>
+</svg>

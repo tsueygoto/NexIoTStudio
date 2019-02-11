@@ -1,0 +1,75 @@
+<style>@keyframes alertPluginGlowAnimation {
+    from {
+        opacity : 0.5
+    }
+    to {
+        opacity : 1.0
+    }
+}
+
+.alertPluginBackground {
+    background-image: url( 'plugins/alert/alert_bg.png' );
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background-size: 100%;
+}
+
+.alertPluginGlow {
+    opacity: 0.2;
+    width: 100%;
+    max-width: 100%;
+    background-size: 100%;
+}
+
+.alertPluginGlow.animate {
+    animation: alertPluginGlowAnimation 0.25s infinite alternate ease-in-out;
+}</style><script type="text/javascript">(function() {
+        var AlertPlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+
+            this.container = $( container );
+
+            this.container.append( '<div class="alertPluginBackground"><img class="alertPluginGlow" height="auto" max-width="100%" src="plugins/alert/alert_glow.png" /></div>' );
+            this.$alertGlow = this.container.find( ".alertPluginGlow" );
+        };
+
+        AlertPlugin.prototype.pushData = function( index , data ) {
+            if( this.components[ index ].getData( data.data ).type === "ok" ) {
+                this.$alertGlow.addClass( "animate" );
+            }
+            else {
+                this.$alertGlow.removeClass( "animate" );
+            }
+        };
+
+        App.Plugins.registerChartType( "alert-plugin" , AlertPlugin , {
+            category : "Basic",
+            display_name : "Alert",
+            disableComponentDiscovery : true,
+            color:"rgb(204, 255, 255)"
+        });
+
+    })();</script><script type="text/x-red" data-help-name="alert-plugin">
+	<h1>Alert</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>The DataSource example:</p>
+<pre>
+ msg.payload = {
+     tstamp: new Date(),
+     data: {
+         // "ok" to turn on alert, 
+         // other values are turn off alert
+         type: "ok"
+     }
+ };</pre>
+    <h3><b>|</b> Shape</h3>
+    <p>There are two types for alert shape.</p>
+    <p>Normal Type</p>
+    <p class="alertPluginBackground" style="width:200px; height:200px;"></p>
+    <p>Alert Type</p>
+    <p class="alertPluginBackground" style="width:200px; height:200px;">
+        <img class="alertPluginGlow animate" src="plugins/alert/alert_glow.png" />
+    </p></script>

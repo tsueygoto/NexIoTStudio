@@ -1,0 +1,277 @@
+<!--
+    
+    plugin_iframe.html
+    
+    
+ -->
+<style>
+
+.cusomterIframe {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+/*
+ *kewei add
+ *for dialog
+ */
+.ui-dialog.success-dialog {
+    font-family: Verdana,Arial,sans-serif;
+    /*border: 0.5rem outset #1f343c;*/
+    /*border-radius: 12px;*/
+    margin: 2rem;
+    padding: 1rem;
+    outline-offset: 0.5rem;
+    background:#EEE;
+    color: #333;
+    box-shadow:4px 4px 12px -2px rgba(20%,20%,40%,0.5); 
+}
+.dlg-no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+.ui-dialog-title {
+    font-size:16pt;
+    font-weight:bold;
+}
+
+
+</style>
+
+<script type="text/javascript">
+
+    /**
+        depends on below div element position to decide the input element's index
+    */
+    function onchangeURL(oParent, self) {
+        var sInput = $(self).val().trim();
+        if (sInput.length > 0 ) {
+
+            var urlArr = $(oParent).parent().parent().find(':input[type=textArr]').filter('#urlArr');
+            var dataArr = [];
+
+            if ( $(urlArr).val().trim().length > 0 ) {
+                dataArr = $(urlArr).val().trim().split(",");
+            }
+            
+            var eleIndex = $(self).parent().parent().index() - 7;
+            // console.log("Elm Index : ", eleIndex);
+            if (dataArr.length == eleIndex) {   // means new item
+                dataArr.push(sInput);
+            } else {
+                dataArr[eleIndex] = sInput;
+            }
+            $(urlArr).val(dataArr.toString());
+        }
+    }
+
+    /**
+        addURL
+     */
+    function addURL(obj) {
+        // before add to check input array
+        // if the last content is empty then don't add a new empty content
+        var inputArr = $(obj).find(":input[type=text]");
+        if (inputArr.length > 0) {
+            if ($(inputArr[inputArr.length - 1]).val().trim().length == 0) {
+                return;
+            }
+        }
+    
+        var clone = '<input class="form-control" type="text" value="{value}" onchange="onchangeURL(this.parentElement, this)"/>';
+        var content = '' + 
+            '<div class="form-group" style="margin-bottom:0px;">' +
+                '<div class="col-md-10">' +
+                    '<input class="form-control addURL" type="text" placeholder="https://www.example.com" data-toggle="tooltip" title="Please note that at least 40% of websites do not support Iframe connections." onchange="onchangeURL(this.parentElement, this)" />' +
+                '</div>' +
+                '<div class="col-md-2">' +
+                    '<button class="btn-default glyphicon glyphicon-remove" onclick="removeURL(this)" />' +
+                '</div>' +
+            '</div>';
+        <!-- underline input index base is 7 depends on model element numbers -->
+        $(obj).append(content);
+    }
+    
+    /**
+        removeURL
+     */
+    function removeURL(obj) {
+        // get the previous data
+        var urlArr = $(obj).parent().parent().parent().find(':input[type=textArr]').filter('#urlArr');
+        var dataArr = [];
+        // console.log($(urlArr).val().trim());
+        if ( $(urlArr).val().trim().length > 0 ) {
+            dataArr = $(urlArr).val().trim().split(",");
+        }
+        // find element's index
+        var eleIndex = $(obj).parent().parent().index() - 7;
+        // array remvoe element by index
+        dataArr.splice(eleIndex, 1);
+        // reset value
+        $(urlArr).val(dataArr.toString());
+        // remove fronet element
+        $(obj).parent().parent().remove();
+    }
+
+    (function() {
+    
+        /**
+            verifyURL
+         */
+        function verfiyURLArr(urlArr) {
+            var vReady = true;
+            for(var index=0; index < urlArr.length; index++) {
+                //Check the URL
+                var url = urlArr[index];
+				if(url != ""){
+					var checkStr1 = "http", checkStr2 = "ftp";
+					var checkResult1 = url.toString().indexOf(checkStr1);
+					var checkResult2 = url.toString().indexOf(checkStr2);
+					if (!((checkResult1 > -1) || (checkResult2 > -1))) {
+						var errorMsg = 'This is an invalid URL.';
+						//config.url = "https://www.example.com";
+						//this.config = config;               
+						var artDialog = '<div id="dialog-alert" title="ERROR"><p>'+ errorMsg +'</p><p>Please start with http:// or https://</p></div>';
+						$("#gridList").append(artDialog);
+						//Create dialog
+						$( "#dialog-alert" ).dialog({
+							resizable: false,
+							dialogClass: 'dlg-no-close success-dialog',
+							height:180,
+							modal: true,
+							buttons: [
+								{
+									text: "Cancel",
+									"class": 'btn btn-default',
+									click: function() {
+										$( this ).dialog( "close" );
+									}
+								}
+							]
+						});
+						return false;
+					}
+				}    
+            }
+            return vReady;
+        }
+    
+        var iFramePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $( container );
+            this.config = config;
+            
+            // verify input url value is valid
+            var urlArr = config.urlArr.trim().split(",");
+            // console.log("urlArr : ", urlArr);
+            if(urlArr.length == 0) { return; }
+            
+            this.contentArr = [];
+            if ( verfiyURLArr(urlArr) ) {
+                for(var index=0; index < urlArr.length; index++)
+                {
+                    var content = document.createElement("iframe");
+                    this.contentArr.push(content);
+                    content.src = urlArr[index];
+                    var iID = "iframeID_" + dbTools.generateId().replace(".","");
+                    content.setAttribute("id", iID);
+                    if (this.config.hasOwnProperty('style') && 
+                        (this.config.style.trim().length > 0)) {
+                        content.style = this.config.style;
+                    }
+                    content.height = "100%";
+                    content.width = "100%";
+                    content.style.display = 'none';
+                    
+                    if (this.config.hasOwnProperty('scrolling')) {
+                        if (this.config.scrolling) {
+                            $(content).removeAttr('scrolling');
+                        } else {
+                            $(content).attr( "scrolling", "no" );
+                        }
+                    }
+                    
+                    if (this.config.hasOwnProperty('fullScreen') && (this.config.fullScreen)) {
+                        // when fullScreen enable, then remove iframe boarder
+                        $(content).removeAttr('style');
+                        $(content).attr( "frameBorder", "0" );
+                        $('#fullPage>div').append(content);
+                    } else {
+                        this.container.append(content);
+                    }
+                }
+                this.contentActived = 0;
+                this.contentArr[this.contentActived].style.display = 'block';
+            }
+        };
+
+        iFramePlugin.prototype.pushData = function( index , data ) {
+            if( index < 0 || index >= this.components.length ) return;
+            if( typeof data.data != 'number' ) return;
+            if( (data.data < 0 ) || (data.data >= this.contentArr.length)) return;
+            
+            if (data.data != this.contentActived) {
+                this.contentArr[this.contentActived].style.display = 'none';
+                this.contentActived = data.data;
+                this.contentArr[data.data].style.display = 'block';
+            }
+            if (this.config.hasOwnProperty('fullScreen') && 
+                (this.config.fullScreen) &&
+                !$(".fullScreen").is(":visible")) {
+                $(".fullScreen").show();
+                }
+        };
+
+        App.Plugins.registerChartType( "cusomterIframe-plugin" , iFramePlugin , {
+            category : "Basic",
+            display_name : "iFrame",
+            disableComponentDiscovery : true,
+            chartConfig : {
+                urlArr      : { default: "" },
+                style       : { default: "border:2px solid grey;" },
+                fullScreen  : { default: false },
+                scrolling   : { default: true }
+            },
+            color:"rgb(204, 255, 255)",
+            dependencies : [
+                            "plugins/lib/tools.js"
+                        ]
+        });
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="cusomterIframe-plugin">
+<div class="form-horizontal">
+    <label data-toggle="tooltip" title="Please note that at least 40% of websites do not support Iframe connections.">URL</label>
+    <button class="btn-default glyphicon glyphicon-plus" onclick="addURL(this.parentElement)" />
+    <label>Full Screen</label>
+    <input type="checkbox" data-prop="fullScreen" />
+    <label>Scrolling</label>
+    <input type="checkbox" data-prop="scrolling" />
+    <div class="form-group" style="margin-bottom:0px;">
+        <div class="col-md-10">
+            <input class="form-control" style="display:none" type="textArr" id="urlArr" data-prop="urlArr" placeholder="https://www.example.com" data-toggle="tooltip" title="Please note that at least 40% of websites do not support Iframe connections." data-clone='<div class="form-group" style="margin-bottom:0px;"><div class="col-md-10"><input class="form-control addURL" type="text" placeholder="https://www.example.com" data-toggle="tooltip" title="Please note that at least 40% of websites do not support Iframe connections." onchange="onchangeURL(this.parentElement, this)" value="{value}" /></div><div class="col-md-2"><button class="btn-default glyphicon glyphicon-remove" onclick="removeURL(this)" /></div></div>' /><!--kewei add placeholder & Tooltip-->
+        </div>
+        <div class="col-md-2">
+            <button class="btn-default glyphicon glyphicon-remove" style="display:none" onclick="removeURL(this)" />
+        </div>
+        <!-- underline input index base is 3 -->
+    </div>
+</div>    
+</script>
+
+<script type="text/x-red" data-help-name="cusomterIframe-plugin">
+    <h1>iFrame</h1>
+	<h3><b>|</b> Background</h3>
+    <p>Configure the iframe URL(s).</p>
+    
+    <h3><b>|</b> DataSource</h3>
+    <p>control the specific iframe show for multiple iframes.</p>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>URL</b> : The iframe URL list.</p>
+    <p><b>+</b> : The iframe URL add button to add url content.</p>
+    <p><b>Full Screen</b> : The Full Screen check button to enable/disable show iframe on full screen mode.</p>
+    <p><b>Scrolling</b> : The Scrolling check button to show/hide the scrolling bar on iframe.</p>
+</script>
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+]>
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="200px" height="200px" viewBox="-2 -2 200 200" enable-background="new -2 -2 200 200"
+	 xml:space="preserve">
+<defs>
+</defs>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="99.5" y1="198" x2="99.5" y2="1">
+	<stop  offset="0.0303" style="stop-color:#1A1A1A"/>
+	<stop  offset="0.3636" style="stop-color:#4D4D4D"/>
+	<stop  offset="1" style="stop-color:#000000"/>
+</linearGradient>
+<path fill="url(#SVGID_1_)" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M198,188.15c0,5.439-4.41,9.85-9.85,9.85
+	H10.85c-5.44,0-9.85-4.41-9.85-9.85V10.85C1,5.41,5.409,1,10.85,1H188.15c5.439,0,9.85,4.41,9.85,9.85V188.15z"/>
+<path stroke="#FFFFFF" stroke-miterlimit="10" d="M188.5,180.65c0,5.439-4.41,9.85-9.85,9.85H19.35c-5.439,0-9.85-4.41-9.85-9.85
+	V21.35c0-5.439,4.41-9.85,9.85-9.85H178.65c5.439,0,9.85,4.41,9.85,9.85V180.65z"/>
+<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="31.5088" y1="118.5732" x2="202.9033" y2="118.5732" gradientTransform="matrix(-0.0018 1 -1 -0.0018 217.3295 -16.4916)">
+	<stop  offset="0.0303" style="stop-color:#4F1A1A"/>
+	<stop  offset="0.3636" style="stop-color:#FF1700"/>
+	<stop  offset="1" style="stop-color:#FF1D25"/>
+</linearGradient>
+<path fill="url(#SVGID_2_)" d="M21.705,186.056c-4.976-0.01-9.003-4.053-8.995-9.028L12.989,23.66
+	c0.01-4.976,4.053-9.004,9.028-8.995l153.367,0.279c4.976,0.01,9.005,4.053,8.997,9.028l-0.281,153.367
+	c-0.01,4.976-4.053,9.003-9.028,8.996L21.705,186.056z"/>
+<path fill="#F2F2F2" d="M12.861,92.489c0,0,74.548,21.554,171.393,0C184.254,92.489,90.688,108.461,12.861,92.489z"/>
+</svg>

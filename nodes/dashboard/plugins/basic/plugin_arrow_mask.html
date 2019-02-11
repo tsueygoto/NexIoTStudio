@@ -1,0 +1,263 @@
+<style>
+
+.arrows {
+	width: 60px;
+	height: 72px;
+	position: absolute;
+	left: 50%;
+	margin-left: -30px;
+	bottom: 20px;
+}
+
+.arrows path {
+	//stroke: #2994D1;
+    stroke: #FF0000;
+	fill: transparent;
+	stroke-width: 3px;	
+	animation: arrow 2s infinite;
+	-webkit-animation: arrow 2s infinite; 
+}
+
+
+@keyframes arrow
+{
+0% {opacity:0}
+40% {opacity:1}
+80% {opacity:0}
+100% {opacity:0}
+}
+
+@-webkit-keyframes arrow /*Safari and Chrome*/
+{
+0% {opacity:0}
+40% {opacity:1}
+80% {opacity:0}
+100% {opacity:0}
+}
+
+.arrows path.a1 {
+	animation-delay:-1s;
+	-webkit-animation-delay:-1s; /* Safari 和 Chrome */
+}
+
+.arrows path.a2 {
+	animation-delay:-0.5s;
+	-webkit-animation-delay:-0.5s; /* Safari 和 Chrome */
+}
+
+.arrows path.a3 {	
+	animation-delay:0s;
+	-webkit-animation-delay:0s; /* Safari 和 Chrome */
+}
+
+</style>
+
+<script type="text/javascript">
+  ( function() {
+        var ImagePlugin = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            this.config = config;
+
+/*
+                <path class="a1" d="M3 14 L17 46 L31 14"></path>  \
+                <path class="a2" d="M3 34 L17 66 L31 34"></path>  \
+                <path class="a3" d="M3 54 L17 86 L31 54"></path>  \
+            '   <svg class="arrows"> \
+                <path class="a3" d="M3 46 L17 14 L31 46"></path>  \
+                <path class="a2" d="M3 66 L17 34 L31 66"></path>  \
+                <path class="a1" d="M3 86 L17 54 L31 86"></path>  \
+                </svg>' +
+                
+                
+                
+<svg xmlns="http://www.w3.org/2000/svg" width="300px" height="100px">
+      <rect x="0" y="0" width="300" height="100" stroke="black" stroke-width="1" />
+        <circle cx="0" cy="50" r="15" fill="blue" stroke="black" stroke-width="1">
+          <animateMotion path="M 0 0 H 300 Z" dur="3s" repeatCount="indefinite" />
+        </circle>
+      </svg>                
+repeatCount="indefinite"
+
+
+            '   <image xlink:href="' +
+            config.file + //images/factory/Corners-1.svg +
+            '" x="0" y="0" height="100%" width="100%" />' +
+
+        
+
+ */
+        this.width = 35;
+        this.height = 100;
+        this.maskWidth = 35;
+        this.maskHeight = this.config.maskWidth;
+        this.maskX = 0;
+        this.maskY = this.height;
+        this.maskStroke = this.config.maskColor;
+        this.maskOpacity = this.config.maskOpacity;
+        this.maskFill = this.config.maskColor;
+        this.maskFillOpacity = this.config.maskOpacity;
+        this.maskDuration = this.config.maskDuration;
+        this.path = 'M ' + this.maskX + ' ' + this.maskY + ' V ' + ( 0 - this.maskHeight );  // from bottom to top
+        
+        if ( config.direction == '1' ) {    // from top to bottom
+            this.width = 35;
+            this.height = 100;
+            this.maskWidth = 35;
+            this.maskHeight = this.config.maskWidth;
+            this.maskX = 0;
+            this.maskY = 0 - this.maskHeight;
+            this.path = 'M ' + this.maskX + ' ' + this.maskY + ' V ' + this.height;
+        } else if ( config.direction == '2' ) { // from left to right
+            this.width = 100;
+            this.height = 35;
+            this.maskWidth = this.config.maskWidth;
+            this.maskHeight = 35;
+            this.maskX = 0 - this.maskWidth;
+            this.maskY = 0;
+            this.path = 'M ' + this.maskX + ' ' + this.maskY + ' H ' + this.width;
+        } else if ( config.direction == '3' ) { // from right to left
+            this.width = 100;
+            this.height = 35;
+            this.maskWidth = this.config.maskWidth;
+            this.maskHeight = 35;
+            this.maskX = this.width;
+            this.maskY = 0;
+            this.path = 'M ' + this.maskX + ' ' + this.maskY + ' H ' + (0 - this.maskWidth);
+        } else if ( config.direction == '4' ) {  // from bottom turn right
+            this.path = 'M ' + this.maskX + ' ' + this.maskY + ' V 75 C 0 10 0 0 ' + Math.floor(this.width/2) + ' 0 H ' + this.width;
+            
+            console.info("XXXXXXXXXXXXXXXX", this.path);
+            
+        }
+        
+        
+        var content = '<svg width="100%" height="100%" viewBox="0 0 ' + this.width + ' ' + this.height + '" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+            
+            '<rect x="0" y="0" width="' + this.maskWidth + '" height="' + this.maskHeight + '" stroke="' + this.maskStroke + '" stroke-opacity="' + this.maskOpacity + '" stroke-width="1" fill="' + this.maskFill + '" fill-opacity="' + this.maskFillOpacity + '" >' +
+            '<animateMotion path="' + this.path + '" dur="' + this.maskDuration + '"  rotate="auto" repeatCount="indefinite" fill="freeze" />'
+            '</rect>' +
+
+/*
+            '   <svg class="arrows"> \
+                <path class="a3" d="M3 46 L17 14 L31 46"></path>  \
+                <path class="a2" d="M3 66 L17 34 L31 66"></path>  \
+                <path class="a1" d="M3 86 L17 54 L31 86"></path>  \
+                </svg>' +
+*/            
+            '</svg>';
+
+        this.container.append(content);
+    };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+        // verify input data
+        console.info(data.data.hasOwnProperty('switch'));
+        
+        if (!(data.data.hasOwnProperty('switch'))) return;
+        
+        if (data.data.switch == "ON") {
+            this.container.find('rect').attr("visibility", "visible");
+        } else {
+            this.container.find('rect').attr("visibility", "hidden");
+        }
+        
+        var color = this.maskStroke;
+        if ( data.data.hasOwnProperty('maskColor')) {
+            color = data.data.maskColor;
+        }
+        this.container.find('rect').attr("stroke", color);
+        this.container.find('rect').attr("fill", color);
+        
+        var opacity = this.maskOpacity;
+        if ( data.data.hasOwnProperty('maskOpacity')) {
+            opacity = data.data.maskOpacity;
+        }
+        this.container.find('rect').attr("stroke-opacity", opacity);
+        this.container.find('rect').attr("fill-opacity", opacity);
+        
+        var duration = this.maskDuration;
+        if ( data.data.hasOwnProperty('maskDuration')) {
+            duration = data.data.maskDuration;
+        }
+        this.container.find('rect>animateMotion').attr("dur", duration);
+        
+    };
+
+    App.Plugins.registerChartType( "arrow-mask-plugin" , ImagePlugin , {
+        category : "Basic",
+        display_name : "Arrow Mask",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            direction : {default : "0" },
+            maskColor : {default: "red" },
+            maskOpacity : {default: "0.4" },
+            maskDuration : {default: "3s" },
+            maskWidth : {default: "10"}
+        },
+        color: "rgb(204, 204, 255)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="arrow-mask-plugin">
+    <div class="form-group">
+        <label for="direction">Type</label>
+        <select class="form-control" data-prop="direction">
+          <option value="0">from bottom to top</option>
+          <option value="1">from top to bottom</option>
+          <option value="2">from left to right</option>
+          <option value="3">from right to left</option>
+          <!-- option value="4">from bottom turn right</option -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="maskColor">Mask Color</label>
+        <input class="form-control" type="text" id="maskColor" data-prop="maskColor">
+    </div>
+    <div class="form-group">
+        <label for="maskOpacity">Mask Opacity</label>
+        <input class="form-control" type="text" id="maskOpacity" data-prop="maskOpacity">
+    </div>
+    <div class="form-group">
+        <label for="maskDuration">Mask Duration</label>
+        <input class="form-control" type="text" id="maskDuration" data-prop="maskDuration">
+    </div>
+    <div class="form-group">
+        <label for="maskWidth">Mask Width</label>
+        <input class="form-control" type="text" id="maskWidth" data-prop="maskWidth">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="arrow-mask-plugin">
+    <h1>Arrow Mask</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>The DataSource example:</p>
+<pre>
+ msg.payload = {
+     tstamp: new Date(),
+     data: {
+        switch: "on",       // the switch control ON/OFF
+        color: "#0000FF",   // the mask color
+        opacity:"0.3",      // the mask opacity
+        duration: "2s",     // the mask move duration
+        width: "20"         // the mask width
+    }
+ };</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Direction</b> : There are 4 direcctions can select in below.</p>
+<pre>
+ from bottom to top
+ from top to bottom
+ from left to right
+ from right to left</pre>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p>The 2 Types.</p><p style="text-align: center;"><img src="" /></p></div>
+</script>
+
+

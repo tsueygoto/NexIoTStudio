@@ -1,0 +1,461 @@
+{
+    "common": {
+        "label": {
+            "name": "å§“å?",
+            "ok": "ç¡®è®¤",
+            "done": "å®Œæ?",
+            "cancel": "?–æ?",
+            "delete": "? é™¤",
+            "close": "?³é—­",
+            "load": "è¯»å?",
+            "save": "ä¿å?",
+            "import": "å¯¼å…¥",
+            "export": "å¯¼å‡º"
+        }
+    },
+    "workspace": {
+        "defaultName": "æµç?__number__",
+        "editFlow": "ç¼–è?æµç?: __name__",
+        "confirmDelete": "ç¡®è®¤? é™¤",
+        "delete": "ä½ ç¡®å®šæƒ³? é™¤ '__label__'?",
+        "dropFlowHere": "?Šæ?ç¨‹æ”¾?°è???,
+        "status": "?¶æ€?,
+        "enabled": "?‰æ?",
+        "disabled": "? æ?",
+        "info": "è¯¦ç??è¿°",
+        "tip": "è¯¦ç??è¿°?¯æ?Markdownè½»é?çº§æ?è®°è¯­è¨€ï¼Œå¹¶å°†å‡º?°åœ¨ä¿¡æ¯?‡ç­¾ä¸­ã€?
+    },
+    "menu": {
+        "label": {
+            "view": {
+                "view": "?¾ç¤º",
+                "showGrid": "?¾ç¤ºç½‘æ ¼",
+                "snapGrid": "å¯¹é?ç½‘æ ¼",
+                "gridSize": "ç½‘æ ¼å°ºå¯¸",
+                "textDir": "?‡æœ¬?¹å?",
+                "defaultDir": "é»˜è®¤",
+                "ltr": "ä»å·¦?°å³",
+                "rtl": "ä»å³?°å·¦",
+                "auto": "ä¸Šä???
+            },
+            "sidebar": {
+                "show": "?¾ç¤ºä¾§è¾¹??
+            },
+            "userSettings": "è®¾å?",
+            "displayStatus": "?¾ç¤º?‚ç‚¹?¶æ€?,
+            "displayConfig": "?ç½®?‚ç‚¹è®¾å?",
+            "import": "å¯¼å…¥",
+            "export": "å¯¼å‡º",
+            "search": "?¥è¯¢",
+            "clipboard": "?ªè´´??,
+            "library": "åº?,
+            "examples": "ä¾‹å?",
+            "subflows": "å­æ?ç¨?,
+            "createSubflow": "?°å»ºå­æ?ç¨?,
+            "selectionToSubflow": "å°†é€‰æ‹©?¨å??´æ”¹ä¸ºå?æµç?",
+            "flows": "æµç?",
+            "add": "å¢å?",
+            "rename": "?å‘½??,
+            "delete": "? é™¤",
+            "keyboardShortcuts": "?®ç?å¿«æ·?¹å?",
+            "login": "?»é?",
+            "logout": "?€??,
+            "editPalette": "ç¼–è?è°ƒé¢??,
+            "showTips": "?¾ç¤ºå°æ?ç¤?
+        }
+    },
+    "user": {
+        "loggedInAs": "ä½œä¸º__name__?»é?",
+        "login": "?»é?",
+        "loginFailed": "?»é?å¤±è´¥",
+        "notAuthorized": "?ªæ???
+    },
+    "notification": {
+        "warning": "<strong>è­¦å?</strong>: __message__",
+        "warnings": {
+            "undeployedChanges": "?‚ç‚¹ä¸­å??¨æœª?¨ç½²?„æ›´??,
+            "nodeActionDisabled": "?‚ç‚¹?¨ä??¨å?æµç?ä¸­è¢«ç¦ç”¨",
+            "missing-types": "æµç??±ä?ç¼ºå??‚ç‚¹ç±»å??Œå?æ­¢ã€‚è¯·æ£€?¥æ—¥å¿—ç?è¯¦ç?ä¿¡æ¯",
+            "restartRequired": "Node-REDå¿…é¡»?æ–°?¯åŠ¨ï¼Œä»¥?¯ç”¨?‡çº§?„æ¨¡??
+        },
+        "error": "<strong>Error</strong>: __message__",
+        "errors": {
+            "lostConnection": "ä¸¢å¤±ä¸æ??¡å™¨?„è??¥ï??æ–°è¿æ¥...",
+            "lostConnectionReconnect": "ä¸¢å¤±ä¸æ??¡å™¨?„è??¥ï?__time__ç§’å??æ–°è¿æ¥",
+            "lostConnectionTry": "?°åœ¨å°è?",
+            "cannotAddSubflowToItself": "? æ??‘å…¶?ªèº«æ·»å?å­æ?ç¨?,
+            "cannotAddCircularReference": "? æ?æ·»å?å­æ?ç¨?- å¾ªç¯å¼•ç”¨",
+            "unsupportedVersion": "?¨æ­£?¨ä½¿?¨ä??—æ”¯?ç?Node.js?ˆæœ¬<br/>è¯·å?çº§åˆ°?€?°ç??¬ç?Node.js LTS"
+        }
+    },
+    "clipboard": {
+        "nodes": "?‚ç‚¹",
+        "selectNodes": "?‰æ‹©ä¸Šé¢?„æ??¬å¹¶å¤åˆ¶?°å‰ªè´´æ¿",
+        "pasteNodes": "?¨è??Œç?è´´è???,
+        "importNodes": "å¯¼å…¥?‚ç‚¹",
+        "exportNodes": "å¯¼å‡º?‚ç‚¹?³å‰ªè´´æ¿",
+        "importUnrecognised": "å¯¼å…¥äº†æ?æ³•è??«ç?ç±»å?:",
+        "importUnrecognised_plural": "å¯¼å…¥äº†æ?æ³•è??«ç?ç±»å?:",
+        "nodesExported": "?‚ç‚¹å¯¼å‡º?°ä??ªè´´??,
+        "nodeCopied": "å·²å??¶__count__ä¸ªè???,
+        "nodeCopied_plural": "å·²å??¶__count__ä¸ªè???,
+        "invalidFlow": "? æ??„æ?ç¨? __message__",
+        "export": {
+            "selected": "å·²é€‰æ‹©?„è???,
+            "current": "?°åœ¨?„è???,
+            "all": "?€?‰æ?ç¨?,
+            "compact": "ç´§å?",
+            "formatted": "å·²æ ¼å¼å?",
+            "copy": "å¯¼å‡º?°å‰ªè´´æ¿"
+        },
+        "import": {
+            "import": "å¯¼å…¥??,
+            "newFlow": "?°æ?ç¨?
+        },
+        "copyMessagePath": "å·²å??¶è·¯å¾?,
+        "copyMessageValue": "å·²å??¶æ•°??,
+        "copyMessageValue_truncated": "å·²å??¶è?å¼ƒç??°å€?
+    },
+    "deploy": {
+        "deploy": "?¨ç½²",
+        "full": "?¨é¢",
+        "fullDesc": "?¨å·¥ä½œåŒºä¸­éƒ¨ç½²æ??‰å?å®?,
+        "modifiedFlows": "å·²ä¿®?¹ç?æµç?",
+        "modifiedFlowsDesc": "?ªéƒ¨ç½²å??«å·²?´æ”¹?‚ç‚¹?„æ?",
+        "modifiedNodes": "å·²æ›´?¹ç??‚ç‚¹",
+        "modifiedNodesDesc": "?ªéƒ¨ç½²å·²ç»æ›´?¹ç??‚ç‚¹",
+        "successfulDeploy": "?¨ç½²?å?",
+        "deployFailed": "?¨ç½²å¤±è´¥: __message__",
+        "unusedConfigNodes": "?¨æ?ä¸€äº›æœªä½¿ç”¨?„é?ç½®è???,
+        "unusedConfigNodesLink": "?¹å‡»æ­¤å??¥ç?å®ƒä»¬",
+        "errors": {
+            "noResponse": "?åŠ¡?¨æ²¡?‰å?åº?
+        },
+        "confirm": {
+            "button": {
+                "ignore": "å¿½ç•¥",
+                "confirm": "ç¡®è®¤?¨ç½²",
+                "review": "?¥ç??´æ”¹",
+                "cancel": "?–æ?",
+                "merge": "?ˆå¹¶",
+                "overwrite": "å¿½ç•¥ & ?¨ç½²"
+            },
+            "undeployedChanges": "?¨æ??ªéƒ¨ç½²ç??´æ”¹?‚\n\nç¦»å?æ­¤é¡µ?¢å?ä¸¢å¤±è¿™ä??´æ”¹??,
+            "improperlyConfigured": "å·¥ä??ºå??«ä?äº›æœªæ­?¡®?ç½®?„è???",
+            "unknown": "å·¥ä??ºå??«ä?äº›æœª?¥ç??‚ç‚¹ç±»å?:",
+            "confirm": "ä½ ç¡®å®šè??¨ç½²??",
+            "conflict": "?åŠ¡?¨æ­£?¨è?è¡Œè??°ç?ä¸€ç»„æ?ç¨‹ã€?,
+            "backgroundUpdate": "?åŠ¡?¨ä??„æ?ç¨‹å·²?´æ–°??,
+            "conflictChecking": "æ£€?¥æ˜¯?¦å¯ä»¥è‡ª?¨å?å¹¶æ›´??,
+            "conflictAutoMerge": "æ­¤æ›´?¹ä??…æ‹¬?²ç?ï¼Œå¯ä»¥è‡ª?¨å?å¹?,
+            "conflictManualMerge": "è¿™ä??´æ”¹?…æ‹¬äº†åœ¨?¨ç½²ä¹‹å?å¿…é¡»è§?†³?„å†²çªã€?
+        }
+    },
+    "diff": {
+        "unresolvedCount": "__count__ä¸ªæœªè§?†³?„å†²çª?,
+        "unresolvedCount_plural": "__count__ä¸ªæœªè§?†³?„å†²çª?,
+        "type": {
+            "added": "å·²æ·»??,
+            "changed": "å·²æ›´??,
+            "unchanged": "?ªæ›´??,
+            "deleted": "å·²å???,
+            "flowDeleted": "å·²å??¤æ?ç¨?,
+            "flowAdded": "å·²æ·»? æ?ç¨?,
+            "movedTo": "ç§»åŠ¨?³__id__",
+            "movedFrom": "ä»__id__ç§»åŠ¨"
+        },
+        "nodeCount": "__count__ä¸ªè???,
+        "nodeCount_plural": "__count__ä¸ªè???,
+        "local": "?¬åœ°",
+        "remote": "è¿œç?"
+    },
+    "subflow": {
+        "editSubflow": "ç¼–è?æµç?æ¨¡æ¿: __name__",
+        "edit": "ç¼–è?æµç?æ¨¡æ¿",
+        "subflowInstances": "è¿™ä¸ªå­æ?ç¨‹æ¨¡?¿æ?__count__ä¸ªå?ä¾?,
+        "subflowInstances_plural": "è¿™ä¸ªå­æ?ç¨‹æ¨¡?¿æ?__count__ä¸ªå?ä¾?,
+        "editSubflowProperties": "ç¼–è?å±æ€?,
+        "input": "è¾“å…¥:",
+        "output": "è¾“å‡º:",
+        "deleteSubflow": "? é™¤å­æ?ç¨?,
+        "info": "è¯¦ç??è¿°",
+        "format": "?‡è®°?¼å?",
+        "errors": {
+            "noNodesSelected": "<strong>? æ??›å»ºå­æ?ç¨?/strong>: ?ªé€‰æ‹©?‚ç‚¹",
+            "multipleInputsToSelection": "<strong>? æ??›å»ºå­æ?ç¨?/strong>: å¤šä¸ªè¾“å…¥?°ä??‰æ‹©"
+        }
+    },
+    "editor": {
+        "configEdit": "ç¼–è?",
+        "configAdd": "æ·»å?",
+        "configUpdate": "?´æ–°",
+        "configDelete": "? é™¤",
+        "nodesUse": "__count__ä¸ªè??¹ä½¿?¨æ­¤?ç½®",
+        "nodesUse_plural": "__count__ä¸ªè??¹ä½¿?¨æ­¤?ç½®",
+        "addNewConfig": "æ·»å??°ç?__type__?ç½®?‚ç‚¹",
+        "editNode": "ç¼–è?__type__?‚ç‚¹",
+        "editConfig": "ç¼–è?__type__?ç½®?‚ç‚¹",
+        "addNewType": "æ·»å??°è??¹__type__...",
+        "nodeProperties": "?‚ç‚¹å±æ€?,
+        "portLabels": "ç«¯å£?‡ç­¾",
+        "labelInputs": "è¾“å…¥",
+        "labelOutputs": "è¾“å‡º",
+        "noDefaultLabel": "??,
+        "defaultLabel": "ä½¿ç”¨é»˜è®¤?‡ç­¾",
+        "errors": {
+            "scopeChange": "?´æ”¹?ƒå›´å°†ä½¿?¶ä?æµä¸­?„è??¹æ?æ³•ä½¿??
+        }
+    },
+    "keyboard": {
+        "title": "?®ç?å¿«æ·??,
+        "unassigned": "?ªå???,
+        "selectAll": "?‰æ‹©?€?‰è???,
+        "selectAllConnected": "?‰æ‹©?€?‰è??¥ç??‚ç‚¹",
+        "addRemoveNode": "ä»é€‰æ‹©ä¸­æ·»??? é™¤?‚ç‚¹",
+        "editSelected": "ç¼–è??‰å??‚ç‚¹",
+        "deleteSelected": "? é™¤?‰å??‚ç‚¹?–é“¾??,
+        "importNode": "å¯¼å…¥?‚ç‚¹",
+        "exportNode": "å¯¼å‡º?‚ç‚¹",
+        "nudgeNode": "ç§»åŠ¨?€?‰è???1px)",
+        "moveNode": "ç§»åŠ¨?€?‰è???20px)",
+        "toggleSidebar": "?‡æ¢ä¾§è¾¹??,
+        "copyNode": "å¤åˆ¶?€?‰è???,
+        "cutNode": "?ªå??€?‰è???,
+        "pasteNode": "ç²˜è´´?‚ç‚¹",
+        "undoChange": "?¤æ?ä¸Šæ¬¡?§è??„æ›´??,
+        "searchBox": "?“å??œç´¢æ¡?,
+        "managePalette": "ç®¡ç??¢æ¿"
+    },
+    "library": {
+        "openLibrary": "?œæ?å¼€åº?..",
+        "saveToLibrary": "ä¿å??°å?...",
+        "typeLibrary": "__type__ç±»å?åº?,
+        "unnamedType": "? å?__type__",
+        "exportToLibrary": "å°†è??¹å¯¼?ºåˆ°åº?,
+        "dialogSaveOverwrite": "ä¸€ä¸ªå«?š__libraryName__?„__libraryType__å·²ç?å­˜åœ¨ï¼Œæ‚¨?€è¦è??–ä?ï¼?,
+        "invalidFilename": "? æ??„æ?ä»¶å?",
+        "savedNodes": "ä¿å??„è???,
+        "savedType": "å·²ä?å­˜__type__",
+        "saveFailed": "ä¿å?å¤±è´¥: __message__",
+        "filename": "?‡ä»¶??,
+        "folder": "?‡ä»¶å¤?,
+        "filenamePlaceholder": "?‡ä»¶",
+        "fullFilenamePlaceholder": "a/b/?‡ä»¶",
+        "folderPlaceholder": "a/b",
+        "breadcrumb": "åº?
+    },
+    "palette": {
+        "noInfo": "? å¯?¨ä¿¡??,
+        "filter": "è¿‡æ»¤?‚ç‚¹",
+        "search": "?œç´¢æ¨¡å?",
+        "label": {
+            "subflows": "å­æ?ç¨?,
+            "input": "è¾“å…¥",
+            "output": "è¾“å‡º",
+            "function": "?Ÿèƒ½",
+            "social": "ç¤¾äº¤",
+            "storage": "å­˜å‚¨",
+            "analysis": "?†æ?",
+            "advanced": "é«˜çº§"
+        },
+        "event": {
+            "nodeAdded": "æ·»å??°é¢?¿ä¸­?„è???",
+            "nodeAdded_plural": "æ·»å??°é¢?¿ä¸­?„å?ä¸ªè???,
+            "nodeRemoved": "ä»é¢?¿ä¸­? é™¤?„è???",
+            "nodeRemoved_plural": "ä»é¢?¿ä¸­? é™¤?„å?ä¸ªè???",
+            "nodeEnabled": "?¯ç”¨?‚ç‚¹:",
+            "nodeEnabled_plural": "?¯ç”¨å¤šä¸ª?‚ç‚¹:",
+            "nodeDisabled": "ç¦ç”¨?‚ç‚¹:",
+            "nodeDisabled_plural": "ç¦ç”¨å¤šä¸ª?‚ç‚¹:",
+            "nodeUpgraded": "?‚ç‚¹æ¨¡å?__module__?‡çº§?°__version__?ˆæœ¬"
+        },
+        "editor": {
+            "title": "?¢æ¿ç®¡ç?",
+            "times": {
+                "seconds": "ç§’å?",
+                "minutes": "?†å?",
+                "minutesV": "__count__?†å?",
+                "hoursV": "__count__å°æ—¶??,
+                "hoursV_plural": "__count__å°æ—¶??,
+                "daysV": "__count__å¤©å?",
+                "daysV_plural": "__count__å¤©å?",
+                "weeksV": "__count__?¨å?",
+                "weeksV_plural": "__count__?¨å?",
+                "monthsV": "__count__?ˆå?",
+                "monthsV_plural": "__count__?ˆå?",
+                "yearsV": "__count__å¹´å?",
+                "yearsV_plural": "__count__å¹´å?",
+                "yearMonthsV": "__y__å¹? __count__?ˆå?",
+                "yearMonthsV_plural": "__y__å¹? __count__?ˆå?",
+                "yearsMonthsV": "__y__å¹? __count__?ˆå?",
+                "yearsMonthsV_plural": "__y__å¹? __count__?ˆå?"
+            },
+            "nodeCount": "__label__ä¸ªè???,
+            "nodeCount_plural": "__label__ä¸ªè???,
+            "moduleCount": "__count__ä¸ªå¯?¨æ¨¡??,
+            "moduleCount_plural": "__count__ä¸ªå¯?¨æ¨¡??,
+            "inuse": "ä½¿ç”¨ä¸?,
+            "enableall": "?¨éƒ¨?¯ç”¨",
+            "disableall": "?¨éƒ¨ç¦ç”¨",
+            "enable": "?¯ç”¨",
+            "disable": "ç¦ç”¨",
+            "remove": "ç§»é™¤",
+            "update": "?´æ–°?³__version__?ˆæœ¬",
+            "updated": "å·²æ›´??,
+            "install": "å®‰è?",
+            "installed": "å·²å?è£?,
+            "loading": "? è½½?®å?...",
+            "tab-nodes": "?‚ç‚¹",
+            "tab-install": "å®‰è?",
+            "sort": "?’å?:",
+            "sortAZ": "a-zé¡ºå?",
+            "sortRecent": "?¥æ?é¡ºå?",
+            "more": "å¢å?__count__ä¸?,
+            "errors": {
+                "catalogLoadFailed": "? æ?? è½½?‚ç‚¹?®å???br>?¥ç?æµè??¨æ§?¶å°äº†è§£?´å?ä¿¡æ¯",
+                "installFailed": "? æ?å®‰è?: __module__<br>__message__<br>?¥ç??¥å?äº†è§£?´å?ä¿¡æ¯",
+                "removeFailed": "? æ?? é™¤: __module__<br>__message__<br>?¥ç??¥å?äº†è§£?´å?ä¿¡æ¯",
+                "updateFailed": "? æ??´æ–°: __module__<br>__message__<br>?¥ç??¥å?äº†è§£?´å?ä¿¡æ¯",
+                "enableFailed": "? æ??¯ç”¨: __module__<br>__message__<br>?¥ç??¥å?äº†è§£?´å?ä¿¡æ¯",
+                "disableFailed": "? æ?ç¦ç”¨: __module__<br>__message__<br>?¥ç??¥å?äº†è§£?´å?ä¿¡æ¯"
+            },
+            "confirm": {
+                "install": {
+                    "body": "?¨å?è£…ä??ï?è¯·é?è¯»è??¹ç??‡æ¡£ï¼Œæ?äº›è??¹ç?ä¾è??³ç³»ä¸èƒ½?ªåŠ¨è§?†³ï¼Œå¯?½é?è¦é??°å¯?¨Node-RED??,
+                    "title": "å®‰è??‚ç‚¹"
+                },
+                "remove": {
+                    "body": "? é™¤?‚ç‚¹å°†ä?Node-RED?¸è½½å®ƒã€‚è??¹å¯?½ä?ç»§ç»­ä½¿ç”¨èµ„æ?ï¼Œç›´?°é??°å¯?¨Node-RED??,
+                    "title": "? é™¤?‚ç‚¹"
+                },
+                "update": {
+                    "body": "?´æ–°?‚ç‚¹å°†é?è¦é??°å¯?¨Node-RED?¥å??æ›´?°ï?è¯¥è?ç¨‹å?é¡»ç”±?‹åŠ¨å®Œæ???,
+                    "title": "?´æ–°?‚ç‚¹"
+                },
+                "cannotUpdate": {
+                    "body": "æ­¤è??¹ç??´æ–°?¯ç”¨ï¼Œä?ä¸ä?å®‰è??¨é¢?¿ç®¡?†å™¨?¯ä»¥?´æ–°?„ä?ç½®ã€?br/><br/>è¯·å??…æ??³å?ä½•æ›´?°æ­¤?‚ç‚¹?„æ?æ¡?€?
+                },
+                "button": {
+                    "review": "?“å??‚ç‚¹ä¿¡æ¯",
+                    "install": "å®‰è?",
+                    "remove": "? é™¤",
+                    "update": "?´æ–°"
+                }
+            }
+        }
+    },
+    "sidebar": {
+        "info": {
+            "name": "?‚ç‚¹ä¿¡æ¯",
+            "label": "ä¿¡æ¯",
+            "node": "?‚ç‚¹",
+            "type": "ç±»å?",
+            "id": "ID",
+            "subflow": "å­æ?ç¨?,
+            "instances": "å®ä?",
+            "properties": "å±æ€?,
+            "info": "ä¿¡æ¯",
+            "blank": "ç©ºç™½",
+            "null": "ç©?,
+            "arrayItems": "__count__ä¸ªé¡¹??,
+            "showTips": "?¨å¯ä»¥ä?è®¾ç½®?¢æ¿?“å??ç¤º"
+        },
+        "config": {
+            "name": "?ç½®?‚ç‚¹",
+            "label": "?ç½®",
+            "global": "?€?‰æ?ç¨?,
+            "none": "??,
+            "subflows": "å­æ?ç¨?,
+            "flows": "æµç?",
+            "filterUnused": "?ªä½¿??,
+            "filterAll": "?€??,
+            "filtered": "__count__ä¸ªé???
+        },
+        "palette": {
+            "name": "?¢æ¿ç®¡ç?",
+            "label": "?¢æ¿"
+        }
+    },
+    "typedInput": {
+        "type": {
+            "str": "?‡å???,
+            "num": "?°å?",
+            "re": "æ­??è¡¨è¾¾å¼?,
+            "bool": "å¸ƒå?",
+            "json": "JSON",
+            "date": "?¶é—´??
+        }
+    },
+    "editableList": {
+        "add": "æ·»å?"
+    },
+    "search": {
+        "empty": "?¾ä??°åŒ¹??,
+        "addNode": "æ·»å?ä¸€ä¸ªè???.."
+    },
+    "expressionEditor": {
+        "functions": "?Ÿèƒ½",
+        "insert": "?’å…¥",
+        "title": "JSONataè¡¨è¾¾å¼ç?è¾‘å™¨",
+        "data": "ç¤ºä?æ¶ˆæ¯",
+        "result": "ç»“æ?",
+        "format": "?¼å?è¡¨è¾¾?¹æ?",
+        "compatMode": "?¼å®¹æ¨¡å??¯ç”¨",
+        "compatModeDesc": "<h3>JSONata?„å…¼å®¹æ¨¡å¼?/h3><p> ?®å??„è¡¨è¾¾å?ä»ç„¶?‚è€?code>msg</code>ï¼Œæ?ä»¥å?ä»¥å…¼å®¹æ€§æ¨¡å¼è?è¡Œè?ä¼°ã€‚è¯·?´æ–°è¡¨è¾¾å¼ï?ä½¿å…¶ä¸ä½¿??code>msg</code>ï¼Œå?ä¸ºæ­¤æ¨¡å?å°†åœ¨å°†æ¥? é™¤??/p><p> å½“JSONata?¯æ?é¦–æ¬¡æ·»å??°Node-RED?¶ï?å®ƒé?è¦è¡¨è¾¾å?å¼•ç”¨<code>msg</code>å¯¹è±¡?‚ä?å¦?code>msg.payload</code>å°†ç”¨äºè®¿?®æ??ˆè?è½½ã€?/p><p> è¿™æ ·ä¾¿ä??é?è¦è¡¨è¾¾å??´æ¥?ˆå¯¹æ¶ˆæ¯è¿›è?è¯„ä¼°?‚è?è®¿é—®?‰æ?è´Ÿè½½ï¼Œè¡¨è¾¾å?åº”è¯¥?ªæ˜¯<code>payload</code>.</p>",
+        "noMatch": "? åŒ¹?ç???,
+        "errors": {
+            "invalid-expr": "? æ??„JSONataè¡¨è¾¾å¼?\n  __message__",
+            "invalid-msg": "? æ??„ç¤ºä¾‹JSONæ¶ˆæ¯:\n  __message__",
+            "context-unsupported": "? æ?æµ‹è?ä¸Šä??‡å‡½?°\n $flowContext ??$globalContext",
+            "eval": "è¯„ä¼°è¡¨è¾¾å¼é?è¯?\n  __message__"
+        }
+    },
+    "jsonEditor": {
+        "title": "JSONç¼–è???,
+        "format": "?¼å??–JSON"
+    },
+    "bufferEditor": {
+        "title": "ç¼“å†²?ºç?è¾‘å™¨",
+        "modeString": "ä½œä¸ºUTF-8å­—ç¬¦ä¸²å???,
+        "modeArray": "ä½œä¸ºJSON?°ç?å¤„ç?",
+        "modeDesc": "<h3>ç¼“å†²?ºç?è¾‘å™¨</h3><p>ç¼“å†²?ºç±»?‹è¢«å­˜å‚¨ä¸ºå??‚å€¼ç?JSON?°ç??‚ç?è¾‘å™¨å°†å?è¯•å?è¾“å…¥?„æ•°?¼è§£?ä¸ºJSON?°ç??‚å??œå?ä¸æ˜¯?‰æ??„JSONï¼Œå?å°†è¢«è§†ä¸ºUTF-8å­—ç¬¦ä¸²ï?å¹¶è¢«è½¬æ¢ä¸ºå?ä¸ªå?ç¬¦ä»£?ç‚¹?„æ•°ç»„ã€?/p><p>ä¾‹å?ï¼?code>Hello World</code>?„å€¼ä?è¢«è½¬?¢ä¸ºJSON?°ç?ï¼?pre>[72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100]</pre></p>"
+    },
+    "OCDeployer": {
+        "deploy": "?¨ç½²",
+        "full": "?¨é¢",
+        "fullDesc": "?¨å·¥ä½œåŒºä¸­éƒ¨ç½²æ??‰å?å®?,
+        "modifiedFlows": "å·²ä¿®?¹ç?æµç?",
+        "modifiedFlowsDesc": "?ªéƒ¨ç½²å??«å·²?´æ”¹?‚ç‚¹?„æ?",
+        "modifiedNodes": "å·²æ›´?¹ç??‚ç‚¹",
+        "modifiedNodesDesc": "?ªéƒ¨ç½²å·²ç»æ›´?¹ç??‚ç‚¹",
+        "successfulDeploy": "?¨ç½²?å?",
+        "deployFailed": "?¨ç½²å¤±è´¥: __message__",
+        "unusedConfigNodes": "?¨æ?ä¸€äº›æœªä½¿ç”¨?„é?ç½®è???,
+        "unusedConfigNodesLink": "?¹å‡»æ­¤å??¥ç?å®ƒä»¬",
+        "errors": {
+            "noResponse": "?åŠ¡?¨æ²¡?‰å?åº?
+        },
+        "confirm": {
+            "button": {
+                "ignore": "å¿½ç•¥",
+                "confirm": "ç¡®è®¤?¨ç½²",
+                "review": "?¥ç??´æ”¹",
+                "cancel": "?–æ?",
+                "merge": "?ˆå¹¶",
+                "overwrite": "å¿½ç•¥ & ?¨ç½²"
+            },
+            "undeployedChanges": "?¨æ??ªéƒ¨ç½²ç??´æ”¹?‚\n\nç¦»å?æ­¤é¡µ?¢å?ä¸¢å¤±è¿™ä??´æ”¹??,
+            "improperlyConfigured": "å·¥ä??ºå??«ä?äº›æœªæ­?¡®?ç½®?„è???",
+            "unknown": "å·¥ä??ºå??«ä?äº›æœª?¥ç??‚ç‚¹ç±»å?:",
+            "confirm": "ä½ ç¡®å®šè??¨ç½²??",
+            "conflict": "?åŠ¡?¨æ­£?¨è?è¡Œè??°ç?ä¸€ç»„æ?ç¨‹ã€?,
+            "backgroundUpdate": "?åŠ¡?¨ä??„æ?ç¨‹å·²?´æ–°??,
+            "conflictChecking": "æ£€?¥æ˜¯?¦å¯ä»¥è‡ª?¨å?å¹¶æ›´??,
+            "conflictAutoMerge": "æ­¤æ›´?¹ä??…æ‹¬?²ç?ï¼Œå¯ä»¥è‡ª?¨å?å¹?,
+            "conflictManualMerge": "è¿™ä??´æ”¹?…æ‹¬äº†åœ¨?¨ç½²ä¹‹å?å¿…é¡»è§?†³?„å†²çªã€?
+        },
+        "configure": "Configure",
+        "successfulConfigure": "Successfully configured",
+        "configureFailed": "Configure failed: __message__"
+    }
+}

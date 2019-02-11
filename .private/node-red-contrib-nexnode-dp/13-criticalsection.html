@@ -1,0 +1,115 @@
+<!--
+  Copyright 2015, 2016 NEXCOM International Co., Ltd.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="critical section begin">
+    <div class="form-row">
+        <label for="node-input-mutex"><i class="fa fa-globe"></i> Mutex</label>
+        <input type="text" id="node-input-mutex">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="critical section begin">
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('critical section begin',
+    {
+        category: 'DataProcess',
+        defaults: 
+        {
+            mutex: {type:"mutex", required:true},
+            name: {value:""}
+        },
+        color:"#fff", /*kewei modify (#2ab8bd)*/
+		border:"3px solid #02dd09", /*kewei add*/
+		borColor:"#02dd09", /*kewei modify*/
+        inputs:1,
+        outputs:1,
+        icon: "lock.png",
+        label: function() 
+        {
+            return this.name||"critical section begin";
+        },
+        labelStyle: function()
+        {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="critical section end">
+    <div class="form-row">
+        <label for="node-input-mutex"><i class="fa fa-globe"></i> Mutex</label>
+        <input type="text" id="node-input-mutex">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="critical section end">
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('critical section end',
+    {
+        category: 'DataProcess',
+        defaults: 
+        {
+            mutex: {type:"mutex", required:true},
+            name: {value:""}
+        },
+        color:"#fff", /*kewei modify (#2ab8bd)*/
+		border:"3px solid #02dd09", /*kewei add*/
+		borColor:"#02dd09", /*kewei modify*/
+        inputs:1,
+        outputs:1,
+        icon: "unlock.png",
+        label: function() 
+        {
+            return this.name||"critical section end";
+        },
+        labelStyle: function()
+        {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="mutex">
+    <div class="form-row">
+        <label for="node-config-input-mutex"><i class="fa fa-tag"></i> Mutex</label>
+        <input type="text" id="node-config-input-mutex" placeholder="mutex">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mutex',{
+        category: 'config',
+        defaults: {
+            mutex: { value:"",required:true },
+            working: {value:"false"}
+        },
+        label: function() {
+            return this.mutex;
+        }
+    });
+</script>

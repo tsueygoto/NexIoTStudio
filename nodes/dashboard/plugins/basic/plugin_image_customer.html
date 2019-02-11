@@ -1,0 +1,137 @@
+<style>
+
+</style>
+
+<script type="text/javascript">
+	/*kewei added : upload files*/	
+	function handleFiles( files ) {
+		var customImgs = files[0];
+		//console.log(customImgs.size);
+		var formData = new FormData();
+        formData.append("file", customImgs);
+		$.ajax({
+            url: 'imgUpload', /*URL doesn't need slash*/
+            type: 'post',
+            data: formData,
+            cache: false,
+			contentType: false,
+			processData: false,
+			beforeSend: function(){
+				$('.loading').show();
+			},
+            success: function (msg) {
+                $.getJSON( "imagesources" ).done( function( fileList ) {
+					$("#chartImagesources").prepend( '<li><a data-isid="' + fileList.length + '" href="#"><span class="glyphicon  glyphicon-plus"></span> ' + msg.originalname + '</a></li>' );
+				} );
+				App.Model.Dashboard.getImageList();			
+            },
+			complete:function (){
+			    $('.loading').hide();
+			}
+        });
+	}
+	
+    (function() {
+        var ImageCustomerPlugin = 
+		function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+        var node = this;
+        var imgFolder = "images";
+        var imgFile = "";
+        
+        node.conf = config;
+        if (config.cp_file == "") imgFile = imgFolder + "/default.jpg";
+        else imgFile = imgFolder + "/" + config.cp_file;
+        // mark to don't affect the background if this image is not background
+        var img = new Image();
+        img.onload = function() {
+            var content = 
+                '<svg width="100%" height="100%" viewBox="0 0 ' + this.width + ' ' + this.height + '" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"      xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                '   <image xlink:href="' + imgFile + 
+                '" style="width:100%; height:auto;"/>' +
+                '</svg>';
+            node.container.append(content);
+        }
+        img.src = imgFile;
+        
+        /**
+         * get image sources from server then save to configure cp_imglist
+         */
+		function loadImgList(){
+			$.getJSON( "imagesources" ).done( function( imagesources ) {
+				imagesources.sort();
+				console.log("customFront/imagesources")
+				config.cp_imglist = imagesources;
+			} );
+		}
+        
+        loadImgList();
+    };
+		
+    /**
+     *
+     */
+    ImageCustomerPlugin.prototype.pushData = function( index , data ) {
+        //if( this.components[ index ].getData( data.data ).type === "ok" )
+        //{
+        //  this.$alertGlow.removeClass( "animate" );
+        //}
+        //else
+        //{
+        //  this.$alertGlow.addClass( "animate" );
+        //}
+    };
+
+    App.Plugins.registerChartType( "customer-plugin" , ImageCustomerPlugin , {
+        category : "Basic",
+        display_name : "Customer",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            cp_file : {default : "default.jpg" },
+            cp_imglist : { default: [] },
+            cp_setBackground : { default: false }
+        },
+        color: "rgb(153, 255, 204)"
+    });
+
+  })();
+</script>
+
+<script type="text/x-dash" data-chart-config="customer-plugin">
+    <div class="form-group">
+        <div class="dropdown">
+            <label style="font-size: 14px;">Imagesources</label>
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                    Select Image
+                    <span class="caret"></span>
+            </button>
+			<!--kewei added : Custom upload-->
+            <label id="customUpload">
+				<input accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" type="file" onchange="handleFiles(this.files)">
+				<i class="fa fa-cloud-upload"></i> Custom Upload
+			</label>
+				
+            <!--kewei modified-->	
+            <ul class="dropdown-menu" id="chartImagesources" data-prop="cp_imglist" type="dropdown-menu" style="max-height:40vh;"></ul>
+            <input class="form-control" type="text" id="cp_file" data-prop="cp_file">
+            
+        </div>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="customer-plugin">
+    <h1>Customer</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource any.</p>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Image File</b> : To set customize image file path and filename. This image should put in 
+    {IoT Studio installed folder}\node_modules\node-red-contrib-graphs\static\images folder.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p>Like below.</p><p style="text-align: center;"><img src="images/Customer.png" /></p></div>
+</script>
+

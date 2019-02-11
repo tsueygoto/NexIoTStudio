@@ -1,0 +1,37 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('azureiothubsend',{
+        category: 'cloud',
+        color:"#fff", /*kewei modify (#2ab8bd)*/
+		border:"3px solid #e24d0d", /*kewei add*/
+		borColor:"#e24d0d", /*kewei modify*/
+        defaults: {
+            name: {value:"Azure IoT Hub Send (C2D)"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "azureiothub.png",
+        label: function() {
+            return this.name||"Azure IoT Hub Send";
+        },
+        credentials: {
+            connectionstring: {type:"text"}
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="azureiothubsend">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-connectionstring"><i class="fa fa-bookmark"></i> Connection String</label>
+        <input type="text" id="node-input-connectionstring">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="azureiothubsend">
+    <p>A simple node that send the message payloads to Azure IoT Device (Cloud to Device (C2D))</p>
+</script>
+

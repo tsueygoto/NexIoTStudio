@@ -1,0 +1,226 @@
+<style>
+.nvd3CumulativeLineContainer {
+  flex: 1;
+}
+
+.nvd3CumulativeLineContainer .nv-legend-text {
+  //fill: #eee; Kewei modified
+}
+
+.nvd3CumulativeLineContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3CumulativeLineContainer .nvd3.nv-noData {
+  fill: #aab0b9;
+}
+
+.nvd3CumulativeLineContainer .nv-axis {
+  fill: #eee; Kewei modified
+}
+
+.nvd3CumulativeLineContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3CumulativeLineContainer .tick line {
+  stroke: #4a4e54;
+}
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var NVD3CumulativeLine = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+
+			this.id = "id" + dbTools.generateId().replace(".","");
+            this.container = $( '<svg id="' + this.id + '"  class="nvd3CumulativeLineContainer"></svg>' );
+            $( container ).append( this.container );
+
+            this.data = [];
+            this.chart = nv.models.cumulativeLineChart()
+                      .x(function(d) { return d[0] })
+                      .y(function(d) { return d[1]/100 })
+                      .color(d3.scale.category10().range())
+                      .useInteractiveGuideline(true)
+                      ;
+
+            this.chart.forceY([parseInt(this.config.yMin)/100, parseInt(this.config.yMax)/100]);
+            
+            this.chart.xAxis.tickFormat(function(d) {
+                return d3.time.format('%x')(new Date(d))
+            });
+            this.chart.yAxis.tickFormat(d3.format(',.1%'));
+          
+            var arrSize = parseInt(this.config.dataMax) + 1;       
+            
+            if( this.config.xLabel ) this.chart.xAxis.axisLabel( this.config.xLabel );
+            if( this.config.yLabel ) this.chart.yAxis.axisLabel( this.config.yLabel );
+            
+            var now = new Date().getTime();
+            for( var i = 0; i < this.datasources.length; i++ ) {
+                //this.datasources[i].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+                this.data.push( {
+                    key : this.datasources[i].config.label,
+                    values : new Array(arrSize),
+                    valueIndex : 1,
+                    dataCount : -1
+                });
+                for (var j=0; j<this.data[i].values.length; j++) {
+                    this.data[i].values[j] = new Array(2);
+                    this.data[i].values[j][0] = now;
+                    this.data[i].values[j][1] = 0;
+                }
+                this.data[i].dataCount = this.data[i].values.length;
+            }			
+            d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+            this.container.parents( "li" ).on( "resize" , this.chart.update );
+			
+			/*kewei added
+			 *Change text color
+			*/
+		    d3.selectAll('#'+ this.id + ' .nv-axis text').style('fill', this.config.textColor);
+			d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);			
+        };
+
+        NVD3CumulativeLine.prototype.pushData = function( index , data ) {
+            if( index < 0 || index >= this.components.length )
+                return;
+
+            if (($.isArray(data.data)) && (data.data.length > 1)) {
+                this.data[index].values = null;
+                this.data[index].values = data.data;
+            } else {
+                if (this.data[index].valueIndex >= this.data[index].dataCount) {
+                    this.data[index].values[0][0] = this.data[index].values[1][0];
+                    this.data[index].values[0][1] = 0;
+                    for (var i=2; i<this.data[index].dataCount; i++) {
+                        this.data[index].values[i-1][0] = this.data[index].values[i][0];
+                        this.data[index].values[i-1][1] = this.data[index].values[i][1];
+                    }
+                    this.data[index].values[this.data[index].dataCount - 1][0] = data.data[0][0];
+                    this.data[index].values[this.data[index].dataCount - 1][1] = data.data[0][1];
+                } else {
+                    for (var i=this.data[index].valueIndex; i<this.data[index].dataCount; i++) {
+                        this.data[index].values[i][0] = data.data[0][0];
+                        this.data[index].values[i][1] = data.data[0][1];
+                    }
+                    this.data[index].valueIndex++;
+                }
+            }
+			
+            this.chart.update();
+			
+            /*kewei added
+			 *Change text color
+			*/
+		    d3.selectAll('#'+ this.id + ' .nv-axis text').style('fill', this.config.textColor);
+			d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);			
+        };
+
+        App.Plugins.registerChartType( "nvd3cumulativeLine" , NVD3CumulativeLine , {
+            category : "NVD3",
+            display_name : "Cumulative Line",
+            chartConfig : {
+				textColor : { default : "#000000" },
+                xLabel : { default : "" },
+                yLabel : { default : "" },
+                yMin : { default : "-1" },
+                yMax : { default : "1" },
+                dataMax : { default : "10" }
+            },
+            datasourceConfig : {
+                trend : { default : false }
+            },
+            disableComponentDiscovery : true,
+            color: "rgb(255,102,153)",
+            dependencies : [
+                "plugins/lib/d3_3.5.17/d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.css"
+            ]
+        });
+
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="nvd3cumulativeLine">
+  <div class="form-group">
+    <label for="font_color">Text Color</label>
+    <input id="font_color" class="form-control" type="text" data-prop="textColor">
+  </div>
+  <div class="form-group">
+    <label>X Axis Label</label>
+    <input class="form-control" type="text" data-prop="xLabel">
+  </div>
+  <div class="form-group">
+    <label>Y Axis Label</label>
+    <input class="form-control" type="text" data-prop="yLabel">
+  </div>
+  <div class="form-horizontal">
+    <label>Y Axis Value Range</label>
+    <div class="form-group">
+      <div class="col-md-2">
+        <label class="form-control" style="border: none;">Min:</label>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" type="text" data-prop="yMin">
+      </div>
+      <div class="col-md-2">
+        <label class="form-control" style="border: none;">Max:</label>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" type="text" data-prop="yMax">
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Maximun Data Quantity</label>
+    <input class="form-control" type="text" data-prop="dataMax">
+  </div>
+</script>
+
+<!--
+<script type="text/x-dash" data-datasource-config="nvd3cumulativeLine">
+  <div class="checkbox">
+    <label><input type="checkbox" data-prop="trend"> Show trend</label>
+  </div>
+</script>
+-->
+
+<script type="text/x-red" data-help-name="nvd3cumulativeLine">
+    <h1>Cumulative Line</h1>
+    <h3><b>|</b> DataSource</h3>
+    <p>DataSource set cumulative line chart value like the below example.</p>
+<pre>
+var value = Math.floor((Math.random()-0.5) * 100);
+var now = new Date().getTime();
+msg.payload = {
+    tstamp: now,
+    data:[[now, value]]
+};</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Datasources</b>: can add more than one datasource.</p>
+    <p><b>X Axis Label</b>: the X axis label string.</p>
+    <p><b>Y Axis Label</b>: the Y axis label string.</p>
+    <p><b>Y Axis Value Range</b>: the Y axis value range from minimum and maximum.</p>
+    <p><b>Maximum Data Quantity</b>: the maximum data quantity in chart.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3CumulativeLineChart.png" style="width:100%;" /></p></div>
+    
+    <h3><b>|</b> Flow Example</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3CumulativeLineChartExample.png" style="width:100%;" /></p></div>
+<pre>[{"id":"d2f29545.1f17a8","type":"function","z":"a68638eb.a48788","name":"plugin_nvd3cumulativeline","func":"var value = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: msg.payload,\n    data:[[msg.payload, value]]\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":393,"y":595,"wires":[["ed939436.65b608"]]},{"id":"ed939436.65b608","type":"iot-datasource","z":"a68638eb.a48788","name":"Stream 1","tstampField":"","dataField":"data","disableDiscover":false,"x":589,"y":595,"wires":[[]]},{"id":"df3f219.26af0e","type":"inject","z":"a68638eb.a48788","name":"trigger","topic":"","payload":"","payloadType":"date","repeat":"1","crontab":"","once":false,"x":181,"y":537,"wires":[["d2f29545.1f17a8","9473dbfd.a44ed8","fc057e21.2423b","b3a073e9.04ba2"]]},{"id":"9473dbfd.a44ed8","type":"function","z":"a68638eb.a48788","name":"plugin_nvd3cumulativeline","func":"var value = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: msg.payload,\n    data:[[msg.payload, value]]\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":392,"y":558,"wires":[["41d6f64c.580158"]]},{"id":"41d6f64c.580158","type":"iot-datasource","z":"a68638eb.a48788","name":"Stream 2","tstampField":"","dataField":"data","disableDiscover":false,"x":588,"y":558,"wires":[[]]},{"id":"fc057e21.2423b","type":"function","z":"a68638eb.a48788","name":"plugin_nvd3cumulativeline","func":"var value = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: msg.payload,\n    data:[[msg.payload, value]]\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":393,"y":522,"wires":[["a31f622b.9aecd"]]},{"id":"a31f622b.9aecd","type":"iot-datasource","z":"a68638eb.a48788","name":"Stream 3","tstampField":"","dataField":"data","disableDiscover":false,"x":589,"y":522,"wires":[[]]},{"id":"b3a073e9.04ba2","type":"function","z":"a68638eb.a48788","name":"plugin_nvd3cumulativeline","func":"var value = Math.floor( (Math.random()-0.5) * 100 );\nmsg.payload = {\n    tstamp: msg.payload,\n    data:[[msg.payload, value]]\n};\nreturn msg;\n\n","outputs":1,"noerr":0,"x":392,"y":485,"wires":[["80f7f2de.b02b3"]]},{"id":"80f7f2de.b02b3","type":"iot-datasource","z":"a68638eb.a48788","name":"Stream 4","tstampField":"","dataField":"data","disableDiscover":false,"x":588,"y":485,"wires":[[]]}]</pre>
+
+    <p>In configure add the below three datasources.</p>
+<pre>
+   Stream 1
+   Stream 2
+   Stream 3
+   Stream 4</pre>
+    
+</script>

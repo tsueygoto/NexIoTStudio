@@ -1,0 +1,124 @@
+<style>
+.nvd3BulletContainer {
+  flex: 1;
+}
+
+.nvd3BulletContainer .nv-legend-text {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3BulletContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3BulletContainer .nv-axis {
+  fill: #eee; /*Kewei modified*/
+}
+
+.nvd3BulletContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3BulletContainer .tick line {
+  stroke: #4a4e54;
+}
+
+.nvd3BulletContainer .nv-titles text {
+  //fill: #eee; /*Kewei modified*/
+}
+
+.nvd3BulletContainer .nv-tick text {
+  fill: #eee; /*Kewei modified*/
+}
+
+</style>
+
+<script type="text/javascript">
+  ( function() {
+    var NVD3Bullet = function( container , datasources , components , config ) {
+        this.datasources = datasources;
+        this.components = components;
+        this.config = config;
+        
+		this.id = "id" + dbTools.generateId().replace(".","");
+        this.container = $( '<svg id="' + this.id + '" class="nvd3BulletContainer"></svg>' );
+        $( container ).append( this.container );
+    
+        this.data = {};
+    
+        this.chart = nv.models.bulletChart();
+        
+        //d3.select( this.container[0] ).datum( this.data ).transition().duration(100).call( this.chart );
+        d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+    
+        //this.container.parents( "li" ).on( "resize" , this.chart.update );
+    };
+    
+    NVD3Bullet.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+
+        this.data = data.data;
+        if (data.data.color != undefined) {
+            this.data.color = data.data.color;
+        }
+        
+        d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+        this.chart.update();
+		
+		/*kewei added
+			 *Change text color
+			*/
+		d3.selectAll('#'+ this.id + ' .nv-tick text').style('fill', this.config.textColor);
+	    d3.selectAll('#'+ this.id + ' .nv-titles').style('fill', this.config.textColor);
+    };
+    
+    App.Plugins.registerChartType( "nvd3bullet" , NVD3Bullet , {
+        category : "NVD3",
+        display_name : "Bullet Chart",
+        disableComponentDiscovery : true,
+		chartConfig : {
+				textColor : { default : "#eee" }
+            },
+        color: "rgb(153,255,102)",
+        dependencies : [
+                "plugins/lib/d3_3.5.17/d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.css"
+        ]
+    } );
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="nvd3bullet">
+  <div class="form-group">
+    <label for="font_color">Text Color</label>
+    <input id="font_color" class="form-control" type="text" data-prop="textColor">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="nvd3bullet">
+    <h1>Bullet</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource set bullet value like the below example.</p>
+<pre>
+var value = Math.floor( Math.random() * 300 );
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data:{
+        "title":"Revenue",      //Label the bullet chart
+        "subtitle":"US$, in thousands", //sub-label for bullet chart
+        "ranges":[150,225,300], //Minimum, mean and maximum values.
+        "measures":[value],     //Value representing current measurement (the thick blue line in the example)
+        "markers":[250]         //Place a marker on the chart (the white triangle marker)
+    }
+};</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p>No configure need.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3Bullet.png" style="width:100%;" /></p></div>
+    
+</script>
+

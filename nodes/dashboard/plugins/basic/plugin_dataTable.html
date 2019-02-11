@@ -1,0 +1,855 @@
+<!--
+
+    Copyright 2017, 2016 NEXCOM International Co., Ltd.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    
+    Description:
+
+    [ Data Table Module ]
+    
+    Look like below:
+        header1 header2 header3 ... headern
+       -------------------------------------
+         data1   data2   data3  ...  datan
+         data1   data2   data3  ...  datan
+           :       :       :           :
+         data1   data2   data3  ...  datan
+       -------------------------------------
+        summary
+
+    The header items use the config dt_header to setting.
+    The format is header1,header2,header3, ... ,headern
+    
+    The data content came from datasource payload.
+    The datasource payload is like below:
+        msg.payload = {
+            tstamp: new Date().getTime(),
+            data: [data1,data2,data3, ... ,datan]
+        }
+
+    The history data feature will adopt node-red history feature then send back all history data like below:
+        msg.payload = {
+            tstamp: new Date().getTime(),
+            data: [
+                    [history1,history2,history3, ... ,history1n],
+                    [history1,history2,history3, ... ,history1n],
+                     :
+                    [history1,history2,history3, ... ,history1n],
+                  ]
+        }
+        
+    note:
+        reference URL: https://datatables.net/
+-->
+
+<style>
+    table.dataTable {
+        width: 100%;
+        margin: 0 auto;
+        clear: both;
+        border-collapse: separate;
+        border-spacing: 0;
+        color: #000000;
+    }
+    
+    table.dataTable thead th,table.dataTable tfoot th {
+        font-weight: bold;
+    }
+    
+    table.dataTable thead th,table.dataTable thead td {
+        padding: 10px 18px;
+        border-bottom: 1px solid #111;
+    }
+    
+    table.dataTable thead th:active,table.dataTable thead td:active {
+        outline: none;
+    }
+    
+    table.dataTable tfoot th,table.dataTable tfoot td {
+        padding: 10px 18px 6px 18px;
+        border-top: 1px solid #111;
+    }
+    
+    table.dataTable thead .sorting,table.dataTable thead .sorting_asc,table.dataTable thead .sorting_desc {
+        cursor: pointer;
+        *cursor: hand;
+    }
+    
+    table.dataTable thead .sorting,table.dataTable thead .sorting_asc,table.dataTable thead .sorting_desc,table.dataTable thead .sorting_asc_disabled,table.dataTable thead .sorting_desc_disabled {
+        background-repeat: no-repeat;
+        background-position: center right;
+    }
+    
+    table.dataTable thead .sorting {
+        background-image: url("images/dataTable/sort_both.png");
+    }
+    
+    table.dataTable thead .sorting_asc {
+        background-image: url("images/dataTable/sort_asc.png");
+    }
+    
+    table.dataTable thead .sorting_desc {
+        background-image: url("images/dataTable/sort_desc.png");
+    }
+    
+    table.dataTable thead .sorting_asc_disabled {
+        background-image: url("images/dataTable/sort_asc_disabled.png");
+    }
+    
+    table.dataTable thead .sorting_desc_disabled {
+        background-image: url("images/dataTable/sort_desc_disabled.png");
+    }
+    
+    table.dataTable tbody tr {
+        background-color: #ffffff;
+    }
+    
+    table.dataTable tbody tr.selected {
+        background-color: #B0BED9;
+    }
+    
+    table.dataTable tbody th,table.dataTable tbody td {
+        padding: 8px 10px;
+    }
+    
+    table.dataTable.row-border tbody th,table.dataTable.row-border tbody td,table.dataTable.display tbody th,table.dataTable.display tbody td {
+        border-top: 1px solid #ddd;
+    }
+    
+    table.dataTable.row-border tbody tr:first-child th,table.dataTable.row-border tbody tr:first-child td,table.dataTable.display tbody tr:first-child th,table.dataTable.display tbody tr:first-child td {
+        border-top: none;
+    }
+    
+    table.dataTable.cell-border tbody th,table.dataTable.cell-border tbody td {
+        border-top: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+    }
+    
+    table.dataTable.cell-border tbody tr th:first-child,table.dataTable.cell-border tbody tr td:first-child {
+        border-left: 1px solid #ddd;
+    }
+    
+    table.dataTable.cell-border tbody tr:first-child th,table.dataTable.cell-border tbody tr:first-child td {
+        border-top: none;
+    }
+    
+    table.dataTable.stripe tbody tr.odd,table.dataTable.display tbody tr.odd {
+        background-color: #f9f9f9;
+    }
+    
+    table.dataTable.stripe tbody tr.odd.selected,table.dataTable.display tbody tr.odd.selected {
+        background-color: #acbad4;
+    }
+    
+    table.dataTable.hover tbody tr:hover,table.dataTable.display tbody tr:hover {
+        background-color: #f6f6f6;
+    }
+    
+    table.dataTable.hover tbody tr:hover.selected,table.dataTable.display tbody tr:hover.selected {
+        background-color: #aab7d1;
+    }
+    
+    table.dataTable.order-column tbody tr>.sorting_1,table.dataTable.order-column tbody tr>.sorting_2,table.dataTable.order-column tbody tr>.sorting_3,table.dataTable.display tbody tr>.sorting_1,table.dataTable.display tbody tr>.sorting_2,table.dataTable.display tbody tr>.sorting_3 {
+        background-color: #fafafa;
+    }
+    
+    table.dataTable.order-column tbody tr.selected>.sorting_1,table.dataTable.order-column tbody tr.selected>.sorting_2,table.dataTable.order-column tbody tr.selected>.sorting_3,table.dataTable.display tbody tr.selected>.sorting_1,table.dataTable.display tbody tr.selected>.sorting_2,table.dataTable.display tbody tr.selected>.sorting_3 {
+        background-color: #acbad5;
+    }
+    
+    table.dataTable.display tbody tr.odd>.sorting_1,table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
+        background-color: #f1f1f1;
+    }
+    
+    table.dataTable.display tbody tr.odd>.sorting_2,table.dataTable.order-column.stripe tbody tr.odd>.sorting_2 {
+        background-color: #f3f3f3;
+    }
+    
+    table.dataTable.display tbody tr.odd>.sorting_3,table.dataTable.order-column.stripe tbody tr.odd>.sorting_3 {
+        background-color: whitesmoke;
+    }
+    
+    table.dataTable.display tbody tr.odd.selected>.sorting_1,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_1 {
+        background-color: #a6b4cd;
+    }
+    
+    table.dataTable.display tbody tr.odd.selected>.sorting_2,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_2 {
+        background-color: #a8b5cf;
+    }
+    
+    table.dataTable.display tbody tr.odd.selected>.sorting_3,table.dataTable.order-column.stripe tbody tr.odd.selected>.sorting_3 {
+        background-color: #a9b7d1;
+    }
+    
+    table.dataTable.display tbody tr.even>.sorting_1,table.dataTable.order-column.stripe tbody tr.even>.sorting_1 {
+        background-color: #fafafa;
+    }
+    
+    table.dataTable.display tbody tr.even>.sorting_2,table.dataTable.order-column.stripe tbody tr.even>.sorting_2 {
+        background-color: #fcfcfc;
+    }
+    
+    table.dataTable.display tbody tr.even>.sorting_3,table.dataTable.order-column.stripe tbody tr.even>.sorting_3 {
+        background-color: #fefefe;
+    }
+    
+    table.dataTable.display tbody tr.even.selected>.sorting_1,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_1 {
+        background-color: #acbad5;
+    }
+    
+    table.dataTable.display tbody tr.even.selected>.sorting_2,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_2 {
+        background-color: #aebcd6;
+    }
+    
+    table.dataTable.display tbody tr.even.selected>.sorting_3,table.dataTable.order-column.stripe tbody tr.even.selected>.sorting_3 {
+        background-color: #afbdd8;
+    }
+    
+    table.dataTable.display tbody tr:hover>.sorting_1,table.dataTable.order-column.hover tbody tr:hover>.sorting_1 {
+        background-color: #eaeaea;
+    }
+    
+    table.dataTable.display tbody tr:hover>.sorting_2,table.dataTable.order-column.hover tbody tr:hover>.sorting_2 {
+        background-color: #ececec;
+    }
+    
+    table.dataTable.display tbody tr:hover>.sorting_3,table.dataTable.order-column.hover tbody tr:hover>.sorting_3 {
+        background-color: #efefef;
+    }
+    
+    table.dataTable.display tbody tr:hover.selected>.sorting_1,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_1 {
+        background-color: #a2aec7;
+    }
+    
+    table.dataTable.display tbody tr:hover.selected>.sorting_2,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_2 {
+        background-color: #a3b0c9;
+    }
+    
+    table.dataTable.display tbody tr:hover.selected>.sorting_3,table.dataTable.order-column.hover tbody tr:hover.selected>.sorting_3 {
+        background-color: #a5b2cb;
+    }
+    
+    table.dataTable.no-footer {
+        border-bottom: 1px solid #111;
+    }
+    
+    table.dataTable.nowrap th,table.dataTable.nowrap td {
+        white-space: nowrap;
+    }
+    
+    table.dataTable.compact thead th,table.dataTable.compact thead td {
+        padding: 4px 17px 4px 4px;
+    }
+    
+    table.dataTable.compact tfoot th,table.dataTable.compact tfoot td {
+        padding: 4px;
+    }
+    
+    table.dataTable.compact tbody th,table.dataTable.compact tbody td {
+        padding: 4px;
+    }
+    
+    table.dataTable th.dt-left,table.dataTable td.dt-left {
+        text-align: left;
+    }
+    
+    table.dataTable th.dt-center,table.dataTable td.dt-center,table.dataTable td.dataTables_empty {
+        text-align: center;
+    }
+    
+    table.dataTable th.dt-right,table.dataTable td.dt-right {
+        text-align: right;
+    }
+    
+    table.dataTable th.dt-justify,table.dataTable td.dt-justify {
+        text-align: justify;
+    }
+    
+    table.dataTable th.dt-nowrap,table.dataTable td.dt-nowrap {
+        white-space: nowrap;
+    }
+    
+    table.dataTable thead th.dt-head-left,table.dataTable thead td.dt-head-left,table.dataTable tfoot th.dt-head-left,table.dataTable tfoot td.dt-head-left {
+        text-align: left;
+    }
+    
+    table.dataTable thead th.dt-head-center,table.dataTable thead td.dt-head-center,table.dataTable tfoot th.dt-head-center,table.dataTable tfoot td.dt-head-center {
+        text-align: center;
+    }
+    
+    table.dataTable thead th.dt-head-right,table.dataTable thead td.dt-head-right,table.dataTable tfoot th.dt-head-right,table.dataTable tfoot td.dt-head-right {
+        text-align: right;
+    }
+    
+    table.dataTable thead th.dt-head-justify,table.dataTable thead td.dt-head-justify,table.dataTable tfoot th.dt-head-justify,table.dataTable tfoot td.dt-head-justify {
+        text-align: justify;
+    }
+    
+    table.dataTable thead th.dt-head-nowrap,table.dataTable thead td.dt-head-nowrap,table.dataTable tfoot th.dt-head-nowrap,table.dataTable tfoot td.dt-head-nowrap {
+    white-space: nowrap;
+    }
+    
+    table.dataTable tbody th.dt-body-left,table.dataTable tbody td.dt-body-left {
+        text-align: left;
+    }
+    
+    table.dataTable tbody th.dt-body-center,table.dataTable tbody td.dt-body-center {
+        text-align: center;
+    }
+    
+    table.dataTable tbody th.dt-body-right,table.dataTable tbody td.dt-body-right {
+        text-align: right;
+    }
+    
+    table.dataTable tbody th.dt-body-justify,table.dataTable tbody td.dt-body-justify {
+        text-align: justify;
+    }
+    
+    table.dataTable tbody th.dt-body-nowrap,table.dataTable tbody td.dt-body-nowrap {
+        white-space: nowrap;
+    }
+    
+    table.dataTable,table.dataTable th,table.dataTable td {
+        -webkit-box-sizing: content-box;
+        box-sizing: content-box;
+    }
+    
+    .dataTables_wrapper {
+        position: relative;
+        clear: both;
+        *zoom: 1;
+        zoom: 1;
+    }
+    
+    .dataTables_wrapper .dataTables_length {
+        float: left;
+    }
+    
+    .dataTables_wrapper .dataTables_filter {
+        /*
+        float: right;
+        text-align: right;
+        */
+        display: none;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 0.5em;
+    }
+    
+    .dataTables_wrapper .dataTables_info {
+        clear: both;
+        float: left;
+        padding-top: 0.755em;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate {
+        float: right;
+        text-align: right;
+        padding-top: 0.25em;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        box-sizing: border-box;
+        display: inline-block;
+        min-width: 1.5em;
+        padding: 0.5em 1em;
+        margin-left: 2px;
+        text-align: center;
+        text-decoration: none !important;
+        cursor: pointer;
+        *cursor: hand;
+        color: #333 !important;
+        border: 1px solid transparent;
+        border-radius: 2px;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        color: #333 !important;
+        border: 1px solid #979797;
+        background-color: white;
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff), color-stop(100%, #dcdcdc));
+        background: -webkit-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+        background: -moz-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+        background: -ms-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+        background: -o-linear-gradient(top, #fff 0%, #dcdcdc 100%);
+        background: linear-gradient(to bottom, #fff 0%, #dcdcdc 100%);
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+        cursor: default;
+        color: #666 !important;
+        border: 1px solid transparent;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        color: white !important;
+        border: 1px solid #111;
+        background-color: #585858;
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(100%, #111));
+        background: -webkit-linear-gradient(top, #585858 0%, #111 100%);
+        background: -moz-linear-gradient(top, #585858 0%, #111 100%);
+        background: -ms-linear-gradient(top, #585858 0%, #111 100%);
+        background: -o-linear-gradient(top, #585858 0%, #111 100%);
+        background: linear-gradient(to bottom, #585858 0%, #111 100%);
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button:active {
+        outline: none;
+        background-color: #2b2b2b;
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #2b2b2b), color-stop(100%, #0c0c0c));
+        background: -webkit-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);
+        background: -moz-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);
+        background: -ms-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);
+        background: -o-linear-gradient(top, #2b2b2b 0%, #0c0c0c 100%);
+        background: linear-gradient(to bottom, #2b2b2b 0%, #0c0c0c 100%);
+        box-shadow: inset 0 0 3px #111;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .ellipsis {
+        padding: 0 1em;
+    }
+    
+    .dataTables_wrapper .dataTables_processing {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 40px;
+        margin-left: -50%;
+        margin-top: -25px;
+        padding-top: 20px;
+        text-align: center;
+        font-size: 1.2em;
+        background-color: white;
+        background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(25%, rgba(255,255,255,0.9)), color-stop(75%, rgba(255,255,255,0.9)), color-stop(100%, rgba(255,255,255,0)));
+        background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+        background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+        background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+        background: -o-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.9) 75%, rgba(255,255,255,0) 100%);
+    }
+    
+    .dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter,.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_processing,.dataTables_wrapper .dataTables_paginate {
+        color: #333;
+    }
+    
+    .dataTables_wrapper .dataTables_scroll {
+        clear: both;
+    }
+    
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+        *margin-top: -1px;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody th,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody td {
+        vertical-align: middle;
+    }
+    
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody th>div.dataTables_sizing,.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody td>div.dataTables_sizing {
+        height: 0;
+        overflow: hidden;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .dataTables_wrapper.no-footer .dataTables_scrollBody {
+        border-bottom: 1px solid #111;
+    }
+    
+    .dataTables_wrapper.no-footer div.dataTables_scrollHead table,.dataTables_wrapper.no-footer div.dataTables_scrollBody table {
+        border-bottom: none;
+    }
+    
+    .dataTables_wrapper:after {
+        visibility: hidden;
+        display: block;
+        content: "";
+        clear: both;
+        height: 0;
+    }
+    
+    @media screen and (max-width: 767px) {
+        .dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_paginate {
+            float: none;
+            text-align: center;
+        }
+    
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 0.5em;
+        }
+    }
+    
+    @media screen and (max-width: 640px) {
+        .dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter {
+            float: none;
+            text-align: center;
+        }
+        
+        .dataTables_wrapper .dataTables_filter {
+            margin-top: 0.5em;
+        }
+    }
+    
+    .NexDataTableConfigTd tbody tr td:nth-child(1) {
+        width:25%;
+        padding-left:20px;
+        font-weight: 700;
+    }    
+
+    .NexDataTableConfigTd tbody tr td:nth-child(2) {
+        width:60%;
+        align:"left";
+    }
+    
+    .NexDataTableConfigTd tbody tr td input[type=checkbox] {
+        width:6%;
+    }
+
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var dataTablePlugin = function( container , datasources , components , config ) {
+            var chart = this;
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+            
+            this.container = $( container );
+
+            var headerArr = config.dt_header.split(",");
+            this.dt_col_count = headerArr.length;
+            
+            this.id = "id" + dbTools.generateId().replace(".","");
+            var content = '<table id="'+ this.id +'" class="display" cellspacing="0" width="100%"><thead style="color:'+this.config.dt_headerTextColor+';"><tr>';
+            for(var i=0; i<this.dt_col_count; i++) {
+                content = content + "<th>" + headerArr[i].trim() + "</th>";
+            }
+//'                <th>No.</th>      ' +
+//'                <th>時間</th>  ' +
+//'                <th>Ch1 - 0.5 [μm]</th>    ' +
+//'                <th>Ch2 - 5.0 [μm]</th>    ' +
+//'                <th>Ch3 - 0 [μm]</th>' +
+//'                <th>Ch4 - 0 [μm]</th>    ' +
+            content = content + '</tr></thead></table>';
+
+            this.$span = this.container.parents("li").find('.gridItemHeader').find('span');
+            $(this.$span[0]).css("color", this.config.dt_chartTitleColor);
+            
+            this.container.append( content );
+            this.container.parents( "li" ).on( "resize" , this._resize.bind( this ) );
+            
+            this.$dataTable = this.container.find('table');
+            
+            this.dataNoIndex = 0;
+            
+            // row count max
+            this.config.rowCountMax = parseInt(this.config.dt_rowCountMax);
+            if ( isNaN(this.config.rowCountMax) ) { this.config.rowCountMax = 10; }
+            
+            //var execContent = "if(data[2] == '1') { $('td', row).css('background-color', 'Red'); }";
+            //var execContent = ((this.config.dt_rowCondition == undefined) || (this.config.dt_rowCondition == "")) ? "" : this.config.dt_rowCondition;
+            
+            var config = {
+                "scrollY"       : "200px",
+                "scrollCollapse": true,
+                "paging"        : false,
+                "rowCallback" : function( row, data, index ) {
+                    /**
+                        example:
+                        if ( aData[2] == "5" )
+                        {
+                            $('td', nRow).css('background-color', 'Red');
+                        }
+                        else if ( aData[2] == "4" )
+                        {
+                            $('td', nRow).css('background-color', 'Orange');
+                        }
+                    */
+                    //eval(execContent);
+                    //$('td', row).css('padding', '10px');
+                    //console.log(row, chart.config.dt_rowPadding);
+                    $('td', row).css('padding', chart.config.dt_rowPadding);
+                    $('td', row).css('font-size', chart.config.dt_rowFontSize);
+                },
+                "drawCallback" : function(settings) {
+                
+                //console.log($("#"+ chart.id +".display.dataTable tbody td").css({"padding" : "20px; 10px;"}));
+                
+                /*
+                    //alert("drawCallback");
+                    console.log(settings);
+                    var tds = $("#"+ chart.id +".dataTable tbody td");
+                    console.log("length : ", tds.length);
+                    for(var index=0; index < tds.length; index++) {
+                        console.log("textContent : ", tds[index].textContent);
+                        tds[index].style.padding = "10px; 10px;";
+                    }
+                    console.log(tds);
+                    //tds.foreach (function(item) {
+                    //    console.log(item);
+                    //    $(item).css("padding", "2px 10px;");
+                    //});
+                    */
+                },
+            };
+            if (this.config.dt_infoHide) { config.info = false; } 
+            if (this.config.dt_ordering) {
+                config.order = [[0, (this.config.dt_col1Order == undefined ? 'asc' : this.config.dt_col1Order)]];
+            } else {
+                config.ordering = false;
+            }
+            
+            this.dataTable = this.$dataTable.DataTable( config );
+            this._resize();
+            
+            var now = ( new Date() ).getTime();
+            for(var i = 0; i < this.datasources.length; i++ ) {
+                this.datasources[i].requestHistoryData( now , now , this.addHistoryData.bind( this ) );
+            }
+            
+            $("#"+ this.id +".dataTable").css("color", this.config.dt_bodyTextColor);
+            $("#"+ this.id +"_info.dataTables_info").css("color", this.config.dt_infoTextColor);
+            if (this.config.dt_dataBackgroundTransparent)
+            {
+                $("#"+ this.id +".dataTable tbody tr").css("background-color", 'rgba(255,0,0,0)');
+                $("#"+ this.id +".dataTable.display tbody tr.odd").css("background-color", 'rgba(255,0,0,0)');
+            }
+    };
+    
+    dataTablePlugin.prototype.addHistoryData = function( index , data ) {
+        var tableBody = this.dataTable;
+        var itemsProcessed = 0;
+        data.data.forEach(function(item, index, array) {
+            tableBody.row.add( item );
+            itemsProcessed++;
+            if (itemsProcessed === array.length) {
+                tableBody.draw(false);
+            }
+        });
+    };
+    
+    dataTablePlugin.prototype._resize = function() {
+        this.container.parents( "li" ).find('.dataTables_scrollBody').css("max-height", this.container.parents( "li" ).height()-100 + "px");
+    };
+
+    /**
+    
+     */
+    dataTablePlugin.prototype.pushData = function( index , data ) {
+        if( index < 0 || index >= this.components.length ) return;
+        // console.dir(data);
+        if ($.isArray(data.data) && $.isArray(data.data[0])) {
+            // means muti-data set
+            this.dataTable.clear();
+            var tableBody = this.dataTable;
+            //var itemsProcessed = 0;
+            //data.data.forEach(function(item, index, array) {
+            for(var index=0; index < data.data.length; index++) {
+                //console.log(item);
+                tableBody.row.add( data.data[index] );
+                //itemsProcessed++;
+                //if (itemsProcessed === array.length) {
+                //    tableBody.draw(false);
+                //}
+            }
+            //});
+        } else {
+            //console.info(data.data);
+            //var ret=this.dataTable.row.add( data.data ).draw(false);
+            var ret=this.dataTable.row.add( data.data );
+            //console.log("table data count : %s", this.dataTable.data().count());
+            var rowCount = this.dataTable.rows().count();
+            //console.log("table data rows count : %s", rowCount);
+            //if (rowCount > 3) {
+            //    console.log(this.dataTable.rows(0).remove());
+            //}
+        }
+
+        // check the max count then remove the over rows
+        var curRowCounts = this.dataTable.rows().count();
+        if (curRowCounts > this.config.rowCountMax) {
+            var diff = curRowCounts - this.config.rowCountMax;
+            for(var index=0; index < diff; index++) {
+                this.dataTable.rows(0).remove();
+            }
+        }
+
+        this.dataTable.draw(false);
+        
+        if (this.config.dt_dataBackgroundTransparent) {
+            $(".dataTable tbody tr").css("background-color", 'rgba(255,0,0,0)');
+            $(".dataTable.display tbody tr.odd").css("background-color", 'rgba(255,0,0,0)');
+            $(".dataTable.display tbody tr.odd>.sorting_1").css("background-color", 'rgba(255,0,0,0)');
+            $(".dataTable.display tbody tr.even").css("background-color", 'rgba(255,0,0,0)');
+            $(".dataTable.display tbody tr.even>.sorting_1").css("background-color", 'rgba(255,0,0,0)');
+        }
+        
+    };
+
+    App.Plugins.registerChartType( "dataTable-plugin" , dataTablePlugin , {
+        category     : "Basic",
+        version      : "1.0.8",
+        dependencies : [
+                           "plugins/lib/tools.js",
+                           "plugins/lib/dataTables/jquery.dataTables.min.js"
+                       ],
+        display_name : "Data Table",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            dt_header       : { default : "" },
+            dt_infoHide     : { default : false },
+            dt_headerTextColor  : { default : "black" },
+            dt_bodyTextColor    : { default : "black" },
+            dt_infoTextColor    : { default : "black" },
+            dt_dataBackgroundTransparent : { default : false },
+            dt_rowCondition : { default : "" },
+            dt_ordering     : { default : false },
+            dt_col1Order    : { default : "asc" },
+            dt_rowFontSize  : { default : "12px" },
+            dt_rowPadding  : { default : "8px 10px" },
+            dt_rowCountMax  : { default : 10 },
+            dt_chartTitleColor : { default : "black" }
+        },
+        color: "rgb(255, 204, 204)"
+    });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="dataTable-plugin">
+    <div class="form-group">
+        <label for="dt_header">Header</label>
+        <input class="form-control" type="text" id="dt_header" data-prop="dt_header">
+    </div>
+    
+    <div class="form-group NexDataTableConfigTd">
+        <table style="width:100%">
+            <tr>
+                <th colspan="4">Configure</th>
+            </tr>
+            <tr>
+                <td >Chart Titile Color</td>
+                <td width="60%" align="left"><input class="form-control" type="text" data-prop="dt_chartTitleColor">
+            </tr>
+            <tr>
+                <td >Hide Information</td>
+                <td width="60%" align="left"><input class="form-control" type="checkbox" data-prop="dt_infoHide"></td>
+            </tr>
+            <tr>
+                <td>Header Text Color</td><td><input class="form-control" type="text" data-prop="dt_headerTextColor"></td>
+            </tr>
+            <tr>
+                <td>Body Text Color</td><td><input class="form-control" type="text" data-prop="dt_bodyTextColor"></td>
+            </tr>
+            <tr>
+                <td>Info Text Color</td><td><input class="form-control" type="text" data-prop="dt_infoTextColor"></td>
+            </tr>
+            <tr>
+                <td>Data Area Transparent</td>
+                <td width="60%" align="left"><input class="form-control" type="checkbox" data-prop="dt_dataBackgroundTransparent"></td>
+            </tr>
+            <tr>
+                <td>Ordering</td>
+                <td width="60%" align="left"><input class="form-control" type="checkbox" data-prop="dt_ordering"></td>
+            </tr>
+            <tr>
+                <td>First Column Data Sorting Order</td>
+                <td width="60%" align="left">
+                    <select class="form-control" data-prop="dt_col1Order">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </td>
+            </tr>
+            <!-- tr>
+                <td>Row Condition</td><td><input class="form-control" type="text" data-prop="dt_rowCondition"></td>
+            </tr -->
+            <tr>
+                <td>Row Font Size</td><td><input class="form-control" type="text" data-prop="dt_rowFontSize"></td>
+            </tr>
+            <tr>
+                <td>Row Padding</td><td><input class="form-control" type="text" data-prop="dt_rowPadding"></td>
+            </tr>
+            <tr>
+                <td>Row Count Max</td><td><input class="form-control" type="text" data-prop="dt_rowCountMax"></td>
+            </tr>
+        </table>
+    </div>
+    
+</script>
+
+<script type="text/x-red" data-help-name="dataTable-plugin">
+    <h1>Data Table</h1>
+	<h3><b>|</b> Data Source</h3>
+    <p>The data content came from data source payload has two types like below.</p>
+    <p>[Type I ] : will append row in below.</p>
+    <p>[Type II]: will overwrite the previous data in table.</p>
+<pre>
+[Type I]
+ msg.payload = {
+     tstamp: new Date().getTime(),
+     data: [data1,data2,data3, ... ,datan]
+ }
+[Type II]
+ msg.payload = {
+     tstamp: new Date().getTime(),
+     data: [
+            [data1,data2,data3, ... ,datan],
+            ...,
+            [data1,data2,data3, ... ,datan]
+        ]
+ }</pre>
+    <p>The history data feature will adopt node-red history feature then send back all history data like below :</p>
+<pre>
+ msg.payload = {
+     tstamp: new Date().getTime(),
+     data: [
+             [history1,history2,history3, ... ,history1n],
+             [history1,history2,history3, ... ,history1n],
+              :
+             [history1,history2,history3, ... ,history1n],
+           ]
+ };</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Chart Title Color</b> : Set the chart title text color.</p>
+    <p><b>Header</b> : The header items use the config dt_header to setting. The format is header1,header2,header3, ... ,headern.</p>
+    <p><b>Hide Information</b> : The checkbox to show/hide the table information in bottom.</p>
+    <p><b>Header Text Color</b> : Set the table header text color.</p>
+    <p><b>Body Text Color</b> : Set the table body text color.</p>
+    <p><b>Info Text Color</b> : Set the table info text color.</p>
+    <p><b>Data Area Transparent</b> : Set the output data area is transparent or not. The value is checked or unchecked.</p>
+    <p><b>Ordering</b> : Enable/Disable Ordering feature. Default is disbale.</p>
+    <p><b>First Column Data Sorting Order</b> : Set the first column data sorting order is Ascending or Descending.</p>
+    <p><b>Row Condition</b> : Set the row css depends on condition.<br/>Reference : https://datatables.net/reference/option/rowCallback<br/>Base on Row Call back function with 4 parameters:<br/>
+    row : TR element being inserted into the document.<br/>
+    data : Data source for the row.<br/>
+    index : DataTables' internal index for the row.<br/>Ex:<pre>
+    if ( data[2] == "5" ) 
+    {
+        $('td', row).css('background-color', 'Red');
+    }
+</pre></p>
+    <p><b>Row Count Max</b> : Set the table row count maximum value to control data size in front-end.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/dataTable.png" style="width: 90%;"/></p></div>
+</script>
+
+

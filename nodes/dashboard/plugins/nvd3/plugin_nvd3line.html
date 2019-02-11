@@ -1,0 +1,364 @@
+<style>
+.nvd3LineContainer {
+  flex: 1;
+}
+
+.nvd3LineContainer .nv-legend-text {
+  fill: #eee; /*kewei modified*/
+}
+
+.nvd3LineContainer .nvd3.nv-pie path {
+  stroke: none;
+}
+
+.nvd3LineContainer .nvd3.nv-noData {
+  fill: #aab0b9;
+}
+
+.nvd3LineContainer .nv-axis {
+  fill: #eee; /*kewei modified*/
+}
+
+.nvd3LineContainer .nv-axis path {
+  stroke: #4a4e54;
+}
+
+.nvd3LineContainer .tick line {
+    opacity: 1 !important;
+    stroke: #4a4e54;
+}
+
+.nvd3LineContainer .nv-groups {
+  stroke: #FF0000;
+}
+
+.nvd3LineContainer .nv-axis.nv-x path.domain {
+  stroke-opacity: 1;
+}
+
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var NVD3Line = function( container , datasources , components , config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.config = config;
+    
+            this.id = "id" + dbTools.generateId().replace(".","");
+			this.container = $( '<svg id="' + this.id + '" class="nvd3LineContainer" height="500" ></svg>' );
+            $( container ).append( this.container );
+//30, 20, 50, 60
+//                .margin({top: 0, right: 60, bottom: 100, left: 100})
+            this.data = [];
+            this.chart = nv.models.lineChart()
+                .margin({top: 30, right: 20, bottom: 80, left: 80}) // default: 30, 20, 50, 60
+                .useInteractiveGuideline(true)
+                .showLegend(true)
+                .showYAxis(true)
+                .showXAxis(true)
+                .showLabels(true)
+                ;
+
+            this.chart.tooltip.enabled( true );
+            //this.chart.xAxis.tickFormat(function(d) { console.log("XXXXXXXX"+d); return d3.time.format('%b %d')(new Date(d)); });
+
+            this.chart.xAxis.showMaxMin(false);
+            this.chart.xAxis.tickValues(30);
+            
+            // process X Label Rotate
+            this.config.xLabelRotate = parseInt(this.config.xLabelRotate);
+            if( isNaN( this.config.xLabelRotate ) ) {
+                this.chart.xAxis.rotateLabels(0);
+            } else {
+                this.chart.xAxis.rotateLabels(this.config.xLabelRotate);
+            }
+            
+            /**
+                about simple d3 format, please refer https://github.com/d3/d3-format
+            
+                [​[fill]align][sign][symbol][0][width][,][.precision][~][type]
+                
+                fill:
+                    > - Forces the field to be right-aligned within the available space. (Default behavior).
+                    < - Forces the field to be left-aligned within the available space.
+                    ^ - Forces the field to be centered within the available space.
+                    = - like >, but with any sign and symbol to the left of any padding.
+                
+                sign:
+                    - - nothing for zero or positive and a minus sign for negative. (Default behavior.)
+                    + - a plus sign for zero or positive and a minus sign for negative.
+                    ( - nothing for zero or positive and parentheses for negative.
+                      (space) - a space for zero or positive and a minus sign for negative.
+                      
+                symbol:
+                    $ - apply currency symbols per the locale definition.
+                        # - for binary, octal, or hexadecimal notation, prefix by 0b, 0o, or 0x, respectively.
+                        
+                The available type values are:
+                    e - exponent notation.
+                    f - fixed point notation.
+                    g - either decimal or exponent notation, rounded to significant digits.
+                    r - decimal notation, rounded to significant digits.
+                    s - decimal notation with an SI prefix, rounded to significant digits.
+                    % - multiply by 100, and then decimal notation with a percent sign.
+                    p - multiply by 100, round to significant digits, and then decimal notation with a percent sign.
+                    b - binary notation, rounded to integer.
+                    o - octal notation, rounded to integer.
+                    d - decimal notation, rounded to integer.
+                    x - hexadecimal notation, using lower-case letters, rounded to integer.
+                    X - hexadecimal notation, using upper-case letters, rounded to integer.
+                    c - converts the integer to the corresponding unicode character before printing.
+                        
+             */
+            if (this.config.xDataFormat) {
+                //this.chart.xAxis.tickFormat(function(d) { return d3.time.format(this.config.xDataFormat)); }); // '%b %d %H:%M:%S'
+                this.chart.xAxis.tickFormat(d3.format(this.config.xDataFormat)); // '%b %d %H:%M:%S'
+            }
+            
+            if (this.config.yDataFormat) {
+                this.chart.yAxis.tickFormat( d3.format(this.config.yDataFormat) );
+            }
+            
+            //this.chart.legend.margin().bottom = 25;
+            //this.chart.xAxis.tickPadding(25);
+            
+            if( this.config.xLabel ) this.chart.xAxis.axisLabel( this.config.xLabel );
+            if( this.config.yLabel ) this.chart.yAxis.axisLabel( this.config.yLabel );
+            this.chart.forceY([parseInt(this.config.yMin), parseInt(this.config.yMax)]);
+            var arrSize = parseInt(this.config.dataMax);       
+    
+            for( var i = 0; i < this.datasources.length; i++ ) {
+                this.datasources[i].requestHistoryData( 0 , 0 , this.pushData.bind( this ) );
+                this.data.push({
+                    key : this.datasources[i].config.label,
+                    values : new Array(arrSize),
+                    valueIndex : 0,
+                    dataCount : -1
+                });
+                for (var j=0; j<this.data[i].values.length; j++) {
+                    this.data[i].values[j] = {};
+                    this.data[i].values[j].x = 0;
+                    this.data[i].values[j].y = 0;
+                }
+                this.data[i].dataCount = this.data[i].values.length;
+            }
+    
+            //d3.select( this.container[0] ).datum( this.data ).transition( 0 ).call( this.chart );
+            d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+            this.container.parents( "li" ).on( "resize" , this.chart.update );
+			
+			/*kewei added
+			 *Change text color
+			*/
+		    d3.selectAll('#'+ this.id + ' .nv-wrap text').style('fill', this.config.textColor);
+	        d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);
+        };
+    
+        NVD3Line.prototype.pushData = function( index , data ) {
+            if( index < 0 || index >= this.components.length )
+                return;
+            //console.log("Line push data: x:" + data.data[0].x + " y:" + data.data[0].y);
+                        
+            if (($.isArray(data.data)) && (data.data.length > 1)) {
+                    this.data[index].values = null;
+                    this.data[index].values = data.data;
+                    this.data[index].dataCount = data.data.length;
+            } else {
+                // when push data x value < the last data x value means the data reset
+                if (data.data[0].x < this.data[index].values[this.data[index].dataCount-1].x) {
+                    this.data[index].valueIndex = 0;
+                }
+                //console.log("Line: " + this.data[index].valueIndex);
+                if (this.data[index].valueIndex >= this.data[index].dataCount) {
+                    for (var i=1; i<this.data[index].dataCount; i++) {
+                        this.data[index].values[i-1].x = this.data[index].values[i].x;
+                        this.data[index].values[i-1].y = this.data[index].values[i].y;
+                    }
+                    this.data[index].values[this.data[index].dataCount - 1].x = data.data[0].x;
+                    this.data[index].values[this.data[index].dataCount - 1].y = data.data[0].y;
+                } else {
+                    for (var i=this.data[index].valueIndex; i<this.data[index].dataCount; i++) {
+                        this.data[index].values[i].x = data.data[0].x;
+                        this.data[index].values[i].y = data.data[0].y;
+                    }
+                    this.data[index].valueIndex++;
+                }
+            }
+            //console.log("* data array: ");
+            //console.dir(this.data[index].values);
+            var xvalues = [],
+                tmp = this.data.map(function(e) { return e.values.map(function(d) { return d.x; }); });
+                //xvalues.concat.apply(xvalues, tmp[0]);
+            
+            xvalues = tmp[0];
+            
+            this.chart.xAxis.tickValues(xvalues);
+            d3.select( this.container[0] ).datum( this.data ).call( this.chart );
+            this.chart.update();
+			
+			/*kewei added
+			 *Change text color
+			*/
+		    d3.selectAll('#'+ this.id + ' .nv-wrap text').style('fill', this.config.textColor);
+	        d3.selectAll('#'+ this.id + ' .nv-legend-text').style('fill', this.config.textColor);
+        };
+    
+        App.Plugins.registerChartType( "nvd3line" , NVD3Line , {
+            category : "NVD3",
+            display_name : "Simple Line",
+            chartConfig : {
+                xLabel : { default : "" },
+                yLabel : { default : "" },
+                yMin : { default : "-100" },
+                yMax : { default : "100" },
+                dataMax : { default : "30" },
+                xDataFormat: { default: ".01f"},
+                xLabelRotate: { default: "0" },
+                yDataFormat: { default: ".01f"},
+				textColor : { default : "#eee" }
+            },
+            datasourceConfig : {
+                trend : { default : false }
+            },
+            disableComponentDiscovery : true,
+            color: "rgb(204,153,255)",
+            dependencies : [
+                "plugins/lib/d3_3.5.17/d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.min.js",
+                "plugins/lib/nvd3_1.8.5/nv.d3.css"
+            ]
+        });
+    })();
+</script>
+
+<script type="text/x-dash" data-chart-config="nvd3line">
+    <!-- div class="form-group">
+        <label>Y Axis Label</label>
+        <input class="form-control" type="text" data-prop="yLabel">
+    </div -->
+
+    <div class="form-horizontal">
+        <label>Y Axis</label>
+        <div class="form-group" style="margin-bottom:0px;">
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Label:</label>
+            </div>
+            <div class="col-md-10">
+                <input class="form-control" type="text" data-prop="yLabel">
+            </div>
+        </div>
+        
+        <div class="form-group" style="margin-bottom:0px;">
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Value</label>
+            </div>
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Min:</label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="yMin">
+            </div>
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Max:</label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="yMax">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Format:</label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="yDataFormat">
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="form-horizontal">
+        <label>X Axis</label>
+        <div class="form-group" style="margin-bottom:0px;">
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Label:</label>
+            </div>
+            <div class="col-md-10">
+                <input class="form-control" type="text" data-prop="xLabel">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Format:</label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="xDataFormat">
+            </div>
+            <div class="col-md-2">
+                <label class="form-control" style="border: none;">Rotate:</label>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" type="text" data-prop="xLabelRotate">
+            </div>
+        </div>
+    </div>
+    
+    <!-- div class="form-group">
+        <label for="xDataFormat">X Axis Format</label>
+        <input class="form-control" type="text" data-prop="xDataFormat">
+    </div -->
+    
+    <!-- div class="form-group">
+        <label for="yDataFormat">Y Axis Format</label>
+        <input class="form-control" type="text" data-prop="yDataFormat">
+    </div -->
+	<div class="form-group">
+        <label for="textColor">Text Color</label>
+        <input class="form-control" type="text" id="textColor" data-prop="textColor">
+    </div>
+    <div class="form-group">
+        <label>Maximun Data Quantity</label>
+        <input class="form-control" type="text" data-prop="dataMax">
+    </div>
+</script>
+
+<!--
+<script type="text/x-dash" data-datasource-config="nvd3line">
+  <div class="checkbox">
+    <label><input type="checkbox" data-prop="trend"> Show trend</label>
+  </div>
+</script>
+-->
+
+<script type="text/x-red" data-help-name="nvd3line">
+    <h1>Simple Line Chart</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>DataSource set simple line chart value like the below example.</p>
+<pre>
+if (context.i === undefined) context.i=0;
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data: [
+        { x: context.i, y: Math.sin(context.i*6)*100 }
+    ]
+};
+context.i++;
+return msg;</pre>
+
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Datasources</b>: can add more than one datasource.</p>
+    <p><b>Y Axis</b></p>
+    <p><b>&nbsp;&nbsp;&nbsp;Label</b>: the Y axis label string.</p>
+    <p><b>&nbsp;&nbsp;&nbsp;Value Range</b>: the Y axis value range from minimum and maximum.</p>
+    <p><b>&nbsp;&nbsp;&nbsp;Format</b>: the Y axis data format string.</p>
+    <p><b>X Axis</b></p>
+    <p><b>&nbsp;&nbsp;&nbsp;Label</b>: the X axis label string.</p>
+    <p><b>&nbsp;&nbsp;&nbsp;Format</b>: the X axis data format string.</p>
+    <p><b>&nbsp;&nbsp;&nbsp;Rotate</b>: the X axis data rotate degree.</p>
+    <p><b>Maximum Data Quantity</b>: the maximum data quantity in chart.</p>
+    <p><b>PS: about format please refer https://github.com/d3/d3-format</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/nvd3SimpleLineChart.png" style="width:100%;" /></p></div>
+</script>

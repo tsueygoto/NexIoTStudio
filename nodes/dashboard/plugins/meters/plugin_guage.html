@@ -1,0 +1,403 @@
+<style>
+</style>
+
+<script type="text/javascript">
+    ( function() { 
+
+        //Create Ticks and Number 
+        function makeObjectConfigure(objType, objTicksMajor, objTicksMinor, objTicksMin, objTicksMax, objRadian, objTicksPos, objCenterXPos, objCenterYPos, objTicksMajorColor, objTicksMinorColor,
+        objTicksMajorHeight, objTicksMajorWidth,
+        objTicksMinorHeight, objTicksMinorWidth,
+        objStrokeWidth, objTicksNumPos, objTicksNumFontSize, objTicksFontColor) {
+        
+            var ticksXPos, ticksYPos, ticksNumXPos, ticksNumYPos;
+            var ticksTotal  = objTicksMajor * objTicksMinor;
+            var ticksAverageNum = (objTicksMax - objTicksMin) / ticksTotal;
+            
+            // objType: 0
+            var ticksAverageDeg = objRadian / ticksTotal;
+            var objDegPI  = objRadian / Math.PI;
+            
+            var rect = "";
+            for(var i = 0; i <= ticksTotal; i++) {
+            
+                if (objType == 0) {
+                    // objType: 0
+                    //Create Ticks      
+                    deg = i * ticksAverageDeg;
+                    ticksXPos = Math.cos((180 - deg) / objDegPI) * objTicksPos + objCenterXPos;
+                    ticksYPos = -Math.sin( deg / objDegPI ) * objTicksPos + objCenterYPos;
+                    rect += '<rect x="'+ ticksXPos +'" y="'+ ticksYPos +'" transform="rotate('+deg+','+ticksXPos+','+ticksYPos+')" ';
+                }
+                if (objType == 1) {
+                /*
+                <rect x="45" y="75" height="35" width="8" style="fill: rgb(0, 0, 0);" transform="translate(-4,0)"></rect>
+                 */
+                    ticksXPos = i * 20 + objCenterXPos;
+                    ticksYPos = objCenterYPos;
+                    //rect += '<rect x="'+ ticksXPos +'" y="'+ ticksYPos +'" transform="translate('+ticksXPos+','+ticksYPos+')" ';
+                }
+                
+                if((i % objTicksMinor) == 0) {
+                    if (objType == 0) {
+                        rect += 'height="'+objTicksMajorHeight+'" width="'+objTicksMajorWidth+'" style="stroke:'+objTicksMajorColor+'; fill:'+objTicksMajorColor+'; stroke-width: '+objStrokeWidth+';"></rect>';
+                    
+                        ticksNumXPos = Math.cos((180 - deg) / objDegPI) * objTicksNumPos + objCenterXPos;
+                        ticksNumYPos = -Math.sin(deg / objDegPI) * objTicksNumPos + objCenterYPos;              
+                        var numText = '<text id="Num'+i+'" x="'+ticksNumXPos+'" y="'+ticksNumYPos+'" transform="rotate(0,'+ticksNumXPos+','+ticksNumYPos+')" fill="'+objTicksFontColor+'" style="font-size: '+objTicksNumFontSize+'px;" text-anchor="middle" alignment-baseline="central">'+(objTicksMin + (i * ticksAverageNum))+'</text>';
+                        rect += numText;
+                    }
+                    if (objType == 1) {
+                        rect += '<rect x="'+ticksXPos+'" y="'+ticksYPos+'" height="'+objTicksMajorHeight+'" width="'+objTicksMajorWidth+'" style="fill: '+objTicksMajorColor+';" transform="translate('+(-(objTicksMajorWidth / 2))+',0)"></rect>';
+                        /*
+                        <text id="Num0" x="34.39999961853027" y="135" transform="rotate(0,45,135)" fill="#000000" style="">0</text>
+                         */
+                        ticksNumXPos = ticksXPos;
+                        ticksNumYPos = objTicksNumPos + objCenterYPos;;              
+                        var numText = '<text id="Num'+i+'" x="'+ticksNumXPos+'" y="'+ticksNumYPos+'" transform="rotate(0,'+ticksNumXPos+','+ticksNumYPos+')" fill="'+objTicksFontColor+'" style="font-size: '+objTicksNumFontSize+'px;" text-anchor="middle" alignment-baseline="central">'+(objTicksMin + (i * ticksAverageNum))+'</text>';
+                        rect += numText;
+                    }
+                }
+                else {
+                    if (objType == 0) {
+                        rect += 'height="'+objTicksMinorHeight+'" width="'+objTicksMinorWidth+'" style="fill:'+objTicksMinorColor+'; stroke-width: '+objStrokeWidth+';"></rect>';
+                    }
+                    if (objType == 1) {
+                        rect += '<rect x="'+ticksXPos+'" y="'+ticksYPos+'" height="'+objTicksMinorHeight+'" width="'+objTicksMinorWidth+'" style="fill: '+objTicksMinorColor+';" transform="translate('+(-(objTicksMinorWidth / 2))+','+(objTicksMajorHeight - objTicksMinorHeight)+')"></rect>';
+                    }
+                }
+            }
+            return rect;
+        }
+        
+        // create alarm area
+        function makeObjectAlarm(objType, objTicksMajor, objTicksMinor, objTicksMajorHeight, objRadian, objAlarmArea, objAlarmFill, objAlarmStroke, objAlarmWidth, objAlarmPox, objCenterXPos, objCenterYPos) {
+            var ret = '';
+            if (objType == 0) {
+                var objDegPI  = objRadian / Math.PI;
+                var deg1 = 0;
+                var deg2 = (180 / objTicksMajor) * objAlarmArea;
+                var deg  = 180 - deg2;
+                var xPos1, yPos1, xPos2, yPos2, xPos, yPos; 
+                xPos1 = Math.cos((180 - deg1) / objDegPI) * objAlarmPox + objCenterXPos;
+                yPos1 = -Math.sin(deg1 / objDegPI) * objAlarmPox + objCenterYPos;
+                xPos2 = Math.cos((180 - deg2) / objDegPI) * objAlarmPox + objCenterXPos;
+                yPos2 = -Math.sin(deg2 / objDegPI) * objAlarmPox + objCenterYPos;
+                xPos = xPos2 - xPos1;
+                yPos = yPos2 - yPos1;
+                ret = '<path d="M'+xPos1+','+yPos1+' a'+objAlarmPox+' '+objAlarmPox+' 0 0,1 '+xPos+','+yPos+'" transform="rotate('+deg+','+objCenterXPos+','+objCenterYPos+')" style="fill: '+objAlarmFill+'; stroke: '+objAlarmStroke+'; stroke-width: '+objAlarmWidth+';"></path>'
+            }
+            if (objType == 1) {
+                /*
+                    <rect x="445" y="75" width="100" height="35" style="fill: red;"></rect>
+                 */
+                var objInnerWidth = objTicksMajor * objTicksMinor * 20
+                var alarmWidth  = objInnerWidth - ((100-objAlarmWidth) * (objInnerWidth / 100));
+                var alarmXPos   = objCenterXPos + (objInnerWidth - alarmWidth);
+                ret = '<rect x="'+alarmXPos+'" y="'+objCenterYPos+'" width="'+alarmWidth+'" height="'+objTicksMajorHeight+'" style="fill: '+objAlarmStroke+';"></rect>';
+                
+                //console.log(">>>>:" + ret);
+
+            }
+            
+            
+            return ret;
+        }
+  
+        var ImagePlugin = function( container, datasources, components, config ) {
+            this.datasources = datasources;
+            this.components = components;
+            this.container = $(container);
+            
+            this.needle = {};
+            var content, configure, criticalArea, objCenterXPos, objCenterYPos;
+            if (config.file == "images/meters/gauge-round1.svg") {
+                this.objType = 0;
+
+                objCenterXPos = 300;
+                objCenterYPos = 330;
+                configure = makeObjectConfigure(
+                    0,              // objType: Round, 1: H
+                    5,              // objTicksMajor
+                    5,              // objTicksMinor
+                    0,              // objTicksMin
+                    100,            // objTicksMax
+                    180,            // objRadian
+                    230,            // objTicksPos
+                    objCenterXPos,  // objCenterXPos
+                    objCenterYPos,  // objCenterYPos
+                    '#000000',      // objTicksMajorColor
+                    '#000000',      // objTicksMinorColor
+                    4,              // objTicksMajorHeight
+                    35,             // objTicksMajorWidth
+                    4,              // objTicksMinorHeight
+                    30,             // objTicksMinorWidth
+                    ((8 - 4) / 2),  // objStrokeWidth
+                    160,            // objTicksNumPos
+                    20,             // objTicksNumFontSize
+                    '#000000'       // objTicksFontColor
+                );
+                //console.log(ret);
+                criticalArea = makeObjectAlarm(
+                    0,              // objType: Round, 1: H
+                    5,              // objTicksMajor
+                    5,              // objTicksMinor
+                    4,              // objTicksMajorHeight
+                    180,            // objRadian
+                    1,              // objAlarmArea
+                    'none',         // objAlarmFill
+                    'red',          // objAlarmStroke
+                    20,             // objAlarmWidth
+                    250,            // objAlarmPox
+                    objCenterXPos,  // objCenterXPos
+                    objCenterYPos   // objCenterYPos
+                );
+                content = '<svg width="100%" height="100%" viewBox="0 0 600 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                    '   <image xlink:href="images/meters/Gauge-Round1-bg.svg" x="0" y="0" width="600" height="600" />' +
+                    '   <image id="Needle" xlink:href="images/meters/Gauge-dir.svg" x="'+(objCenterXPos-170)+'" y="'+(objCenterYPos-(10/2))+'" width="170" height="10" transform="rotate(0,'+objCenterXPos+','+objCenterYPos+')" />' +
+                    '   <image xlink:href="images/meters/Gauge-center.svg" x="'+(objCenterXPos-(64/2))+'" y="'+(objCenterYPos-(64/2))+'" width="64" height="64" />' +
+                    configure + 
+                    criticalArea + 
+                    '</svg>';
+            }
+            else if (config.file == "images/meters/gauge-round2.svg") {
+                this.objType = 0;
+                objCenterXPos = 300;
+                objCenterYPos = 310;
+                configure = makeObjectConfigure(
+                                0,              // objType: Round, 1: H
+                                5,              // objTicksMajor
+                                5,              // objTicksMinor
+                                0,              // objTicksMin
+                                100,            // objTicksMax
+                                180,            // objRadian
+                                210,            // objTicksPos
+                                objCenterXPos,  // objCenterXPos
+                                objCenterYPos,  // objCenterYPos
+                                '#000000',      // objTicksMajorColor
+                                '#000000',      // objTicksMinorColor
+                                4,              // objTicksMajorHeight
+                                35,             // objTicksMajorWidth
+                                4,              // objTicksMinorHeight
+                                30,             // objTicksMinorWidth
+                                ((8 - 4) / 2),  // objStrokeWidth
+                                150,            // objTicksNumPos
+                                20,             // objTicksNumFontSize
+                                '#000000'       // objTicksFontColor
+                            );
+                //console.log(ret);
+                criticalArea = makeObjectAlarm(
+                    0,              // objType: Round, 1: H
+                    5,              // objTicksMajor
+                    5,              // objTicksMinor
+                    4,              // objTicksMajorHeight
+                    180,            // objRadian
+                    2,              // objAlarmArea
+                    'none',         // objAlarmFill
+                    'red',          // objAlarmStroke
+                    20,             // objAlarmWidth
+                    230,            // objAlarmPox
+                    objCenterXPos,  // objCenterXPos
+                    objCenterYPos   // objCenterYPos
+                );
+                content = '<svg width="100%" height="100%" viewBox="0 0 600 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                    '   <image xlink:href="images/meters/Gauge-Round2-bg.svg" x="0" y="0" width="600" height="600" />' +
+                    '   <image id="Needle" xlink:href="images/meters/Gauge-dir.svg" x="'+(objCenterXPos-170)+'" y="'+(objCenterYPos-(10/2))+'" width="170" height="10" transform="rotate(0,'+objCenterXPos+','+objCenterYPos+')" />' +
+                    '   <image xlink:href="images/meters/Gauge-center.svg" x="'+(objCenterXPos-(64/2))+'" y="'+(objCenterYPos-(64/2))+'" width="64" height="64" />' +
+                    configure + 
+                    criticalArea + 
+                    '</svg>';
+            }
+            else if (config.file == "images/meters/gauge-round3.svg") {
+                this.objType = 0;
+                // input parameters:
+                var svgWidth = 600;
+                var svgHeight = 600;
+                objCenterXPos = 300;
+                objCenterYPos = 300;
+                configure = makeObjectConfigure(
+                                0,              // objType: Round, 1: H
+                                5,              // objTicksMajor
+                                5,              // objTicksMinor
+                                0,              // objTicksMin
+                                100,            // objTicksMax
+                                180,            // objRadian
+                                200,            // objTicksPos
+                                objCenterXPos,  // objCenterXPos
+                                objCenterYPos,  // objCenterYPos
+                                '#FFFFFF',      // objTicksMajorColor
+                                '#FFFFFF',      // objTicksMinorColor
+                                4,              // objTicksMajorHeight
+                                35,             // objTicksMajorWidth
+                                4,              // objTicksMinorHeight
+                                30,             // objTicksMinorWidth
+                                ((8 - 4) / 2),  // objStrokeWidth
+                                140,            // objTicksNumPos
+                                20,             // objTicksNumFontSize
+                                '#FFFFFF'       // objTicksFontColor
+                            );
+                //console.log(ret);
+                criticalArea = makeObjectAlarm(
+                    0,              // objType: Round, 1: H
+                    5,              // objTicksMajor
+                    5,              // objTicksMinor
+                    4,              // objTicksMajorHeight
+                    180,            // objRadian
+                    2,              // objAlarmArea
+                    'none',         // objAlarmFill
+                    'red',          // objAlarmStroke
+                    20,             // objAlarmWidth
+                    220,            // objAlarmPox
+                    objCenterXPos,  // objCenterXPos
+                    objCenterYPos   // objCenterYPos
+                );
+                content = '<svg width="100%" height="100%" viewBox="0 0 '+svgWidth+' '+svgHeight+'" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                    '   <image xlink:href="images/meters/Gauge-Round3-bg.svg" x="0" y="0" width="'+svgWidth+'" height="'+svgHeight+'" />' +
+                    '   <image id="Needle" xlink:href="images/meters/Gauge-dir.svg" x="'+(objCenterXPos-170)+'" y="'+(objCenterYPos-(10/2))+'" width="170" height="10" transform="rotate(0,'+objCenterXPos+','+objCenterYPos+')" />' +
+                    '   <image xlink:href="images/meters/Gauge-center.svg" x="'+(objCenterXPos-(64/2))+'" y="'+(objCenterYPos-(64/2))+'" width="64" height="64" />' +
+                    configure + 
+                    criticalArea + 
+                    '</svg>';
+            }
+            else if (config.file == "images/meters/gauge-horizontal1.svg") {
+                this.objType = 1;
+                //Object background svg img		    
+                var objBgImg = 'images/meters/Gauge-Horizontal1-bg.svg';
+                var objBgWidth  = 600;
+                var objBgHeight = 300;
+                //Object Center position
+                var objCenterXPos = 45;
+                var objCenterYPos = 75;
+                var objNeedlePos = -10;
+                var objTicksMax = 100;
+                var objTicksMajor = 5;
+                var objTicksMinor = 5;
+        
+                this.objType = 1;
+ 
+                configure = makeObjectConfigure(
+                    1,              // objType: Round, 1: H
+                    objTicksMajor,  // objTicksMajor
+                    objTicksMinor,  // objTicksMinor
+                    0,              // objTicksMin
+                    objTicksMax,    // objTicksMax
+                    180,            // objRadian
+                    200,            // objTicksPos
+                    objCenterXPos,  // objCenterXPos
+                    objCenterYPos,  // objCenterYPos
+                    '#000000',      // objTicksMajorColor
+                    '#663399',      // objTicksMinorColor
+                    35,             // objTicksMajorHeight
+                    8,              // objTicksMajorWidth
+                    20,             // objTicksMinorHeight
+                    4,              // objTicksMinorWidth
+                    ((8 - 4) / 2),  // objStrokeWidth
+                    50,             // objTicksNumPos
+                    20,             // objTicksNumFontSize
+                    '#000000'       // objTicksFontColor
+                );
+        
+                criticalArea = makeObjectAlarm(
+                    1,              // objType: Round, 1: H
+                    5,              // objTicksMajor
+                    5,              // objTicksMinor
+                    35,             // objTicksMajorHeight
+                    180,            // objRadian
+                    2,              // objAlarmArea
+                    'none',         // objAlarmFill
+                    'red',          // objAlarmStroke
+                    20,             // objAlarmWidth base 100
+                    220,            // objAlarmPox
+                    objCenterXPos,  // objCenterXPos
+                    objCenterYPos   // objCenterYPos
+                );
+                
+                /*
+                <image id="Needle" x="445" y="65" width="22" height="45" transform="translate(-11,0)" xlink:href="images/meters/Gauge-sh-dir.svg"></image>
+                 */
+                
+                content = '<svg width="100%" height="100%" viewBox="0 0 '+objBgWidth+' '+objBgHeight+'" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                    '   <image xlink:href="'+objBgImg+'" x="0" y="0" width="'+objBgWidth+'" height="'+objBgHeight+'" />' +
+                    '   <image id="Needle" xlink:href="images/meters/Gauge-sh-dir.svg" x="'+(objCenterXPos)+'" y="'+(objCenterYPos+objNeedlePos)+'" width="22" height="45" transform="translate(-11, 0)" />' +
+                    criticalArea + 
+                    configure + 
+                    '</svg>';
+                this.needle.animateAverageValue = (objTicksMajor * objTicksMinor * 20) / objTicksMax;
+            }
+
+
+            this.container.append(content);
+            this.needle.handle = this.container.find( "#Needle" );
+            this.needle.cx = objCenterXPos;
+            this.needle.cy = objCenterYPos;
+            
+            criticalArea = null;
+            configure = null;
+            content = null;
+        };
+
+    ImagePlugin.prototype.pushData = function( index , data ) {
+      //if( this.components[ index ].getData( data.data ).type === "ok" )
+      if( index < 0 || index >= this.components.length ) return;
+      if(this.needle.handle[0] == undefined) return;
+        if (this.objType == 0) {
+            Math.floor( Math.random() * 100 )
+            this.needle.handle[0].setAttribute('transform','rotate('+(this.components[ index ].getData( data.data ).value * 1.8)+','+this.needle.cx+','+this.needle.cy+')');
+        }
+        if (this.objType == 1) {
+            var posX = (this.components[ index ].getData( data.data ).value * this.needle.animateAverageValue) + this.needle.cx;
+            this.needle.handle[0].setAttribute('x', posX);
+        }
+    };
+
+    App.Plugins.registerChartType( "gauge-plugin" , ImagePlugin , {
+        category: "Meter",
+        display_name : "Gauge",
+        disableComponentDiscovery : true,
+        chartConfig : {
+            file : {default : "images/meters/gauge-round1.svg" }
+        },
+        color: "rgb(102,255,102)"
+    });
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="gauge-plugin">
+    <div class="form-group">
+        <label for="file">Type</label>
+        <select class="form-control" data-prop="file">
+          <option value="images/meters/gauge-round1.svg">Gauge Round 1</option>
+          <option value="images/meters/gauge-round2.svg">Gauge Round 2</option>
+          <option value="images/meters/gauge-round3.svg">Gauge Round 3</option>
+          <option value="images/meters/gauge-horizontal1.svg">Gauge Horizontal 1</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="gauge-plugin">
+    <h3>* DataSource *</h3>
+    <p>DataSource set gauge value like the below example.</p>
+<pre>
+msg.payload = {
+    tstamp: new Date().getTime(),
+    data: {
+        value: Math.floor( Math.random() * 100 );
+    }
+  };</pre>
+
+    <h3>* Configuration *</h3>
+    <p><b>Type</b> : There are 4 types can select in below.</p>
+    
+<pre>
+ Gauge Round 1  Gauge Round 2
+ Gauge Round 3  Gauge Horizontal 1</pre>
+    
+    <h3>* Shape *</h3>
+    <div><p><b>Gauge Round 1</b></p><p style="text-align: center;"><img src="images/GaugeRound1.png" style="width:100%;" /></p></div>
+    <div><p><b>Gauge Round 2</b></p><p style="text-align: center;"><img src="images/GaugeRound2.png" style="width:100%;" /></p></div>
+    <div><p><b>Gauge Round 3</b></p><p style="text-align: center;"><img src="images/GaugeRound3.png" style="width:100%;" /></p></div>
+    <div><p><b>Gauge Horizontal 1</b></p><p style="text-align: center;"><img src="images/GaugeHorizontal1.png" style="width:100%;" /></p></div>
+    
+</script>
+
+

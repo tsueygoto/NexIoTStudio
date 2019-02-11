@@ -1,0 +1,700 @@
+<script type="text/javascript">
+    /**
+        Reference:
+            http://bl.ocks.org/dk8996/5538271
+        
+     */
+</script>
+
+<style>
+//.ganttPlugin table {
+//    font-family: arial, sans-serif;
+//    border-collapse: collapse;
+//    width: 100%;
+//}
+
+//.ganttPlugin td, th {
+//    //border: 1px solid #dddddd;
+//    text-align: left;
+//    padding: 1px;
+//}
+
+//.ganttPlugin tr:nth-child(even) {
+//    background-color: #dddddd;
+//}
+
+html,body,#wrapper {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+}
+
+.chart {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+.axis path,.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.bar {
+    fill: #33b5e5;
+}
+
+.bar-failed {
+    fill: #CC0000;
+}
+
+.bar-running {
+    fill: #669900;
+}
+
+.bar-succeeded {
+    fill: #33b5e5;
+}
+
+.bar-killed {
+    fill: #ffbb33;
+}
+
+//.ganttPlugin text {
+//    fill: #ff0000;
+//}
+
+//#forkme_banner {
+//    display: block;
+//    position: absolute;
+//    top: 0;
+//    right: 5px;
+//    z-index: 10;
+//    padding: 10px 40px 10px 5px;
+//    color: #fff;
+//    background:
+//        url('http://dk8996.github.io/gantt-Chart/images/blacktocat.png')
+//        #0090ff no-repeat 95% 50%;
+//    font-weight: 700;
+//    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+//    border-bottom-left-radius: 2px;
+//    border-bottom-right-radius: 2px;
+//    text-decoration: none;
+//}
+
+//#twittme_banner {
+//    display: block;
+//    position: absolute;
+//    top: 0;
+//    right: 180px;
+//    z-index: 10;
+//    padding: 10px 40px 10px 5px;
+//    color: #fff;
+//    background:
+//        url('http://dk8996.github.io/gantt-Chart/images/twitter.png')
+//        #0090ff no-repeat 95% 50%;
+//    font-weight: 700;
+//    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+//    border-bottom-left-radius: 2px;
+//    border-bottom-right-radius: 2px;
+//    text-decoration: none;
+//}
+
+</style>
+
+<script type="text/javascript">
+    ( function() {
+        var ganttPlugin = function( container , datasources , components , dsconfig ) {
+            var chart = this;
+            chart.datasources = datasources;
+            chart.components = components;
+            chart.config = dsconfig;
+            chart.container = $( container );
+            
+            // process configure - taskName
+            chart.taskNames = chart.config.taskNames.split(',').map(function(x){ return x.trim(); });
+            // process configure - taskStatus
+            chart.taskStatus = {};
+            chart.config.taskStatus.split(',').map(function(x) { 
+                var status = x.split(':');
+                chart.taskStatus[status[0].trim()] = status[1].trim();
+            });
+            
+            chart.config.ticks = parseInt(chart.config.ticks);
+            if ( isNaN(chart.config.ticks) ) { chart.config.ticks = 3; }
+            chart.config.maxItemCount = parseInt(chart.config.maxItemCount);
+            if ( isNaN(chart.config.maxItemCount) ) { chart.config.maxItemCount = 100; }
+            
+            chart.id = "id" + dbTools.generateId().replace(".","");
+            var content = '<svg class="ganttPlugin" id="' + chart.id + '" width="100%" height="100%" ></svg>'
+            
+            chart.container.append(content);
+            chart.container.parents( "li" ).on( "resize" , chart._resize.bind( chart ) );
+            
+            // Firefox fix: SVG elements using links when a <base> tag is present
+            //this.container.find( "path" ).each( function() {
+            //    $( this ).attr( "filter" , $( this ).attr( "filter" ).replace( "#" , window.location.pathname + "#" ) );
+            //} );
+            
+            chart.tasks = [];
+            chart.obj = null
+            chart.resizeTimer = null;
+            chart._resize();
+        };
+
+        /**
+         *
+         */
+        ganttPlugin.prototype._resize = function() {
+            var plugin = this;
+            if (plugin.resizeTimer != null) {
+                 clearTimeout(plugin.resizeTimer);
+            }
+            //var targetId = chart.id;
+            plugin.resizeTimer = setTimeout(function() {
+                //var obj = plugin;
+                //console.info("make sure timer has been done. (" + obj.id + ")");            
+            
+                // Run code here, resizing has "stopped"
+                if (plugin.obj != null) {
+                    $("#"+plugin.id).html("");
+                    plugin.obj = null;
+                }
+                if ( document.getElementById(plugin.id) != null ) {
+                    plugin.obj = plugin.newgantt(plugin.id);
+                }                
+            }, 250);
+        };
+    
+        /**
+         *
+         */
+        ganttPlugin.prototype.pushData = function( index , data ) {
+            var chart = this;
+            if (( index < 0 ) || (chart.obj == null) || (data.data == null)) {
+                console.info("chart obj is null", index, data);
+                return; 
+            }
+            console.info("[pushData]", index, data);
+            
+            var targetId = chart.id;
+            if ($.isArray(data.data)) {
+                for(var index=0; index < data.data.length; index++) {
+                    var strToObj = JSON.parse(data.data[index]);
+                    chart.tasks.push({
+                        "startDate" : new Date(strToObj.startDate),
+                        "endDate"   : new Date(strToObj.endDate),
+                        "taskName"  : strToObj.taskName,
+                        "status"    : strToObj.status
+                    });
+                }
+                //console.info( "chart.tasks : ", chart.tasks );
+            } else {
+                var strToObj = JSON.parse(data.data);
+                chart.tasks.push(
+                    {
+                        "startDate" : new Date(strToObj.startDate),
+                        "endDate"   : new Date(strToObj.endDate),
+                        "taskName"  : strToObj.taskName,
+                        "status"    : strToObj.status
+                    }
+                );
+            }
+            
+            //console.log("chart.tasks length : ", chart.tasks.length);
+            /**
+                control chart tasks count don't over maxItemCount.
+             */
+            if (chart.tasks.length > chart.config.maxItemCount) {
+                chart.tasks.splice(0,(chart.tasks.length - chart.config.maxItemCount));
+            }
+            //console.log("chart.tasks length : ", chart.tasks.length);
+            
+            //const used = process.memoryUsage();
+            //var memoryInfo = window.performance.memory;
+            //const hSizeLimit = memoryInfo.jsHeapSizeLimit / 1024 / 1024;
+            //const hUsed = memoryInfo.usedJSHeapSize / 1024 / 1024;
+            //const hTotal = memoryInfo.totalJSHeapSize  / 1024 / 1024;
+            //console.log("Heap Size Limit : ", hSizeLimit, "HeapTotal : ", hTotal, " HeapUsed : ", hUsed);
+            
+            chart.obj.redraw(targetId ,chart.tasks);
+        };
+        
+        /**
+         *
+         */
+        ganttPlugin.prototype.plugingantt = function( elementId ) {
+            var plugin = this;
+            var FIT_TIME_DOMAIN_MODE = "fit";
+            var FIXED_TIME_DOMAIN_MODE = "fixed";
+            
+            var margin = {
+                top : 20,
+                right : 40,
+                bottom : 20,
+                left : 80
+            };
+            
+            var selector = "#"+elementId;
+            
+            var timeDomainStart = d3.time.second.offset(new Date(),-1);
+            var timeDomainEnd = d3.time.second.offset(new Date(), +1);
+            //var timeDomainMode = FIT_TIME_DOMAIN_MODE;// fixed or fit
+            //var timeDomainMode = FIXED_TIME_DOMAIN_MODE;// fixed or fit
+            var timeDomainMode = ((plugin.config.timeDomainMode == undefined) ? FIT_TIME_DOMAIN_MODE : plugin.config.timeDomainMode);
+            var taskTypes = [];
+            var taskStatus = [];
+            
+            //console.log(elementId);
+            var height = document.getElementById(elementId).clientHeight - margin.top - margin.bottom-5;
+            var width = document.getElementById(elementId).clientWidth - margin.right - margin.left-5;
+        
+            var tickFormat = "%H:%M";
+        
+            var keyFunction = function(d) {
+                return d.startDate + d.taskName + d.endDate;
+            };
+        
+            var rectTransform = function(d) {
+                return "translate(" + x(d.startDate) + "," + y(d.taskName) + ")";
+            };
+            
+            var x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true).nice(plugin.config.ticks);
+            var y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1);
+            var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true).ticks(plugin.config.ticks);
+        
+            var yAxis = d3.svg.axis().scale(y).orient("left");
+        
+            /**
+                get the 
+                    timeDomainStart
+                    timeDomainEnd
+             */
+            var initTimeDomain = function(tasks) {
+                //console.info("timeDomainMode : ", timeDomainMode);
+                if (timeDomainMode === FIT_TIME_DOMAIN_MODE) {
+                    if (tasks === undefined || tasks.length < 1) {
+                        timeDomainStart = d3.time.hour.offset(new Date(), -3);
+                        timeDomainEnd = d3.time.hour.offset(new Date(), +3);
+                        return;
+                    }
+                    tasks.sort(function(a, b) { return a.endDate - b.endDate; });
+                    timeDomainEnd = tasks[tasks.length - 1].endDate;
+                    
+                    tasks.sort(function(a, b) { return a.startDate - b.startDate; });
+                    timeDomainStart = tasks[0].startDate;
+                    
+                    //console.log(timeDomainEnd);
+                } else { // fixed time mode
+                    timeDomainStart = ((plugin.config.fixedTimeStart == undefined) ? (new Date(new Date().setDate((new Date().getDate() - 15)))).toISOString() : new Date(plugin.config.fixedTimeStart));
+                    timeDomainEnd = ((plugin.config.fixedTimeEnd == undefined) ? (new Date(new Date().setDate((new Date().getDate() + 15)))).toISOString() : new Date(plugin.config.fixedTimeEnd));
+                }
+            };
+        
+            /**
+            
+             */
+            var initAxis = function() {
+                //console.info("[ initAxis ]");
+                
+                x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]);
+                //.clamp(true).nice(plugin.config.ticks);
+                y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1);
+                
+                tickFormat = plugin.config.tickFormat;
+                //console.info("pre tickFormat : ", tickFormat);
+                if ( (tickFormat == undefined) || (tickFormat == "") ) {
+                    // asume the start and end year is different
+                    tickFormat = "%y:%m:%d";
+                    if( timeDomainStart.getFullYear() === timeDomainEnd.getFullYear() ) {
+                        tickFormat = "%m:%d:%H";
+                        if ( timeDomainStart.getMonth() === timeDomainEnd.getMonth() ) {
+                            tickFormat = "%d:%H:%M";
+                            if ( timeDomainStart.getDate() === timeDomainEnd.getDate() ) {
+                                tickFormat = "%H:%M:%S";
+                            }
+                        }
+                    }
+                }
+                //console.info("tickFormat : ", tickFormat);
+                
+                xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true).ticks(plugin.config.ticks);
+                //.tickSize(8).tickPadding(3); //.ticks(plugin.config.ticks);
+                yAxis = d3.svg.axis().scale(y).orient("left").tickSize(8);
+            };
+            
+            function gantt(tasks) {
+                initTimeDomain(tasks);
+                initAxis();
+            
+                var svg = d3.select(selector)
+                    .append("svg")
+                    .attr("class", "chart")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("class", "gantt-chart")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+                
+                svg.selectAll(".chart")
+                    .data(tasks, keyFunction).enter()
+                    .append("rect")
+                    .attr("rx", 5)
+                    .attr("ry", 5)
+                    .attr("class", function(d) { 
+                        if(taskStatus[d.status] == null) { return "bar";}
+                            //return taskStatus[d.status];
+                            return d.status;
+                    }) 
+                    .attr("y", 0)
+                    .attr("transform", rectTransform)
+                    .attr("height", function(d) { return y.rangeBand(); })
+                    .attr("width", function(d) {
+                        return Math.max(1,(x(d.endDate) - x(d.startDate))); 
+                    })
+                    .append("title")
+                    //.text(function(d){return "StartDate:" + d.startDate + "EndDate:" + d.endDate + "Status:" + d.status});;
+                    .html(function(d) {
+                        var outFormat = d3.time.format("%Y-%m-%d %H:%M:%S");
+                        var startD = outFormat(d.startDate);
+                        var endD = outFormat(d.endDate);
+                        return "<div><span>" + startD + "</span><br><span>" + endD + "</span><br><span>" + d.status + "</span></div>"
+                    })
+                    ;
+                
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
+                    .transition()
+                    .call(xAxis);
+                
+                svg.append("g").attr("class", "y axis").transition().call(yAxis);
+            
+                return gantt;
+            };
+            
+            gantt.redraw = function(id, tasks) {
+                //console.info("[ redraw ]", tasks);
+                initTimeDomain(tasks);
+                initAxis();
+            
+                //var svg = d3.select(".chart");
+                var svg = d3.select("#" + id + " .chart");
+                //console.info("id : ", id, "<<<< svg >>>>",svg);
+        
+                var ganttChartGroup = svg.select(".gantt-chart");
+                var rect = ganttChartGroup.selectAll("rect").
+                            data(tasks, keyFunction);
+                
+                rect.enter()
+                    .insert("rect",":first-child")
+                    .attr("rx", 5)
+                    .attr("ry", 5)
+                    .attr("class", function(d) {
+                        //console.log(d.status);
+                        //console.log(taskStatus);
+                        if(taskStatus[d.status] == null){ return "bar";}
+                            //return taskStatus[d.status];
+                            return d.status;
+                        }) 
+                    .transition()
+                    .attr("y", 0)
+                    .attr("transform", rectTransform)
+                    .attr("height", function(d) { return y.rangeBand(); })
+                    .attr("width", function(d) {
+                        return Math.max(1,(x(d.endDate) - x(d.startDate))); 
+                    })
+                    ;
+        
+                rect.transition()
+                    .attr("transform", rectTransform)
+                    .attr("height", function(d) { return y.rangeBand(); })
+                    .attr("width", function(d) { 
+                        return Math.max(1,(x(d.endDate) - x(d.startDate))); 
+                        });
+                
+                rect.exit().remove();
+
+                //console.info("rect : ", rect);
+                // for each rect add tooltip
+                rect.append("title").html(function(d) {
+                    var outFormat = d3.time.format("%Y-%m-%d %H:%M:%S");
+                    var startD = outFormat(d.startDate);
+                    var endD = outFormat(d.endDate);
+                    return "<div><span>" + startD + "</span><br><span>" + endD + "</span><br><span>" + d.status + "</span></div>"
+                });
+                
+                svg.select(".x").transition().call(xAxis);
+                svg.select(".y").transition().call(yAxis);
+                
+                $(".ganttPlugin text").css({ fill: plugin.config.textColor });
+            
+                var keys = Object.keys(plugin.taskStatus);
+                //console.log(keys);
+                keys.map(function(key) {
+                    //console.log(plugin.taskStatus[key]);
+                    //console.dir($(".ganttPlugin ."+key));
+                    $(".ganttPlugin ."+key).css({ fill: plugin.taskStatus[key] });
+                });
+                
+                return gantt;
+            };
+        
+            gantt.margin = function(value) {
+                if (!arguments.length)
+                    return margin;
+                margin = value;
+                return gantt;
+            };
+        
+            gantt.timeDomain = function(value) {
+                if (!arguments.length)
+                    return [ timeDomainStart, timeDomainEnd ];
+                    
+                timeDomainStart = +value[0], timeDomainEnd = +value[1];
+                //timeDomainStart = value[0];
+                //timeDomainEnd = value[1];
+                
+                //console.info(">>>", timeDomainStart);
+                //console.info(">>>", timeDomainEnd);
+                return gantt;
+            };
+        
+            /**
+               @param {string}
+                              vale The value can be "fit" - the domain fits the data or
+                              "fixed" - fixed domain.
+             */
+            gantt.timeDomainMode = function(value) {
+                if (!arguments.length) { return timeDomainMode; }
+                timeDomainMode = value;
+                return gantt;
+            };
+        
+            gantt.taskTypes = function(value) {
+                if (!arguments.length) { return taskTypes; }
+                taskTypes = value;
+                return gantt;
+            };
+            
+            gantt.taskStatus = function(value) {
+                if (!arguments.length) { return taskStatus; }
+                taskStatus = value;
+                return gantt;
+            };
+        
+            gantt.width = function(value) {
+                if (!arguments.length) { return width; }
+                width = +value;
+                return gantt;
+            };
+        
+            gantt.height = function(value) {
+                if (!arguments.length) { return height; }
+                height = +value;
+                return gantt;
+            };
+        
+            gantt.tickFormat = function(value) {
+                if (!arguments.length) { return tickFormat; }
+                tickFormat = value;
+                return gantt;
+            };
+        
+            gantt.selector = function(value) {
+                if (!arguments.length) { return selector; }
+                selector = value;
+                return gantt;
+            };
+        
+            return gantt;
+    
+        };
+        
+        
+        
+        /**
+         *
+         * task sample:
+         *    [
+         *       {"startDate":new Date("Sun Dec 09 01:36:45 EST 2012"),"endDate":new Date("Sun Dec 09 02:36:45 EST 2012"),"taskName":"Zone 1","status":"SUCCEEDED"},
+         *       {"startDate":new Date("Sun Dec 09 01:36:45 EST 2012"),"endDate":new Date("Sun Dec 09 02:36:45 EST 2012"),"taskName":"Zone 3","status":"FAILED"},
+         *       {"startDate":new Date("Sun Dec 09 04:56:32 EST 2012"),"endDate":new Date("Sun Dec 09 06:35:47 EST 2012"),"taskName":"Zone 5","status":"RUNNING"}
+         *    ]
+         */
+        ganttPlugin.prototype.newgantt = function( elementId ) {
+            var node = this;
+            var taskStatus = node.taskStatus;
+            var taskNames = node.taskNames;
+            
+            //node.tasks.sort(function(a, b) 
+            //{
+            //    return a.endDate - b.endDate;
+            //});
+            
+            //var maxDate = this.tasks[this.tasks.length - 1].endDate;
+            
+            //node.tasks.sort(function(a, b)
+            //{
+            //    return a.startDate - b.startDate;
+            //});
+            //var minDate = tasks[0].startDate;
+            
+            var format = "%H:%M:%S";
+            
+            var gantt = this.plugingantt(elementId)
+                            .taskTypes(taskNames)
+                            .taskStatus(taskStatus)
+                            .tickFormat(format);
+            gantt(node.tasks);
+            
+            // set text color
+            $("#"+node.id+" text").css({ fill: node.config.textColor });
+            
+            var keys = Object.keys(node.taskStatus);
+            keys.map(function(key) {
+                $("."+key).css({ fill: node.taskStatus[key] });
+            });
+            
+            return gantt;    
+        }
+
+        
+        App.Plugins.registerChartType(
+            "gantt",
+            ganttPlugin, 
+            {
+                category     : "Basic",
+                display_name : "Gantt",
+                version      : "1.0.6",
+                dependencies : [
+                                "plugins/lib/tools.js",
+                                "plugins/lib/d3_3.5.17/d3.min.js"
+                            ],
+                chartConfig  : {
+                                timeDomainMode : { default : "fit" },
+                                fixedTimeStart : { default : (new Date(new Date().setDate((new Date().getDate() - 15)))).toISOString() },
+                                fixedTimeEnd   : { default : (new Date(new Date().setDate((new Date().getDate() + 15)))).toISOString() },
+                                title      : { default : "" },
+                                label      : { default : "" },
+                                textColor  : { default : "#000000" },
+                                taskNames  : { default : "Zone 1, Zone 2, Zone 3, Zone 4, Zone 5" },
+                                taskStatus : { default : "SUCCEEDED:#33b5e5, FAILED:#CC0000, RUNNING:#669900, KILLED:#ffbb33" },
+                                tickFormat : { default : "" },
+                                ticks      : { default : 3 },
+                                maxItemCount    : { default : 100 }
+                            },
+                color        : "rgb(255, 204, 255)"
+            });
+
+  } )();
+</script>
+
+<script type="text/x-dash" data-chart-config="gantt">
+    <!-- div class="form-group">
+        <label>Title</label><input class="form-control" type="text" data-prop="title">
+    </div>
+    
+    <div class="form-group">
+        <label>Label</label><input class="form-control" type="text" data-prop="label">
+    </div -->
+    
+    <div class="form-group ganttPlugin">
+        <table style="width:100%">
+            <tr>
+                <th colspan="4">Configuration</th>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Task Names</td><td><input class="form-control" type="text" data-prop="taskNames"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Task Status</td><td><input class="form-control" type="text" data-prop="taskStatus"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Text Color</td><td><input class="form-control" type="text" data-prop="textColor"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Tick Format</td><td><input class="form-control" type="text" data-prop="tickFormat"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Time Domain Mode</td>
+                <td>
+                    <select class="form-control" data-prop="timeDomainMode">
+                        <option value="fit">Fit</option>
+                        <option value="fixed">Fixed</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Fixed Start Time</td><td><input class="form-control" type="text" data-prop="fixedTimeStart"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Fixed End Time</td><td><input class="form-control" type="text" data-prop="fixedTimeEnd"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Tick Count</td><td><input class="form-control" type="text" data-prop="ticks"></td>
+            </tr>
+            <tr>
+                <td style="width:25%; padding-left:12px;">Max Data Count</td><td><input class="form-control" type="text" data-prop="maxItemCount"></td>
+            </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="gantt">
+    <h1>Gantt</h1>
+	<h3><b>|</b> DataSource</h3>
+    <p>The DataSource example:</p>
+<pre>
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getStatus() {
+    switch (getRandomInt(3)) {
+        case 0:
+            return "SUCCEEDED"; 
+            break;
+        case 1:
+            return "FAILED";
+            break;
+        default:
+            return "RUNNING"
+    }
+    return "RUNNING";
+}
+
+var now = new Date();
+var eDate = new Date();
+eDate.setSeconds(eDate.getSeconds() + 3);
+
+var out = {
+        "startDate" : now.toString(),
+        "endDate"   : eDate.toString(),
+        "taskName"  :"Zone " + (getRandomInt(5)+1),
+        "status"    : getStatus()
+    }  
+
+msg.payload = {
+    tstamp: now.getTime(),
+    data: JSON.stringify(out)
+};
+return msg;
+</pre>
+    
+    <h3><b>|</b> Configuration</h3>
+    <p><b>Task Names</b> : The chart's Y axis values. The default values are Zone 1, Zone 2, Zone 3, Zone 4, Zone 5.</p>
+    <p><b>Task Status</b> : The chart's status color value. The defaut values are SUCCEEDED:#33b5e5, FAILED:#CC0000, RUNNING:#669900, KILLED:#ffbb33</p>
+    <p><b>Tick Format</b> : The chart's X axis value format follow the d3 time format.</p>
+    <p><b>Time Domain Mode</b> : The chart's X axis show mode. There are two modes: Fit and Fixed for user selected. The Fit mode will depends on input data time period to change show data but the Fixed mode will fix time period for show data.</p>
+    <p><b>Fixed Start Time</b> : For Fixed Mode only. The fixed start time setting.</p>
+    <p><b>Fixed End Time</b> : For Fixed Mode only. The fixed end time setting.</p>
+    <p><b>Tick Count</b> : The show X axis tick count.</p>
+    <p><b>Max Data Count</b> : The show maximum data count setting.</p>
+    
+    <h3><b>|</b> Shape</h3>
+    <div><p style="text-align: center;"><img src="images/gantt.png" style="width:100%;" /></p></div>
+</script>
+

@@ -1,0 +1,119 @@
+<style>
+    .form-row.checkbox > input[type="checkbox"] {
+        width:10%;
+    }
+    
+    .form-row.checkbox > label {
+        width:80%;
+    }
+</style>
+
+<script type="text/javascript">
+    RED.nodes.registerType( 'iot-datasource' , 
+    {
+        category: 'storage',
+		border:"3px solid #e00202", /*kewei add*/
+        defaults: 
+        {
+            name: { value : "" },
+            tstampField : { value : "" },
+            dataField : { value : "" },
+            disableDiscover : { value : false },
+            //iotHubNodeId : { value : "" },
+            cloudReady : { value : false },
+            protocol: { value : "amqp" }
+        },
+        credentials:
+        {
+            connectionstring: { type: "text" }
+        },
+        inputs:1,
+        outputs:1,
+        icon: function() {
+            return (this.cloudReady ? "dbCloud.png" : "db.png");
+            //$.ajax({
+            //    url: "getCloudStatus",
+            //    type:"GET",
+            //    data: {
+            //        id: this.id
+            //    },
+            //    success: function(resp) {
+            //        //return resp;
+            //        //node.name = resp;
+            //        // alert("azureconfig oneditsave resp [" + resp + "]");
+            //        if (resp == 'ready') {
+            //            return "dbCloud.png";
+            //        } else {
+            //            return "db.png";
+            //        }
+            //    },
+            //    error: function(jqXHR,textStatus,errorThrown) {
+            //        // alert('error');
+            //        return "db.png";
+            //    }
+            //});
+        
+        
+            
+        },
+        label: function() {
+            return this.name || "IoT Datasource";
+        },
+        align: "right"
+    });
+    
+    // add dashboard link to menu
+    RED.menu.addItem("btn-sidemenu", null);
+    RED.menu.addItem("btn-sidemenu",
+    {
+        id:"menu-item-iot-studio-dashboard",
+        label: "IoT Studio Dashboard",
+        href: "dash/#"
+    });
+    
+</script>
+
+<script type="text/x-red" data-template-name="iot-datasource">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row checkbox">
+        <input type="checkbox" id="node-input-disableDiscover">
+        <label for="node-input-disableDiscover">Disable subcomponent discovery</label>
+    </div>
+    <h5>Timestamp Field</h5>
+    <div class="form-row">
+        msg.payload.<input type="text" id="node-input-tstampField" placeholder="tstamp">
+    </div>
+    <h5>Data Field</h5>
+    <div class="form-row">
+        msg.payload.<input type="text" id="node-input-dataField" placeholder="data">
+    </div>
+    <!-- div style="display:none;" class="form-row">
+        <label for="node-input-iotHubNodeId"><i class="icon-tag"></i> iotHubNodeId</label>
+        <input type="text" id="node-input-iotHubNodeId" placeholder="iotHubNodeId">
+    </div -->
+</script>
+
+<script type="text/x-red" data-help-name="iot-datasource">
+    <p>IoT Gateway Kit Datasource node.</p>
+    <h4><strong>Configuration</strong></h4>
+    <p><strong>Disable subcomponent discovery</strong> - If checked, the datasource will not attempt to look inside the data field and split it into subfields.
+    For example, if your data format looks something like this...</p>
+    <pre><code>msg.payload = {
+  tstamp: 1438637044000,
+  data: {
+    x: 3.14,
+    y: 1.41,
+    z: 6.02
+  }
+}</code></pre>
+    <p>... having discovery enabled will allow the datasource to go inside <code>msg.payload.data</code> and find the fields <code>x</code>, <code>y</code>, and
+    <code>z</code>, and present them to the Dashboard as separate data points. If disabled, however, the Dashboard will receive the entire JSON Object
+    <code>msg.payload.data</code> as one data point.<br>
+    A line chart might need them split up so it can chart the data points separately, but a 3d scattered plot would need the data intact, since the entire object
+    would represent just one data point on the plot.</p>
+    <p><strong>Timestamp Field</strong> - The JSON field the UNIX timestamp is located at<br>(default: <code>msg.payload.tstamp</code>)</p>
+    <p><strong>Data Field</strong> - The JSON field the data is located at<br>(default: <code>msg.payload.data</code>)</p>
+</script>

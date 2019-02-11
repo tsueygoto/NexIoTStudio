@@ -1,0 +1,80 @@
+<script type="text/javascript">
+
+  (function() {
+
+    var WorldTour = function( container , datasources , components , config ) 
+    {
+        this.datasources = datasources;
+        this.components = components;
+        this.config = config;
+
+        this.container = $( '<div id="world" style="-webkit-flex:1;flex:1"></div>' )[0];
+        $( container ).append( this.container );
+
+        this.data = [];
+        this.world = new WT.WorldTour( this.container , {} );
+
+        //$( this.container ).parents( "li" ).on( "resize" , this._resize.bind( this ) );
+      
+        //d3.select(this.container).style("height", 960 + "px");
+        $( this.container ).parents( "li" ).on( "resize" , this._resize.bind( this ) );
+        //console.log("@@@ init.");
+        //this.world.resize();
+        //console.log("@@@ resize.");
+        
+        //this.container.on("keypress", this._mousedown.bind( this ));
+        //$( this.container ).parents( "li" ).on( "mousedown" , this._mousedown.bind( this ) );
+        //Mousetrap.bind('4', this._mousedown.bind( this ));
+        
+        $( this.container ).parents( "li" ).on( "mousemove" , this._mousemove.bind( this ) );
+        $( this.container ).parents( "li" ).on( "wheel" , this._mousewheel.bind( this ) );
+        
+    };
+
+    //WorldTour.prototype._mousedown = function(event) {
+    //    console.log("4 ...");
+    //};
+    
+    WorldTour.prototype._mousemove = function(evt) {
+        //$( this.container ).css( "height" , "0" );
+        //this.world.resize();
+        // console.log(evt);
+        this.world.mousemove(evt);
+    };
+
+    WorldTour.prototype._mousewheel = function(evt) {
+        //$( this.container ).css( "height" , "0" );
+        //this.world.resize();
+        console.log(evt.originalEvent.wheelDelta);
+        //this.world.mousemove(evt);
+        this.world.mousewheel(evt.originalEvent.wheelDelta);
+    };
+    
+    WorldTour.prototype._resize = function() {
+        //$( this.container ).css( "height" , "0" );
+        this.world.resize();
+    };
+
+    WorldTour.prototype.pushData = function( index , data )
+    {
+        //console.log("@@@ index:" + index);
+        //console.log("@@@ data:" + this.components[ index ].getData( data.data ));
+        if( index !== 0 ) return;
+        //console.log(this.components[ index ].getData( data.data ));
+        this.world.updateValue( this.components[ index ].getData( data.data ) );
+    };
+
+    App.Plugins.registerChartType( "worldTour" , WorldTour , {
+      dependencies : [
+        "plugins/lib/worldTour.js",
+        "plugins/lib/topojson.v1.min.js"
+//        ,
+//        "plugins/lib/mousetrap.min.js"
+      ],
+      display_name : "World Tour"
+    } );
+    
+  })();
+  
+  
+</script>
