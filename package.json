@@ -46,7 +46,7 @@
     "azure-storage": "1.4.0",
     "basic-auth": "1.1.0",
     "bcryptjs": "2.4.3",
-    "body-parser": "1.17.2",
+    "body-parser": ">=1.20.6",
     "cheerio": "0.22.0",
     "clone": "2.1.1",
     "cookie": "0.3.1",
