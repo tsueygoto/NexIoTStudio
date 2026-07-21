@@ -38,7 +38,7 @@
   "dependencies": {
     "express": "^4.13.1",
     "mustache": "^2.1.3",
-    "ws": "^0.8.0"
+    "ws": "1.1.5"
   },
   "deprecated": false,
   "description": "A NEXCOM IoT Studio dashboard package. Contains a datasource node which handles historical data and live data streams, and a hackable visualization application designed to connect to the datasource nodes.",
